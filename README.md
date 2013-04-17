@@ -1,7 +1,5 @@
-Rand-O-Mater
-============
-### A webpage that gives you random food recipes and allow you to submit new ones.
+Ruoeg
+=====
+### An old-school rogue-like game built from scratch using pdcurses.
 -
-The files **index.php** and **submitRecipe.php** must be edited with your webpage url.
-
-The **Db_Functions.php** must be edited with your database information.
+All the documentation is currently being developed.
