@@ -20,20 +20,15 @@ public:
 	void generate();
 
 private:
-	struct Room
+	struct Pair
 	{
-		unsigned int min_width_room, min_height_room;
-		unsigned int max_width_room, max_height_room;
+		unsigned int x;
+		unsigned int y;
 	};
 
-	struct Coordinate
-	{
-		unsigned int row, column;
-	};
-
-	void createRandomRoom(Room &r, GameObject &game_object);
-	Coordinate getRandomWall();
-	bool checkAdjacent(Coordinate &c, GameObject::Type type);
+	void makeRoom(Pair &location, Pair &size, GameObject &game_object);
+	Pair getRandomWall();
+	bool checkAdjacent(Pair &c, GameObject::Type type);
 
 	RNG rng_;
 	Map2D map_;

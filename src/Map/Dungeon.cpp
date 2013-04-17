@@ -15,10 +15,8 @@ Dungeon::~Dungeon()
 
 void Dungeon::generate()
 {
-	/*
-	 * A Roguebasin's based algorithm. 
-	 * Each step is enumerated to keep it clear.
-	 */
+	// A Roguebasin's based algorithm. 
+	// Each step is enumerated to keep it clear.
 
 	map_.clear();
 
@@ -30,26 +28,25 @@ void Dungeon::generate()
 	}
 	
 	// Dig out a single room in the center of the map
-	Room room = {4, 3, 7, 6}; // Min and Max size
-	createRandomRoom(room, Lit());
+	Pair location = {map_.width()/2, map_.height()/2};
+	Pair dimensions = {8, 6};
+	makeRoom(location, dimensions, Lit());
 
 	// Pick a wall of any room
-	Coordinate p = getRandomWall();
-	map_.at(p.row, p.column).top() = GameObject(GameObject::Type::Dummy); // TODO this is just a dummy!!!
+	Pair p = getRandomWall();
+	map_.at(p.y, p.x).top() = GameObject(GameObject::Type::Dummy); // TODO this is just a dummy!!!
 
 	// Decide upon a new feature to build
 
 }
 
-void Dungeon::createRandomRoom(Room &r, GameObject &game_object)
+void Dungeon::makeRoom(Pair &location, Pair &size, GameObject &game_object)
 {
 	// Using Mersenne Twister engine for random numbers
-	unsigned int row = rng_.nextInt(3, map_.height()-r.max_height_room-3);
-	unsigned int column = rng_.nextInt(3, map_.width()-r.max_width_room-3);
-	unsigned int height = row + 
-		rng_.nextInt(r.min_height_room, r.max_height_room);
-	unsigned int width = column + 
-		rng_.nextInt(r.min_width_room, r.max_width_room);
+	unsigned int row = location.y - size.y/2;
+	unsigned int column = location.x - size.x/2;
+	unsigned int height = location.y + rng_.nextInt(4, size.y);
+	unsigned int width = location.x + rng_.nextInt(4, size.x);
 
 	for(unsigned int i = row; i < height; ++i)
 	{
@@ -60,15 +57,15 @@ void Dungeon::createRandomRoom(Room &r, GameObject &game_object)
 	}
 }
 
-Dungeon::Coordinate Dungeon::getRandomWall()
+Dungeon::Pair Dungeon::getRandomWall()
 {
-	Coordinate c; 
+	Pair p; 
 	bool ok = false;
 	while(!ok)
 	{
-		c.row = rng_.nextInt(2, map_.height()-2);
-		c.column = rng_.nextInt(2, map_.width()-2);
-		Tile t1 = map_.at(c.row, c.column);
+		p.y = rng_.nextInt(2, map_.height()-2);
+		p.x = rng_.nextInt(2, map_.width()-2);
+		Tile t1 = map_.at(p.y, p.x);
 
 		if(!t1.visited())
 		{
@@ -78,20 +75,20 @@ Dungeon::Coordinate Dungeon::getRandomWall()
 			// Check for tiles adjacent
 			if(t1.top().type() == GameObject::Type::Wall)
 			{
-				ok = checkAdjacent(c, GameObject::Type::Lit);
+				ok = checkAdjacent(p, GameObject::Type::Lit);
 			}
 		}
 	}
 
-	return c;
+	return p;
 }
 
-bool Dungeon::checkAdjacent(Coordinate &c, GameObject::Type type)
+bool Dungeon::checkAdjacent(Pair &p, GameObject::Type type)
 {
-	if((map_.at(c.row-1, c.column).top().type() == type) || 
-		(map_.at(c.row+1, c.column).top().type() == type) ||
-		(map_.at(c.row, c.column-1).top().type() == type) ||
-		(map_.at(c.row,c. column+1).top().type() == type))
+	if((map_.at(p.y-1, p.x).top().type() == type) || 
+		(map_.at(p.y+1, p.x).top().type() == type) ||
+		(map_.at(p.y, p.x-1).top().type() == type) ||
+		(map_.at(p.y, p.x+1).top().type() == type))
 	{
 		return true;
 	}
