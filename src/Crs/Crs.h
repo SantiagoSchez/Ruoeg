@@ -1,0 +1,95 @@
+//
+// Just a wrapper for curses library with the functions used for
+// making the game and a little bit document inline.
+// 
+
+#ifndef RUOEG_CRS_CRS_H_
+#define RUOEG_CRS_CRS_H_
+
+#include "../../include/curses.h"
+
+class Crs
+{
+public:
+	static enum class Key 
+	{
+		DOWN = 0x102, 
+		UP = 0x103, 
+		LEFT = 0x104, 
+		RIGHT = 0x105, 
+		ESC = 0x1B,
+		SPACE = 0x20
+	};
+
+	// Starts curses mode
+	static WINDOW* initscr();
+
+	// Resize a given curses window
+	static int wresize(WINDOW *win, int lines, int columns);
+
+	// Resize the terminal
+	static int resize_term(int lines, int columns);
+
+	// Whether cursor displays (1) or not (0)
+	static int curs_set(int visibility);
+
+	// Allows the input of function keys (F1, F2, Up arrow, ...)
+	static int keypad(WINDOW *win, bool bf);
+
+	// No echoing
+	static int noecho();
+
+	// No buffering
+	static int cbreak();
+
+	// No delaying
+	static int nodelay(WINDOW *win, bool bf);
+
+	// Enables/Disables scroll
+	static int scrollok(WINDOW *win, bool bf);
+
+	// Ends curses mode
+	static void endwin();
+
+	// Output 'ch' at (x,y) in win
+	static int mvwaddch(WINDOW *win, int y, int x, const chtype ch);
+
+	// Output the string str in win (scrolling way)
+	static int mvwaddstr(WINDOW *win, int y, int x, const char *str);
+
+	// Output the string str in win (scrolling way)
+	static int waddstr(WINDOW *win, const char *str);
+
+	// Wait for key input
+	static int wgetch(WINDOW *win);
+
+	// Starts color mode
+	static int start_color();
+
+	// Enables attributes to a window
+	static int wattron(WINDOW *win, int attrs);
+
+	// Disable attributes to a window
+	static int wattroff(WINDOW *win, int attrs);
+
+	// Creates a new pair (1..COLOR_PAIRS-1) with the given f(oreground) 
+	// and b(ackground) color
+	static int init_pair(short pair, short f, short b);
+
+	// Returns true if terminal can display colors
+	static int has_colors();
+
+	// Creates a new window
+	static WINDOW* newwin(int nlines, int ncols, int begin_y, int begin_x);
+
+	// Deletes a given window
+	static int delwin(WINDOW *win);
+
+	// Surround a window with a frame
+	static int box(WINDOW *win, chtype verch, chtype horch);
+
+	// Refresh the given window
+	static int refresh(WINDOW *win);
+};
+
+#endif // RUOEG_CRS_CRS_H_
