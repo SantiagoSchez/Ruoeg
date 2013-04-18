@@ -89,25 +89,25 @@ void Game::manageInput(WINDOW *win)
 
 	if(key != -1)
 	{
-		if(key == static_cast<int>(Crs::Key::SPACE))
+		if(key == static_cast<int>(Crs::Key::Space))
 		{
 			dungeon_.generate();
 		}
 
 		// Stuff for testing 
-		if(key == static_cast<int>(Crs::Key::DOWN))
+		if(key == static_cast<int>(Crs::Key::Down))
 		{
 			Crs::wattron(windows_.at(1), COLOR_PAIR(1));
 			Crs::waddstr(windows_.at(1), " Troll attack you! You received 15 damage!\n");
 			Crs::wattroff(windows_.at(1), COLOR_PAIR(1));
 		}
-		if(key == static_cast<int>(Crs::Key::UP))
+		if(key == static_cast<int>(Crs::Key::Up))
 		{
 			Crs::wattron(windows_.at(1), COLOR_PAIR(2));
 			Crs::waddstr(windows_.at(1), " You attack enemy Troll. You dealt 45 damage!\n");
 			Crs::wattroff(windows_.at(1), COLOR_PAIR(2));
 		}
-		if(key == static_cast<int>(Crs::Key::RIGHT))
+		if(key == static_cast<int>(Crs::Key::Right))
 		{
 			Crs::waddstr(windows_.at(1), " Troll fainted.\n");
 		}

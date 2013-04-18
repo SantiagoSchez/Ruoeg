@@ -20,15 +20,24 @@ public:
 	void generate();
 
 private:
+	enum class Direction
+	{
+		North,
+		East,
+		South,
+		West
+	};
+
 	struct Pair
 	{
 		unsigned int x;
 		unsigned int y;
 	};
 
-	void makeRoom(Pair &location, Pair &size, GameObject &game_object);
+	bool makeRoom(Pair &loc, Pair &size, GameObject &game_object);
+	bool makeCorridor(Pair &loc, unsigned int len, Direction dir);
 	Pair getRandomWall();
-	bool checkAdjacent(Pair &c, GameObject::Type type);
+	bool checkAdjacent(Pair &p, GameObject::Type type);
 
 	RNG rng_;
 	Map2D map_;

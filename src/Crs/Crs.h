@@ -13,12 +13,12 @@ class Crs
 public:
 	static enum class Key 
 	{
-		DOWN = 0x102, 
-		UP = 0x103, 
-		LEFT = 0x104, 
-		RIGHT = 0x105, 
-		ESC = 0x1B,
-		SPACE = 0x20
+		Down = 0x102, 
+		Up = 0x103, 
+		Left = 0x104, 
+		Right = 0x105, 
+		Esc = 0x1B,
+		Space = 0x20
 	};
 
 	// Starts curses mode

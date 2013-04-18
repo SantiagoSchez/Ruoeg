@@ -18,7 +18,7 @@ public:
 
 	void start();
 	void setUp();
-	void loop(Crs::Key exit_key = Crs::Key::ESC);
+	void loop(Crs::Key exit_key = Crs::Key::Esc);
 	void refreshWindows(std::vector<WINDOW *> windows);
 	void release();
 	void manageInput(WINDOW *win);
