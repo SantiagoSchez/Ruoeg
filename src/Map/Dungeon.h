@@ -22,22 +22,25 @@ public:
 private:
 	enum class Direction
 	{
+		None,
 		North,
 		East,
 		South,
 		West
 	};
 
-	struct Pair
+	struct Point
 	{
 		unsigned int x;
 		unsigned int y;
+		Direction dir;
 	};
 
-	bool makeRoom(Pair &loc, Pair &size, GameObject &game_object);
-	bool makeCorridor(Pair &loc, unsigned int len, Direction dir);
-	Pair getRandomWall();
-	bool checkAdjacent(Pair &p, GameObject::Type type);
+	bool makeRoom(Point &loc, Point &size, GameObject &game_object);
+	bool makeCorridor(Point &loc, unsigned int len);
+	Point getRandomWall();
+	bool checkAdjacency(Point &p, GameObject::Type type);
+	Direction checkDirection(Point &p, GameObject::Type type);
 
 	RNG rng_;
 	Map2D map_;
