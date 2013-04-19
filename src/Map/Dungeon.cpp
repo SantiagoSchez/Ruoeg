@@ -35,18 +35,16 @@ void Dungeon::generate()
 	makeRoom(location, dimensions, Lit());
 
 	int num_features = 0;
-	while(num_features < 10000) // Decide about the max
+	/*while(num_features < 50) // Decide about the max
 	{
 		// Pick a wall of any room
 		Point p = getRandomWall();
 
 		// Decide upon a new feature to build
-		//makeCorridor(p, 6, Direction::North);
-		//makeCorridor(p, 6, Direction::South);
 		makeCorridor(p, 6);
 
 		++num_features;
-	}
+	}*/
 }
 
 bool Dungeon::makeRoom(Point &loc, Point &size, GameObject &game_object)
@@ -77,15 +75,23 @@ bool Dungeon::makeCorridor(Point &loc, unsigned int len)
 	switch(loc.dir)
 	{
 	case Direction::North:
+		// Checking for free area to build the corridor
+		// #####**********		###############
+		// #...#W*********	->	#...#..........
+		// #####**********		###############
 		for(unsigned int i = loc.y; i > (loc.y-length); --i)
 		{
-			if((i < 2) || (i > height-2) ||
-			   (map_.at(i, loc.x).top().type() != GameObject::Type::Wall)) 
+			if((i < 2) || 
+			   (i > height-2) ||
+			   (map_.at(i, loc.x).top().type()!=GameObject::Type::Wall) ||
+			   (map_.at(i, loc.x-1).top().type()!=GameObject::Type::Wall) ||
+			   (map_.at(i, loc.x+1).top().type() != GameObject::Type::Wall)) 
 			{
 				return false;
 			}
 		}
 
+		// All went ok? Then build the corridor
 		for(unsigned int i = loc.y; i > (loc.y-length); --i)
 		{
 			map_.at(i, loc.x).top() = Lit();
@@ -94,8 +100,11 @@ bool Dungeon::makeCorridor(Point &loc, unsigned int len)
 	case Direction::East:
 		for(unsigned int i = loc.x; i < (loc.x+length); ++i)
 		{
-			if((i < 2) || (i > width-2) ||
-				(map_.at(loc.y, i).top().type() != GameObject::Type::Wall)) 
+			if((i < 2) || 
+			   (i > width-2) ||
+			   (map_.at(loc.y, i).top().type()!=GameObject::Type::Wall) ||
+			   (map_.at(loc.y-1, i).top().type()!=GameObject::Type::Wall) ||
+			   (map_.at(loc.y+1, i).top().type()!=GameObject::Type::Wall)) 
 			{
 				return false;
 			}
@@ -109,8 +118,11 @@ bool Dungeon::makeCorridor(Point &loc, unsigned int len)
 	case Direction::South:
 		for(unsigned int i = loc.y; i < (loc.y+length); ++i)
 		{
-			if((i < 2) || (i > height-2) ||
-				(map_.at(i, loc.x).top().type() != GameObject::Type::Wall)) 
+			if((i < 2) || 
+			   (i > height-2) ||
+			   (map_.at(i, loc.x).top().type()!=GameObject::Type::Wall) ||
+			   (map_.at(i, loc.x-1).top().type()!=GameObject::Type::Wall) ||
+			   (map_.at(i, loc.x+1).top().type()!=GameObject::Type::Wall)) 
 			{
 				return false;
 			}
@@ -124,8 +136,11 @@ bool Dungeon::makeCorridor(Point &loc, unsigned int len)
 	case Direction::West:
 		for(unsigned int i = loc.x; i > (loc.x-length); --i)
 		{
-			if((i < 2) || (i > width-2) ||
-				(map_.at(loc.y, i).top().type() != GameObject::Type::Wall)) 
+			if((i < 2) || 
+			   (i > width-2) ||
+			   (map_.at(loc.y, i).top().type()!=GameObject::Type::Wall) ||
+			   (map_.at(loc.y-1, i).top().type()!=GameObject::Type::Wall) ||
+			   (map_.at(loc.y+1, i).top().type()!=GameObject::Type::Wall)) 
 			{
 				return false;
 			}
@@ -242,4 +257,13 @@ void Dungeon::draw(WINDOW *win)
 				static_cast<char>(map_.at(i, j).top().type()));
 		}
 	}
+}
+
+bool Dungeon::createrCorridor()
+{
+	// Pick a wall of any room
+	Point p = getRandomWall();
+
+	// Decide upon a new feature to build
+	return makeCorridor(p, 6);
 }

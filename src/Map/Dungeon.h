@@ -19,6 +19,9 @@ public:
 	void draw(WINDOW *win);
 	void generate();
 
+	// Just for testing
+	bool createrCorridor();
+
 private:
 	enum class Direction
 	{

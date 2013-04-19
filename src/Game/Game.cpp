@@ -89,27 +89,26 @@ void Game::manageInput(WINDOW *win)
 
 	if(key != -1)
 	{
+		// Stuff for testing 
 		if(key == static_cast<int>(Crs::Key::Space))
 		{
-			dungeon_.generate();
+			if(dungeon_.createrCorridor())
+			{
+				Crs::wattron(windows_.at(1), COLOR_PAIR(2));
+				Crs::waddstr(windows_.at(1), " Making a corridor succeed.\n");
+				Crs::wattroff(windows_.at(1), COLOR_PAIR(2));
+			}
+			else
+			{
+				Crs::wattron(windows_.at(1), COLOR_PAIR(1));
+				Crs::waddstr(windows_.at(1), " Making corridor failed.\n");
+				Crs::wattroff(windows_.at(1), COLOR_PAIR(1));
+			}
 		}
 
-		// Stuff for testing 
 		if(key == static_cast<int>(Crs::Key::Down))
 		{
-			Crs::wattron(windows_.at(1), COLOR_PAIR(1));
-			Crs::waddstr(windows_.at(1), " Troll attack you! You received 15 damage!\n");
-			Crs::wattroff(windows_.at(1), COLOR_PAIR(1));
-		}
-		if(key == static_cast<int>(Crs::Key::Up))
-		{
-			Crs::wattron(windows_.at(1), COLOR_PAIR(2));
-			Crs::waddstr(windows_.at(1), " You attack enemy Troll. You dealt 45 damage!\n");
-			Crs::wattroff(windows_.at(1), COLOR_PAIR(2));
-		}
-		if(key == static_cast<int>(Crs::Key::Right))
-		{
-			Crs::waddstr(windows_.at(1), " Troll fainted.\n");
+			dungeon_.generate();
 		}
 	}
 }
