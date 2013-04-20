@@ -13,7 +13,7 @@
 class Dungeon
 {
 public:
-	Dungeon(unsigned int height, unsigned int width);
+	Dungeon(int height, int width);
 	~Dungeon();
 
 	void draw(WINDOW *win);
@@ -35,18 +35,21 @@ private:
 
 	struct Point
 	{
-		unsigned int x;
-		unsigned int y;
+		int x;
+		int y;
 		Direction dir;
+		int xmod;
+		int ymod;
 	};
 
-	bool makeSquaredRoom(Point &loc, unsigned int height, unsigned int width);
-	bool makeCorridor(Point &loc, unsigned int len);
+	bool makeSquaredRoom(Point &loc, int height, int width);
+	bool makeCorridor(Point &loc, int len);
 	Point getRandomWall();
-	Direction checkAdjacency(Point &p, GameObject::Type type);
 
 	RNG rng_;
 	Map2D map_;
+
+	const unsigned int map_error;
 };
 
 #endif // RUOEG_MAP_DUNGEON_H_

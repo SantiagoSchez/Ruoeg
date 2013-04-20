@@ -10,8 +10,13 @@ class GameObject
 public:
 	enum class Type : char
 	{
-		Wall = '#',
+		None = ' ',
+		VerticalWall = '|',
+		HorizontalWall = '-',
+		Corridor = '#',
 		Lit = '.',
+		Door = '+',
+		Stairs = '>',
 		Dummy = '?'
 	};
 
