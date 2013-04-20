@@ -81,6 +81,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\GameObjects\Dummy.cpp" />
     <ClCompile Include="src\Crs\Crs.cpp" />
     <ClCompile Include="src\Map\Dungeon.cpp" />
     <ClCompile Include="src\Game\Game.cpp" />
@@ -93,6 +94,7 @@
     <ClCompile Include="src\GameObjects\Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\GameObjects\Dummy.h" />
     <ClInclude Include="src\Crs\Crs.h" />
     <ClInclude Include="src\Map\Dungeon.h" />
     <ClInclude Include="src\Game\Game.h" />

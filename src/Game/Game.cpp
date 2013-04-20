@@ -92,7 +92,28 @@ void Game::manageInput(WINDOW *win)
 		// Stuff for testing 
 		if(key == static_cast<int>(Crs::Key::Space))
 		{
-			if(dungeon_.createrCorridor())
+			dungeon_.generate();
+		}
+
+		if(key == static_cast<int>(Crs::Key::Left))
+		{
+			if(dungeon_.createSquaredRoom())
+			{
+				Crs::wattron(windows_.at(1), COLOR_PAIR(2));
+				Crs::waddstr(windows_.at(1), " Making a squared room succeed.\n");
+				Crs::wattroff(windows_.at(1), COLOR_PAIR(2));
+			}
+			else
+			{
+				Crs::wattron(windows_.at(1), COLOR_PAIR(1));
+				Crs::waddstr(windows_.at(1), " Making squared room failed.\n");
+				Crs::wattroff(windows_.at(1), COLOR_PAIR(1));
+			}
+		}
+
+		if(key == static_cast<int>(Crs::Key::Right))
+		{
+			if(dungeon_.createCorridor())
 			{
 				Crs::wattron(windows_.at(1), COLOR_PAIR(2));
 				Crs::waddstr(windows_.at(1), " Making a corridor succeed.\n");
@@ -104,11 +125,6 @@ void Game::manageInput(WINDOW *win)
 				Crs::waddstr(windows_.at(1), " Making corridor failed.\n");
 				Crs::wattroff(windows_.at(1), COLOR_PAIR(1));
 			}
-		}
-
-		if(key == static_cast<int>(Crs::Key::Down))
-		{
-			dungeon_.generate();
 		}
 	}
 }

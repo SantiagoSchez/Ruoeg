@@ -12,7 +12,7 @@ public:
 	{
 		Wall = '#',
 		Lit = '.',
-		Dummy = 'O'
+		Dummy = '?'
 	};
 
 	explicit GameObject(Type type);

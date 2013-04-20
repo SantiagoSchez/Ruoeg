@@ -20,7 +20,8 @@ public:
 	void generate();
 
 	// Just for testing
-	bool createrCorridor();
+	bool createCorridor();
+	bool createSquaredRoom();
 
 private:
 	enum class Direction
@@ -39,11 +40,10 @@ private:
 		Direction dir;
 	};
 
-	bool makeRoom(Point &loc, Point &size, GameObject &game_object);
+	bool makeSquaredRoom(Point &loc, unsigned int height, unsigned int width);
 	bool makeCorridor(Point &loc, unsigned int len);
 	Point getRandomWall();
-	bool checkAdjacency(Point &p, GameObject::Type type);
-	Direction checkDirection(Point &p, GameObject::Type type);
+	Direction checkAdjacency(Point &p, GameObject::Type type);
 
 	RNG rng_;
 	Map2D map_;
