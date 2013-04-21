@@ -51,7 +51,7 @@ void Dungeon::generate()
 		// Decide upon a new feature to build
 		if(rng_.nextInt(0, 100) <= 75)
 		{
-			if(makeSquaredRoom(p, 6, 8))
+			if(makeSquaredRoom(p, 6, 8)) // 75% for a room
 			{
 				map_.at(p.y-p.ymod, p.x-p.xmod).top() = Door();
 				map_.at(p.y, p.x).top() = Lit();
@@ -59,7 +59,7 @@ void Dungeon::generate()
 		}
 		else
 		{
-			if(makeCorridor(p, 6))
+			if(makeCorridor(p, 6)) // 25% for a corridor
 			{
 				map_.at(p.y-p.ymod, p.x-p.xmod).top() = Door();
 			}
@@ -75,22 +75,20 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 	switch(loc.dir)
 	{
 	case Direction::North:
-		//Check if there's enough space left for it
+		// Check if there's enough space left for it
 		for(int i = loc.y; i > (loc.y-real_height); --i)
 		{
-			if (i < map_error || i > map_.height()-map_error)
+			if(i < map_error || i > map_.height()-map_error)
 			{
 				return false;
 			}
 			for(int j = (loc.x-real_width/2); j < (loc.x+(real_width+1)/2); ++j)
 			{
-				if(j < map_error || j > map_.width()-map_error) 
+				if((j < map_error) || 
+				   (j > map_.width()-map_error) ||
+				   (map_.at(i, j).top().type() != GameObject::Type::None))
 				{
 					return false;
-				}
-				if(map_.at(i, j).top().type() != GameObject::Type::None) 
-				{
-					return false; //no space left...
 				}
 			}
 		}
@@ -132,11 +130,9 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 			}
 			for(int j = loc.x; j < (loc.x+real_width); ++j)
 			{
-				if(j < map_error || j > map_.width()-map_error)
-				{
-					return false;
-				}
-				if(map_.at(i, j).top().type() != GameObject::Type::None) 
+				if((j < map_error) || 
+				   (j > map_.width()-map_error) ||
+				   (map_.at(i, j).top().type() != GameObject::Type::None))
 				{
 					return false;
 				}
@@ -179,11 +175,9 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 			}
 			for(int j = (loc.x-real_width/2); j < (loc.x+(real_width+1)/2); ++j)
 			{
-				if(j < map_error || j > map_.width()-map_error) 
-				{
-					return false;
-				}
-				if(map_.at(i, j).top().type()!=GameObject::Type::None) 
+				if((j < map_error) ||
+				   (j > map_.width()-map_error) ||
+				   (map_.at(i, j).top().type() != GameObject::Type::None)) 
 				{
 					return false;
 				}
@@ -226,11 +220,9 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 			}
 			for(int j = loc.x; j > (loc.x-real_width); --j)
 			{
-				if(j < map_error || j > map_.width()-map_error)
-				{
-					return false;
-				}
-				if(map_.at(i, j).top().type() != GameObject::Type::None) 
+				if((j < map_error) || 
+				   (j > map_.width()-map_error) ||
+				   (map_.at(i, j).top().type() != GameObject::Type::None))
 				{
 					return false;
 				}
@@ -424,8 +416,30 @@ void Dungeon::draw(WINDOW *win)
 	{
 		for(int j = 0; j < width; ++j)
 		{
-			Crs::mvwaddch(win, i, j, 
-				static_cast<char>(map_.at(i, j).top().type()));
+			GameObject::Type g = map_.at(i, j).top().type();
+
+			switch(g)
+			{
+			case GameObject::Type::Door:
+				Crs::wattron(win, COLOR_PAIR(4));
+				Crs::mvwaddch(win, i, j, static_cast<char>(g));
+				Crs::wattroff(win, COLOR_PAIR(4));
+				break;
+			case GameObject::Type::Corridor:
+			case GameObject::Type::Lit:
+				Crs::wattron(win, COLOR_PAIR(2));
+				Crs::mvwaddch(win, i, j, static_cast<char>(g));
+				Crs::wattroff(win, COLOR_PAIR(2));
+				break;
+			case GameObject::Type::HorizontalWall:
+			case GameObject::Type::VerticalWall:
+				Crs::wattron(win, COLOR_PAIR(1));
+				Crs::mvwaddch(win, i, j, static_cast<char>(g));
+				Crs::wattroff(win, COLOR_PAIR(1));
+				break;
+			default:
+				Crs::mvwaddch(win, i, j, static_cast<char>(g));
+			}
 		}
 	}
 }
@@ -435,7 +449,15 @@ bool Dungeon::createCorridor()
 	Point p = getRandomWall();
 	p.x += p.xmod;
 	p.y += p.ymod;
-	return makeCorridor(p, 6);
+
+	if(makeCorridor(p, 6))
+	{
+		map_.at(p.y-p.ymod, p.x-p.xmod).top() = Door();
+
+		return true;
+	}
+
+	return false;
 }
 
 bool Dungeon::createSquaredRoom()
@@ -443,5 +465,14 @@ bool Dungeon::createSquaredRoom()
 	Point p = getRandomWall();
 	p.x += p.xmod;
 	p.y += p.ymod;
-	return makeSquaredRoom(p, 6, 8);
+
+	if(makeSquaredRoom(p, 6, 8))
+	{
+		map_.at(p.y-p.ymod, p.x-p.xmod).top() = Door();
+		map_.at(p.y, p.x).top() = Lit();
+
+		return true;
+	}
+
+	return false;
 }

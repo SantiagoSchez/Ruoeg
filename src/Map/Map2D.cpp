@@ -1,6 +1,6 @@
 #include "Map2D.h"
 
-Map2D::Map2D(unsigned int height, unsigned int width) : 
+Map2D::Map2D(int height, int width) : 
 	vec_(height*width), height_(height), width_(width)
 {
 }
@@ -9,22 +9,22 @@ Map2D::~Map2D()
 {
 }
 
-Tile& Map2D::at(unsigned int row, unsigned int column) 
+Tile& Map2D::at(int row, int column) 
 {
 	return vec_[row*width_+column];
 }
 
-Tile& Map2D::at(unsigned int index)
+Tile& Map2D::at(int index)
 {
 	return vec_[index];
 }
 
-unsigned int Map2D::height() const
+int Map2D::height() const
 {
 	return height_;
 }
 
-unsigned int Map2D::width() const
+int Map2D::width() const
 {
 	return width_;
 }

@@ -12,17 +12,17 @@
 class Map2D
 {
 public:
-	Map2D(unsigned int height, unsigned int width);
+	Map2D(int height, int width);
 	~Map2D();
 
-	Tile& at(unsigned int row, unsigned int column);
-	Tile& at(unsigned int index);
-	unsigned int height() const;
-	unsigned int width() const;
+	Tile& at(int row, int column);
+	Tile& at(int index);
+	int height() const;
+	int width() const;
 	void clear();
 
 private:
-	unsigned int height_, width_;
+	int height_, width_;
 	std::vector<Tile> vec_;
 };
 

@@ -49,7 +49,7 @@ private:
 	RNG rng_;
 	Map2D map_;
 
-	const unsigned int map_error;
+	const int map_error;
 };
 
 #endif // RUOEG_MAP_DUNGEON_H_

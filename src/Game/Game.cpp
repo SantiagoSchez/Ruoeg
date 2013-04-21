@@ -53,9 +53,10 @@ void Game::setUp()
 	}
 
 	Crs::start_color();
-	Crs::init_pair(1, COLOR_RED, COLOR_BLACK);
-	Crs::init_pair(2, COLOR_GREEN, COLOR_BLACK);
-
+	Crs::init_pair(1, COLOR_RED, COLOR_BLACK); // Walls/Non-walkable
+	Crs::init_pair(2, COLOR_GREEN, COLOR_BLACK); // Floor/Walkable
+	Crs::init_pair(3, COLOR_YELLOW, COLOR_BLACK); // Enemies
+	Crs::init_pair(4, COLOR_CYAN, COLOR_BLACK); // Loot/Doors/Stairs
 }
 
 void Game::loop(Crs::Key /*= Crs::Key::ESC*/)
