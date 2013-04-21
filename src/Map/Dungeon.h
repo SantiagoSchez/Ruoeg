@@ -41,7 +41,7 @@ private:
 		int y;
 		Direction dir;
 		// Variables used to modify the prior ones when building a 
-		// connection between features.
+		// connection between features i.e. a door/lit.
 		int x_mod;
 		int y_mod;
 	};
@@ -55,8 +55,13 @@ private:
 	Point getRandomLit();
 	Point getRandomCorridor();
 
+	// Spawns a GameObject in the given location and pushes back
+	// in the top of the tile
+	bool spawn(int row, int column, GameObject &game_object);
+	bool spawn(Point &p, GameObject &game_object, int offset);
+
 	// Check whether there are objects of the given type around the
-	// given location within the given radius
+	// given location within the given radius.
 	bool checkObjectsSurrounding(Point &loc, GameObject::Type type, int radius);
 
 	// The random number generator object.

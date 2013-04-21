@@ -10,10 +10,10 @@ Tile::~Tile()
 
 GameObject& Tile::top()
 {
-	return raw_.front();
+	return raw_.back();
 }
 
-GameObject& Tile::layer(unsigned int layer)
+GameObject& Tile::element(int layer)
 {
 	return raw_.at(layer);
 }
@@ -23,7 +23,7 @@ void Tile::add(GameObject &game_object)
 	raw_.push_back(game_object);
 }
 
-int Tile::layers() const
+int Tile::elements() const
 {
 	return raw_.size();
 }

@@ -43,9 +43,11 @@ public:
 	virtual ~GameObject();
 
 	virtual Type type() const;
+	virtual bool walkable() const;
 
 protected:
 	Type type_;
+	bool walkable_;
 };
 
 #endif // RUOEG_GAMEOBJECTS_GAMEOBJECT_H_

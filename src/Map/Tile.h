@@ -22,9 +22,9 @@ public:
 	~Tile();
 
 	GameObject& top();
-	GameObject& layer(unsigned int layer);
+	GameObject& element(int layer);
 	void add(GameObject &game_object);
-	int layers() const;
+	int elements() const;
 	bool visited() const;
 	void set_visited(bool visited);
 

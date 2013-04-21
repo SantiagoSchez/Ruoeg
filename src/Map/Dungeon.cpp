@@ -10,6 +10,7 @@
 #include "../GameObjects/Terrains/None/None.h"
 #include "../GameObjects/Chests/Chest.h"
 #include "../GameObjects/Enemies/Dragon/Dragon.h"
+#include "../GameObjects/Enemies/Goblin/Goblin.h"
 
 Dungeon::Dungeon(int height, int width) 
 	: map_(height, width), map_error(4), min_room_height(4), 
@@ -268,27 +269,27 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 	{
 		// Spawn a chest
 		// The 2 means the number of min walkable tiles
-		switch(loc.dir)
-		{
-		case Direction::North:
-			map_.at(loc.y-min_room_height+2, loc.x).top() = Chest();
-			break;
-		case Direction::East:
-			map_.at(loc.y, loc.x+min_room_width-2).top() = Chest();
-			break;
-		case Direction::South:
-			map_.at(loc.y+min_room_height-2, loc.x).top() = Chest();
-			break;
-		case Direction::West:
-			map_.at(loc.y, loc.x-min_room_width+2).top() = Chest();
-			break;
-		}
+		spawn(loc, Chest(), 2);
+		++num_chests_;
 	}
 	else if(chance < 50) // 30% <- (50-20)
 	{
-		// Spawn a monster
+		// Spawn an enemy
+		int monster_chance = rng_.nextInt(0, 100);
+		if(monster_chance < 20) // 20%
+		{
+			spawn(loc, Dragon(), 1);
+		}
+		else if(chance < 50)
+		{
+			spawn(loc, Goblin(), 1);
+		}
+
+		++num_enemies_;
 	}
 	// Otherwise don't spawn nothing
+
+	++num_rooms_;
 
 	return true;
 }
@@ -367,6 +368,8 @@ bool Dungeon::makeCorridor(Point &loc, int len)
 		break;
 	}
 
+	++num_corridors_;
+
 	return true;
 }
 
@@ -382,35 +385,32 @@ Dungeon::Point Dungeon::getRandomWall()
 	{
 		p.y = rng_.nextInt(2, map_.height()-2);
 		p.x = rng_.nextInt(2, map_.width()-2);
+		GameObject::Type game_object_type = map_.at(p.y, p.x).top().type();
 
-		if((map_.at(p.y, p.x).top().type() == GameObject::Type::HorizontalWall) ||
-		   (map_.at(p.y, p.x).top().type() == GameObject::Type::VerticalWall) ||
-		   (map_.at(p.y, p.x).top().type() == GameObject::Type::Corridor))
+		if((game_object_type == GameObject::Type::HorizontalWall) ||
+		   (game_object_type == GameObject::Type::VerticalWall) ||
+		   (game_object_type == GameObject::Type::Corridor))
 		{
 			// Check if we can reach the place
-			if((map_.at(p.y+1, p.x).top().type() == GameObject::Type::Lit) ||
-			   (map_.at(p.y+1, p.x).top().type() == GameObject::Type::Corridor))
+			if(map_.at(p.y+1, p.x).top().walkable())
 			{
 				p.dir = Direction::North;
 				p.x_mod = 0;
 				p.y_mod = -1;
 			}
-			else if((map_.at(p.y, p.x-1).top().type() == GameObject::Type::Lit) ||
-				    (map_.at(p.y, p.x-1).top().type() == GameObject::Type::Corridor))
+			else if(map_.at(p.y, p.x-1).top().walkable())
 			{
 				p.dir = Direction::East;
 				p.x_mod = +1;
 				p.y_mod = 0;
 			}
-			else if((map_.at(p.y-1, p.x).top().type() == GameObject::Type::Lit) ||
-				    (map_.at(p.y-1, p.x).top().type() == GameObject::Type::Corridor))
+			else if(map_.at(p.y-1, p.x).top().walkable())
 			{
 				p.dir = Direction::South;
 				p.x_mod = 0;
 				p.y_mod = +1;
 			}
-			else if((map_.at(p.y, p.x+1).top().type() == GameObject::Type::Lit) ||
-				    (map_.at(p.y, p.x+1).top().type() == GameObject::Type::Corridor))
+			else if(map_.at(p.y, p.x+1).top().walkable())
 			{
 				p.dir = Direction::West;
 				p.x_mod = -1;
@@ -420,18 +420,10 @@ Dungeon::Point Dungeon::getRandomWall()
 			// Check for nearby doors
 			if(p.dir != Direction::None)
 			{
-				if((map_.at(p.y+1, p.x).top().type() == GameObject::Type::Door) ||
-				   (map_.at(p.y, p.x-1).top().type() == GameObject::Type::Door) ||
-				   (map_.at(p.y-1, p.x).top().type() == GameObject::Type::Door) ||
-				   (map_.at(p.y, p.x+1).top().type() == GameObject::Type::Door))
+				if(!checkObjectsSurrounding(p, GameObject::Type::Door, 1))
 				{
-					p.dir = Direction::None;
+					ok = true;
 				}
-			}
-
-			if(p.dir != Direction::None)
-			{
-				ok = true;
 			}
 		}
 	}
@@ -475,6 +467,49 @@ Dungeon::Point Dungeon::getRandomCorridor()
 	}
 
 	return p;
+}
+
+bool Dungeon::spawn(int row, int column, GameObject &game_object)
+{
+	Tile &t = map_.at(row, column);
+	if(t.top().walkable())
+	{
+		t.add(game_object);
+		
+		return true;
+	}
+	
+	return false;
+}
+
+bool Dungeon::spawn(Point &p, GameObject &game_object, int offset)
+{
+	Tile *t;
+
+	switch(p.dir)
+	{
+		case Direction::North:
+			t = &map_.at(p.y-min_room_height+offset, p.x);
+			break;
+		case Direction::East:
+			t = &map_.at(p.y, p.x+min_room_width-offset);
+			break;
+		case Direction::South:
+			t = &map_.at(p.y+min_room_height-offset, p.x);
+			break;
+		case Direction::West:
+			t = &map_.at(p.y, p.x-min_room_width+offset);
+			break;
+	}
+
+	if(t->top().walkable())
+	{
+		t->add(game_object);
+
+		return true;
+	}
+
+	return false;
 }
 
 bool Dungeon::checkObjectsSurrounding(Point &loc, GameObject::Type type, int radius)
