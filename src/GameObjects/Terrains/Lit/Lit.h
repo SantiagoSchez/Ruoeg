@@ -5,7 +5,7 @@
 #ifndef RUOEG_GAMEOBJECTS_LIT_H_
 #define RUOEG_GAMEOBJECTS_LIT_H_
 
-#include "../GameObject.h"
+#include "../../GameObject.h"
 
 class Lit : public GameObject
 {

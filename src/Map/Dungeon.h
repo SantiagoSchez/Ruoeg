@@ -19,9 +19,11 @@ public:
 	void draw(WINDOW *win);
 	void generate();
 
-	// Just for testing
-	bool createCorridor();
-	bool createSquaredRoom();
+	// Some getters for get the number of features
+	int num_rooms() const;
+	int num_corridors() const;
+	int num_enemies() const;
+	int num_chests() const;
 
 private:
 	enum class Direction
@@ -30,7 +32,7 @@ private:
 		North,
 		East,
 		South,
-		West
+		West,
 	};
 
 	struct Point
@@ -38,17 +40,44 @@ private:
 		int x;
 		int y;
 		Direction dir;
-		int xmod;
-		int ymod;
+		// Variables used to modify the prior ones when building a 
+		// connection between features.
+		int x_mod;
+		int y_mod;
 	};
 
+	// Features to build. More can be added here.
 	bool makeSquaredRoom(Point &loc, int height, int width);
 	bool makeCorridor(Point &loc, int len);
-	Point getRandomWall();
 
+	// Helper methods
+	Point getRandomWall();
+	Point getRandomLit();
+	Point getRandomCorridor();
+
+	// Check whether there are objects of the given type around the
+	// given location within the given radius
+	bool checkObjectsSurrounding(Point &loc, GameObject::Type type, int radius);
+
+	// The random number generator object.
 	RNG rng_;
+
+	// The internal object to keep the dungeon's map.
 	Map2D map_;
 
+	// Information variables about the features.
+	int num_rooms_;
+	int num_corridors_;
+	int num_enemies_;
+	int num_chests_;
+
+	// Some min values
+	const int min_room_height;
+	const int min_room_width;
+
+	// This is a margin of error that allows the map to be fitted
+	// inside the window avoiding problems of index out of boundaries.
+	// Currently it's set to 4 i.e. (4, 4, height-4, width-4).
 	const int map_error;
 };
 

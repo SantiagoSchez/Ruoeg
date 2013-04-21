@@ -5,7 +5,7 @@
 #ifndef RUOEG_GAMEOBJECTS_DOOR_H_
 #define RUOEG_GAMEOBJECTS_DOOR_H_
 
-#include "../GameObject.h"
+#include "../../GameObject.h"
 
 class Door : public GameObject
 {

@@ -5,7 +5,7 @@
 #ifndef RUOEG_GAMEOBJECTS_DUMMY_H_
 #define RUOEG_GAMEOBJECTS_DUMMY_H_
 
-#include "../GameObject.h"
+#include "../../GameObject.h"
 
 class Dummy : public GameObject
 {

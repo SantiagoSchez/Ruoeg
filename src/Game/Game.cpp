@@ -55,12 +55,15 @@ void Game::setUp()
 	Crs::start_color();
 	Crs::init_pair(1, COLOR_RED, COLOR_BLACK); // Walls/Non-walkable
 	Crs::init_pair(2, COLOR_GREEN, COLOR_BLACK); // Floor/Walkable
-	Crs::init_pair(3, COLOR_YELLOW, COLOR_BLACK); // Enemies
-	Crs::init_pair(4, COLOR_CYAN, COLOR_BLACK); // Loot/Doors/Stairs
+	Crs::init_pair(3, COLOR_YELLOW, COLOR_RED); // Enemies
+	Crs::init_pair(4, COLOR_CYAN, COLOR_BLACK); // Doors/Stairs
+	Crs::init_pair(5, COLOR_YELLOW, COLOR_BLACK); // Chests
 }
 
 void Game::loop(Crs::Key /*= Crs::Key::ESC*/)
 {
+	dungeon_.generate();
+
 	while(state_ == State::Running)
 	{
 		manageInput(windows_.at(0));
@@ -98,34 +101,12 @@ void Game::manageInput(WINDOW *win)
 
 		if(key == static_cast<int>(Crs::Key::Left))
 		{
-			if(dungeon_.createSquaredRoom())
-			{
-				Crs::wattron(windows_.at(1), COLOR_PAIR(2));
-				Crs::waddstr(windows_.at(1), " Making a squared room succeed.\n");
-				Crs::wattroff(windows_.at(1), COLOR_PAIR(2));
-			}
-			else
-			{
-				Crs::wattron(windows_.at(1), COLOR_PAIR(1));
-				Crs::waddstr(windows_.at(1), " Making squared room failed.\n");
-				Crs::wattroff(windows_.at(1), COLOR_PAIR(1));
-			}
+
 		}
 
 		if(key == static_cast<int>(Crs::Key::Right))
 		{
-			if(dungeon_.createCorridor())
-			{
-				Crs::wattron(windows_.at(1), COLOR_PAIR(2));
-				Crs::waddstr(windows_.at(1), " Making a corridor succeed.\n");
-				Crs::wattroff(windows_.at(1), COLOR_PAIR(2));
-			}
-			else
-			{
-				Crs::wattron(windows_.at(1), COLOR_PAIR(1));
-				Crs::waddstr(windows_.at(1), " Making corridor failed.\n");
-				Crs::wattroff(windows_.at(1), COLOR_PAIR(1));
-			}
+
 		}
 	}
 }

@@ -10,13 +10,32 @@ class GameObject
 public:
 	enum class Type : char
 	{
+		// Terrains
 		None = ' ',
 		VerticalWall = '|',
 		HorizontalWall = '-',
 		Corridor = '#',
 		Lit = '.',
 		Door = '+',
-		Stairs = '>',
+		DownStairs = '>',
+
+		// Player
+		Player = '@',
+
+		// Enemies
+		SmallDragon = 'd',
+		Dragon = 'D',
+		SmallGoblin = 'g',
+		Goblin = 'G',
+		SmallSkeleton = 's',
+		Skeleton = 'S',
+		SmallTroll = 't',
+		Troll = 'T',
+
+		// Chests
+		Chest = 'C',
+
+		// Debug purposes
 		Dummy = '?'
 	};
 

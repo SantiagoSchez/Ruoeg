@@ -39,28 +39,58 @@
     <ClCompile Include="src\GameObjects\GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameObjects\Door\Door.cpp">
+    <ClCompile Include="src\GameObjects\Terrains\Wall\HorizontalWall.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameObjects\Dummy\Dummy.cpp">
+    <ClCompile Include="src\GameObjects\Terrains\Wall\VerticalWall.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameObjects\Lit\Lit.cpp">
+    <ClCompile Include="src\GameObjects\Terrains\Stairs\Stairs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameObjects\None\None.cpp">
+    <ClCompile Include="src\GameObjects\Terrains\None\None.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameObjects\Stairs\Stairs.cpp">
+    <ClCompile Include="src\GameObjects\Terrains\Lit\Lit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameObjects\Wall\VerticalWall.cpp">
+    <ClCompile Include="src\GameObjects\Terrains\Door\Door.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameObjects\Wall\HorizontalWall.cpp">
+    <ClCompile Include="src\GameObjects\Terrains\Corridor\Corridor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameObjects\Corridor\Corridor.cpp">
+    <ClCompile Include="src\GameObjects\Debug\Dummy\Dummy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\Player\Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\Enemies\SmallDragon\SmallDragon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\Enemies\Dragon\Dragon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\Enemies\SmallGoblin\SmallGoblin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\Enemies\Goblin\Goblin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\Enemies\SmallSkeleton\SmallSkeleton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\Enemies\Skeleton\Skeleton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\Enemies\SmallTroll\SmallTroll.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\Enemies\Troll\Troll.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameObjects\Chests\Chest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -86,28 +116,58 @@
     <ClInclude Include="src\GameObjects\GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameObjects\Door\Door.h">
+    <ClInclude Include="src\GameObjects\Terrains\Wall\HorizontalWall.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameObjects\Dummy\Dummy.h">
+    <ClInclude Include="src\GameObjects\Terrains\Wall\VerticalWall.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameObjects\Lit\Lit.h">
+    <ClInclude Include="src\GameObjects\Terrains\Stairs\Stairs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameObjects\None\None.h">
+    <ClInclude Include="src\GameObjects\Terrains\None\None.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameObjects\Stairs\Stairs.h">
+    <ClInclude Include="src\GameObjects\Terrains\Lit\Lit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameObjects\Wall\VerticalWall.h">
+    <ClInclude Include="src\GameObjects\Terrains\Door\Door.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameObjects\Wall\HorizontalWall.h">
+    <ClInclude Include="src\GameObjects\Terrains\Corridor\Corridor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameObjects\Corridor\Corridor.h">
+    <ClInclude Include="src\GameObjects\Debug\Dummy\Dummy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\Player\Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\Enemies\SmallDragon\SmallDragon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\Enemies\Dragon\Dragon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\Enemies\SmallGoblin\SmallGoblin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\Enemies\Goblin\Goblin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\Enemies\SmallSkeleton\SmallSkeleton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\Enemies\Skeleton\Skeleton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\Enemies\SmallTroll\SmallTroll.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\Enemies\Troll\Troll.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\Chests\Chest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

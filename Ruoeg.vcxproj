@@ -81,39 +81,59 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\GameObjects\Corridor\Corridor.cpp" />
-    <ClCompile Include="src\GameObjects\Door\Door.cpp" />
-    <ClCompile Include="src\GameObjects\Dummy\Dummy.cpp" />
+    <ClCompile Include="src\GameObjects\Chests\Chest.cpp" />
+    <ClCompile Include="src\GameObjects\Enemies\Troll\Troll.cpp" />
+    <ClCompile Include="src\GameObjects\Enemies\SmallTroll\SmallTroll.cpp" />
+    <ClCompile Include="src\GameObjects\Enemies\Skeleton\Skeleton.cpp" />
+    <ClCompile Include="src\GameObjects\Enemies\SmallSkeleton\SmallSkeleton.cpp" />
+    <ClCompile Include="src\GameObjects\Enemies\Goblin\Goblin.cpp" />
+    <ClCompile Include="src\GameObjects\Enemies\SmallGoblin\SmallGoblin.cpp" />
+    <ClCompile Include="src\GameObjects\Enemies\Dragon\Dragon.cpp" />
+    <ClCompile Include="src\GameObjects\Enemies\SmallDragon\SmallDragon.cpp" />
+    <ClCompile Include="src\GameObjects\Player\Player.cpp" />
+    <ClCompile Include="src\GameObjects\Terrains\Corridor\Corridor.cpp" />
+    <ClCompile Include="src\GameObjects\Terrains\Door\Door.cpp" />
+    <ClCompile Include="src\GameObjects\Debug\Dummy\Dummy.cpp" />
     <ClCompile Include="src\Crs\Crs.cpp" />
-    <ClCompile Include="src\GameObjects\None\None.cpp" />
-    <ClCompile Include="src\GameObjects\Stairs\Stairs.cpp" />
-    <ClCompile Include="src\GameObjects\Wall\HorizontalWall.cpp" />
+    <ClCompile Include="src\GameObjects\Terrains\None\None.cpp" />
+    <ClCompile Include="src\GameObjects\Terrains\Stairs\Stairs.cpp" />
+    <ClCompile Include="src\GameObjects\Terrains\Wall\HorizontalWall.cpp" />
     <ClCompile Include="src\Map\Dungeon.cpp" />
     <ClCompile Include="src\Game\Game.cpp" />
     <ClCompile Include="src\GameObjects\GameObject.cpp" />
-    <ClCompile Include="src\GameObjects\Lit\Lit.cpp" />
+    <ClCompile Include="src\GameObjects\Terrains\Lit\Lit.cpp" />
     <ClCompile Include="src\Map\Map2D.cpp" />
     <ClCompile Include="src\Utils\RNG.cpp" />
     <ClCompile Include="src\Ruoeg.cpp" />
     <ClCompile Include="src\Map\Tile.cpp" />
-    <ClCompile Include="src\GameObjects\Wall\VerticalWall.cpp" />
+    <ClCompile Include="src\GameObjects\Terrains\Wall\VerticalWall.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\GameObjects\Corridor\Corridor.h" />
-    <ClInclude Include="src\GameObjects\Door\Door.h" />
-    <ClInclude Include="src\GameObjects\Dummy\Dummy.h" />
+    <ClInclude Include="src\GameObjects\Chests\Chest.h" />
+    <ClInclude Include="src\GameObjects\Enemies\Troll\Troll.h" />
+    <ClInclude Include="src\GameObjects\Enemies\SmallTroll\SmallTroll.h" />
+    <ClInclude Include="src\GameObjects\Enemies\Skeleton\Skeleton.h" />
+    <ClInclude Include="src\GameObjects\Enemies\SmallSkeleton\SmallSkeleton.h" />
+    <ClInclude Include="src\GameObjects\Enemies\Goblin\Goblin.h" />
+    <ClInclude Include="src\GameObjects\Enemies\SmallGoblin\SmallGoblin.h" />
+    <ClInclude Include="src\GameObjects\Enemies\Dragon\Dragon.h" />
+    <ClInclude Include="src\GameObjects\Enemies\SmallDragon\SmallDragon.h" />
+    <ClInclude Include="src\GameObjects\Player\Player.h" />
+    <ClInclude Include="src\GameObjects\Terrains\Corridor\Corridor.h" />
+    <ClInclude Include="src\GameObjects\Terrains\Door\Door.h" />
+    <ClInclude Include="src\GameObjects\Debug\Dummy\Dummy.h" />
     <ClInclude Include="src\Crs\Crs.h" />
-    <ClInclude Include="src\GameObjects\None\None.h" />
-    <ClInclude Include="src\GameObjects\Stairs\Stairs.h" />
-    <ClInclude Include="src\GameObjects\Wall\HorizontalWall.h" />
+    <ClInclude Include="src\GameObjects\Terrains\None\None.h" />
+    <ClInclude Include="src\GameObjects\Terrains\Stairs\Stairs.h" />
+    <ClInclude Include="src\GameObjects\Terrains\Wall\HorizontalWall.h" />
     <ClInclude Include="src\Map\Dungeon.h" />
     <ClInclude Include="src\Game\Game.h" />
     <ClInclude Include="src\GameObjects\GameObject.h" />
-    <ClInclude Include="src\GameObjects\Lit\Lit.h" />
+    <ClInclude Include="src\GameObjects\Terrains\Lit\Lit.h" />
     <ClInclude Include="src\Map\Map2D.h" />
     <ClInclude Include="src\Utils\RNG.h" />
     <ClInclude Include="src\Map\Tile.h" />
-    <ClInclude Include="src\GameObjects\Wall\VerticalWall.h" />
+    <ClInclude Include="src\GameObjects\Terrains\Wall\VerticalWall.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

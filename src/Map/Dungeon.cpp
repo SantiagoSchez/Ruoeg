@@ -2,17 +2,20 @@
 
 #include <iostream>
 
-#include "../GameObjects/Wall/HorizontalWall.h"
-#include "../GameObjects/Wall/VerticalWall.h"
-#include "../GameObjects/Corridor/Corridor.h"
-#include "../GameObjects/Lit/Lit.h"
-#include "../GameObjects/Door/Door.h"
-#include "../GameObjects/None/None.h"
+#include "../GameObjects/Terrains/Wall/HorizontalWall.h"
+#include "../GameObjects/Terrains/Wall/VerticalWall.h"
+#include "../GameObjects/Terrains/Corridor/Corridor.h"
+#include "../GameObjects/Terrains/Lit/Lit.h"
+#include "../GameObjects/Terrains/Door/Door.h"
+#include "../GameObjects/Terrains/None/None.h"
+#include "../GameObjects/Chests/Chest.h"
+#include "../GameObjects/Enemies/Dragon/Dragon.h"
 
 Dungeon::Dungeon(int height, int width) 
-	: map_(height, width), map_error(4)
+	: map_(height, width), map_error(4), min_room_height(4), 
+	  min_room_width(4), num_rooms_(0), num_corridors_(0), num_enemies_(0), 
+	  num_chests_(0)
 {
-	generate();
 }
 
 Dungeon::~Dungeon()
@@ -21,8 +24,8 @@ Dungeon::~Dungeon()
 
 void Dungeon::generate()
 {
-	// A Roguebasin's based algorithm. 
-	// Each step is enumerated to keep it clear.
+	// Dungeon generation based on next algorithm:
+	// http://roguebasin.roguelikedevelopment.org/index.php?title=Dungeon-Building_Algorithm
 
 	map_.clear();
 
@@ -41,19 +44,20 @@ void Dungeon::generate()
 	};
 	makeSquaredRoom(location, 6, 8);
 
+	// Build some features. It will try 1000 times to add the features
 	for(int num_features = 0; num_features < 1000; ++num_features)
 	{
-		// Pick a wall of any room
+		// Pick a random wall
 		Point p = getRandomWall();
-		p.x += p.xmod;
-		p.y += p.ymod;
+		p.x += p.x_mod;
+		p.y += p.y_mod;
 
 		// Decide upon a new feature to build
 		if(rng_.nextInt(0, 100) <= 75)
 		{
 			if(makeSquaredRoom(p, 6, 8)) // 75% for a room
 			{
-				map_.at(p.y-p.ymod, p.x-p.xmod).top() = Door();
+				map_.at(p.y-p.y_mod, p.x-p.x_mod).top() = Door();
 				map_.at(p.y, p.x).top() = Lit();
 			}
 		}
@@ -61,7 +65,7 @@ void Dungeon::generate()
 		{
 			if(makeCorridor(p, 6)) // 25% for a corridor
 			{
-				map_.at(p.y-p.ymod, p.x-p.xmod).top() = Door();
+				map_.at(p.y-p.y_mod, p.x-p.x_mod).top() = Door();
 			}
 		}
 	}
@@ -69,8 +73,8 @@ void Dungeon::generate()
 
 bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 {
-	int real_height = rng_.nextInt(4, height);
-	int real_width = rng_.nextInt(4, width);
+	int real_height = rng_.nextInt(min_room_height, height);
+	int real_width = rng_.nextInt(min_room_width, width);
 
 	switch(loc.dir)
 	{
@@ -258,6 +262,34 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 		break;
 	}
 
+	// Let's spawn some objects in the map
+	int chance = rng_.nextInt(0, 100);
+	if(chance < 20) // 20%
+	{
+		// Spawn a chest
+		// The 2 means the number of min walkable tiles
+		switch(loc.dir)
+		{
+		case Direction::North:
+			map_.at(loc.y-min_room_height+2, loc.x).top() = Chest();
+			break;
+		case Direction::East:
+			map_.at(loc.y, loc.x+min_room_width-2).top() = Chest();
+			break;
+		case Direction::South:
+			map_.at(loc.y+min_room_height-2, loc.x).top() = Chest();
+			break;
+		case Direction::West:
+			map_.at(loc.y, loc.x-min_room_width+2).top() = Chest();
+			break;
+		}
+	}
+	else if(chance < 50) // 30% <- (50-20)
+	{
+		// Spawn a monster
+	}
+	// Otherwise don't spawn nothing
+
 	return true;
 }
 
@@ -342,8 +374,8 @@ Dungeon::Point Dungeon::getRandomWall()
 {
 	Point p;
 	p.dir = Direction::None;
-	p.xmod = 0;
-	p.ymod = 0;
+	p.x_mod = 0;
+	p.y_mod = 0;
 
 	bool ok = false;
 	while(!ok) 
@@ -360,29 +392,29 @@ Dungeon::Point Dungeon::getRandomWall()
 			   (map_.at(p.y+1, p.x).top().type() == GameObject::Type::Corridor))
 			{
 				p.dir = Direction::North;
-				p.xmod = 0;
-				p.ymod = -1;
+				p.x_mod = 0;
+				p.y_mod = -1;
 			}
 			else if((map_.at(p.y, p.x-1).top().type() == GameObject::Type::Lit) ||
 				    (map_.at(p.y, p.x-1).top().type() == GameObject::Type::Corridor))
 			{
 				p.dir = Direction::East;
-				p.xmod = +1;
-				p.ymod = 0;
+				p.x_mod = +1;
+				p.y_mod = 0;
 			}
 			else if((map_.at(p.y-1, p.x).top().type() == GameObject::Type::Lit) ||
 				    (map_.at(p.y-1, p.x).top().type() == GameObject::Type::Corridor))
 			{
 				p.dir = Direction::South;
-				p.xmod = 0;
-				p.ymod = +1;
+				p.x_mod = 0;
+				p.y_mod = +1;
 			}
 			else if((map_.at(p.y, p.x+1).top().type() == GameObject::Type::Lit) ||
 				    (map_.at(p.y, p.x+1).top().type() == GameObject::Type::Corridor))
 			{
 				p.dir = Direction::West;
-				p.xmod = -1;
-				p.ymod = 0;
+				p.x_mod = -1;
+				p.y_mod = 0;
 			}
 
 			// Check for nearby doors
@@ -405,6 +437,64 @@ Dungeon::Point Dungeon::getRandomWall()
 	}
 
 	return p;
+}
+
+Dungeon::Point Dungeon::getRandomLit()
+{
+	Point p;
+
+	bool ok = false;
+	while(!ok) 
+	{
+		p.y = rng_.nextInt(2, map_.height()-2);
+		p.x = rng_.nextInt(2, map_.width()-2);
+
+		if(map_.at(p.y, p.x).top().type() == GameObject::Type::Lit)
+		{
+			ok = true;
+		}
+	}
+
+	return p;
+}
+
+Dungeon::Point Dungeon::getRandomCorridor()
+{
+	Point p;
+
+	bool ok = false;
+	while(!ok) 
+	{
+		p.y = rng_.nextInt(2, map_.height()-2);
+		p.x = rng_.nextInt(2, map_.width()-2);
+
+		if(map_.at(p.y, p.x).top().type() == GameObject::Type::Corridor)
+		{
+			ok = true;
+		}
+	}
+
+	return p;
+}
+
+bool Dungeon::checkObjectsSurrounding(Point &loc, GameObject::Type type, int radius)
+{
+	for(int i = 0; i <= radius; ++i)
+	{
+		if((map_.at(loc.y-i, loc.x).top().type() == type) || // North
+			(map_.at(loc.y, loc.x+i).top().type() == type) || // East
+			(map_.at(loc.y+i, loc.x).top().type() == type) || // South
+			(map_.at(loc.y, loc.x-i).top().type() == type) || // West
+			(map_.at(loc.y-i, loc.x+i).top().type() == type) || // North-East
+			(map_.at(loc.y+i, loc.x+i).top().type() == type) || // South-East
+			(map_.at(loc.y+i, loc.x-i).top().type() == type) || // South-West
+			(map_.at(loc.y-i, loc.x-i).top().type() == type))   // North-West
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void Dungeon::draw(WINDOW *win)
@@ -437,6 +527,16 @@ void Dungeon::draw(WINDOW *win)
 				Crs::mvwaddch(win, i, j, static_cast<char>(g));
 				Crs::wattroff(win, COLOR_PAIR(1));
 				break;
+			case GameObject::Type::Chest:
+				Crs::wattron(win, COLOR_PAIR(5));
+				Crs::mvwaddch(win, i, j, static_cast<char>(g));
+				Crs::wattroff(win, COLOR_PAIR(5));
+				break;
+			case GameObject::Type::Dragon:
+				Crs::wattron(win, COLOR_PAIR(3));
+				Crs::mvwaddch(win, i, j, static_cast<char>(g));
+				Crs::wattroff(win, COLOR_PAIR(3));
+				break;
 			default:
 				Crs::mvwaddch(win, i, j, static_cast<char>(g));
 			}
@@ -444,35 +544,22 @@ void Dungeon::draw(WINDOW *win)
 	}
 }
 
-bool Dungeon::createCorridor()
+int Dungeon::num_rooms() const
 {
-	Point p = getRandomWall();
-	p.x += p.xmod;
-	p.y += p.ymod;
-
-	if(makeCorridor(p, 6))
-	{
-		map_.at(p.y-p.ymod, p.x-p.xmod).top() = Door();
-
-		return true;
-	}
-
-	return false;
+	return num_rooms_;
 }
 
-bool Dungeon::createSquaredRoom()
+int Dungeon::num_corridors() const
 {
-	Point p = getRandomWall();
-	p.x += p.xmod;
-	p.y += p.ymod;
+	return num_corridors_;
+}
 
-	if(makeSquaredRoom(p, 6, 8))
-	{
-		map_.at(p.y-p.ymod, p.x-p.xmod).top() = Door();
-		map_.at(p.y, p.x).top() = Lit();
+int Dungeon::num_enemies() const
+{
+	return num_enemies_;
+}
 
-		return true;
-	}
-
-	return false;
+int Dungeon::num_chests() const
+{
+	return num_chests_;
 }
