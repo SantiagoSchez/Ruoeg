@@ -33,10 +33,20 @@ public:
 		Troll = 'T',
 
 		// Chests
-		Chest = 'C',
+		Chest = 'c',
 
 		// Debug purposes
 		Dummy = '?'
+	};
+
+	enum class Color : int
+	{
+		Red_Black = 1,		// Walls/Non-walkable
+		Green_Black = 2,	// Floor/Walkable
+		Yellow_Red = 3,		// Bosses
+		Cyan_Black = 4,		// Doors/Stairs/Chests
+		Yellow_Black = 5,	// Enemies
+		White_Black = 6		// Default
 	};
 
 	explicit GameObject(Type type);

@@ -53,11 +53,12 @@ void Game::setUp()
 	}
 
 	Crs::start_color();
-	Crs::init_pair(1, COLOR_RED, COLOR_BLACK); // Walls/Non-walkable
-	Crs::init_pair(2, COLOR_GREEN, COLOR_BLACK); // Floor/Walkable
-	Crs::init_pair(3, COLOR_YELLOW, COLOR_RED); // Enemies
-	Crs::init_pair(4, COLOR_CYAN, COLOR_BLACK); // Doors/Stairs
-	Crs::init_pair(5, COLOR_YELLOW, COLOR_BLACK); // Chests
+	Crs::init_pair(static_cast<int>(GameObject::Color::Red_Black), COLOR_RED, COLOR_BLACK);
+	Crs::init_pair(static_cast<int>(GameObject::Color::Green_Black), COLOR_GREEN, COLOR_BLACK);
+	Crs::init_pair(static_cast<int>(GameObject::Color::Yellow_Red), COLOR_YELLOW, COLOR_RED);
+	Crs::init_pair(static_cast<int>(GameObject::Color::Cyan_Black), COLOR_CYAN, COLOR_BLACK);
+	Crs::init_pair(static_cast<int>(GameObject::Color::Yellow_Black), COLOR_YELLOW, COLOR_BLACK);
+	Crs::init_pair(static_cast<int>(GameObject::Color::White_Black), COLOR_WHITE, COLOR_BLACK);
 }
 
 void Game::loop(Crs::Key /*= Crs::Key::ESC*/)

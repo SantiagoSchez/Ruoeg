@@ -9,8 +9,15 @@
 #include "../GameObjects/Terrains/Door/Door.h"
 #include "../GameObjects/Terrains/None/None.h"
 #include "../GameObjects/Chests/Chest.h"
+#include "../GameObjects/Enemies/SmallDragon/SmallDragon.h"
+#include "../GameObjects/Enemies/SmallGoblin/SmallGoblin.h"
+#include "../GameObjects/Enemies/SmallSkeleton/SmallSkeleton.h"
+#include "../GameObjects/Enemies/SmallTroll/SmallTroll.h"
 #include "../GameObjects/Enemies/Dragon/Dragon.h"
 #include "../GameObjects/Enemies/Goblin/Goblin.h"
+#include "../GameObjects/Enemies/Skeleton/Skeleton.h"
+#include "../GameObjects/Enemies/Troll/Troll.h"
+#include "../GameObjects/Terrains/Stairs/Stairs.h"
 
 Dungeon::Dungeon(int height, int width) 
 	: map_(height, width), map_error(4), min_room_height(4), 
@@ -70,6 +77,29 @@ void Dungeon::generate()
 			}
 		}
 	}
+
+	// Generate a boss enemy
+	int chance = rng_.nextInt(0, 3);
+	location = getRandomCorridor();
+ 	switch(chance)
+	{
+	case 0:
+		spawn(location.y, location.x, Dragon());
+		break;
+	case 1:
+		spawn(location.y, location.x, Goblin());
+		break;
+	case 2:
+  		spawn(location.y, location.x, Skeleton());
+		break;
+	case 3:
+		spawn(location.y, location.x, Troll());
+		break;
+	}
+
+	// Generate the downstairs
+	location = getRandomLit();
+	map_.at(location.y, location.x).top() = Stairs();
 }
 
 bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
@@ -268,21 +298,28 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 	if(chance < 20) // 20%
 	{
 		// Spawn a chest
-		// The 2 means the number of min walkable tiles
+		// The 2 means two tiles away walls
 		spawn(loc, Chest(), 2);
 		++num_chests_;
 	}
-	else if(chance < 50) // 30% <- (50-20)
+	else if(chance < 100) // 80% <- (100-20)
 	{
 		// Spawn an enemy
-		int monster_chance = rng_.nextInt(0, 100);
-		if(monster_chance < 20) // 20%
+		int monster_chance = rng_.nextInt(0, 3);
+		switch(monster_chance)
 		{
-			spawn(loc, Dragon(), 1);
-		}
-		else if(chance < 50)
-		{
-			spawn(loc, Goblin(), 1);
+		case 0:
+			spawn(loc, SmallTroll(), 1);
+			break;
+		case 1:
+			spawn(loc, SmallGoblin(), 1);
+			break;
+		case 2:
+			spawn(loc, SmallSkeleton(), 1);
+			break;
+		case 3:
+			spawn(loc, SmallDragon(), 1);
+			break;
 		}
 
 		++num_enemies_;
@@ -484,7 +521,7 @@ bool Dungeon::spawn(int row, int column, GameObject &game_object)
 
 bool Dungeon::spawn(Point &p, GameObject &game_object, int offset)
 {
-	Tile *t;
+	Tile *t = nullptr;
 
 	switch(p.dir)
 	{
@@ -502,11 +539,14 @@ bool Dungeon::spawn(Point &p, GameObject &game_object, int offset)
 			break;
 	}
 
-	if(t->top().walkable())
+	if(t != nullptr)
 	{
-		t->add(game_object);
+		if(t->top().walkable())
+		{
+			t->add(game_object);
 
-		return true;
+			return true;
+		}
 	}
 
 	return false;
@@ -546,37 +586,41 @@ void Dungeon::draw(WINDOW *win)
 			switch(g)
 			{
 			case GameObject::Type::Door:
-				Crs::wattron(win, COLOR_PAIR(4));
-				Crs::mvwaddch(win, i, j, static_cast<char>(g));
-				Crs::wattroff(win, COLOR_PAIR(4));
+			case GameObject::Type::Chest:
+				drawGameObject(win, i, j, g, GameObject::Color::Cyan_Black);
 				break;
 			case GameObject::Type::Corridor:
 			case GameObject::Type::Lit:
-				Crs::wattron(win, COLOR_PAIR(2));
-				Crs::mvwaddch(win, i, j, static_cast<char>(g));
-				Crs::wattroff(win, COLOR_PAIR(2));
+				drawGameObject(win, i, j, g, GameObject::Color::Green_Black);
 				break;
 			case GameObject::Type::HorizontalWall:
 			case GameObject::Type::VerticalWall:
-				Crs::wattron(win, COLOR_PAIR(1));
-				Crs::mvwaddch(win, i, j, static_cast<char>(g));
-				Crs::wattroff(win, COLOR_PAIR(1));
+				drawGameObject(win, i, j, g, GameObject::Color::Red_Black);
 				break;
-			case GameObject::Type::Chest:
-				Crs::wattron(win, COLOR_PAIR(5));
-				Crs::mvwaddch(win, i, j, static_cast<char>(g));
-				Crs::wattroff(win, COLOR_PAIR(5));
+			case GameObject::Type::SmallDragon:
+			case GameObject::Type::SmallGoblin:
+			case GameObject::Type::SmallSkeleton:
+			case GameObject::Type::SmallTroll:
+				drawGameObject(win, i, j, g, GameObject::Color::Yellow_Black);
 				break;
 			case GameObject::Type::Dragon:
-				Crs::wattron(win, COLOR_PAIR(3));
-				Crs::mvwaddch(win, i, j, static_cast<char>(g));
-				Crs::wattroff(win, COLOR_PAIR(3));
+			case GameObject::Type::Goblin:
+			case GameObject::Type::Skeleton:
+			case GameObject::Type::Troll:
+				drawGameObject(win, i, j, g, GameObject::Color::Yellow_Red);
 				break;
 			default:
-				Crs::mvwaddch(win, i, j, static_cast<char>(g));
+				drawGameObject(win, i, j, g, GameObject::Color::White_Black);
 			}
 		}
 	}
+}
+
+void Dungeon::drawGameObject(WINDOW *win, int y, int x, GameObject::Type g, GameObject::Color color)
+{
+	Crs::wattron(win, COLOR_PAIR(static_cast<int>(color)));
+	Crs::mvwaddch(win, y, x, static_cast<char>(g));
+	Crs::wattroff(win, COLOR_PAIR(static_cast<int>(color)));
 }
 
 int Dungeon::num_rooms() const
