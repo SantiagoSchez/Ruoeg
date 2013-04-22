@@ -1,14 +1,13 @@
 //
-// Just a wrapper for curses library with the functions used for
-// making the game and a little bit document inline.
+// Set the curses library inside the namespace Curses
 // 
 
-#ifndef RUOEG_CRS_CRS_H_
-#define RUOEG_CRS_CRS_H_
+#ifndef RUOEG_CURSES_CURSES_H_
+#define RUOEG_CURSES_CURSES_H_
 
 #include "../../include/curses.h"
 
-class Crs
+class Curses
 {
 public:
 	static enum class Key 
@@ -60,6 +59,9 @@ public:
 	// Output the string str in win (scrolling way)
 	static int waddstr(WINDOW *win, const char *str);
 
+	// Output a formatted str in win
+	static int wprintw(WINDOW *win, char *fmt, ...);
+
 	// Wait for key input
 	static int wgetch(WINDOW *win);
 
@@ -92,4 +94,4 @@ public:
 	static int refresh(WINDOW *win);
 };
 
-#endif // RUOEG_CRS_CRS_H_
+#endif // RUOEG_CURSES_CURSES_H_

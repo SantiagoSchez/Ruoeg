@@ -17,6 +17,7 @@ public:
 		Corridor = '#',
 		Lit = '.',
 		Door = '+',
+		OpenedDoor = '/',
 		DownStairs = '>',
 
 		// Player
@@ -39,14 +40,17 @@ public:
 		Dummy = '?'
 	};
 
-	enum class Color : int
+	enum class Color
 	{
 		Red_Black = 1,		// Walls/Non-walkable
 		Green_Black = 2,	// Floor/Walkable
 		Yellow_Red = 3,		// Bosses
 		Cyan_Black = 4,		// Doors/Stairs/Chests
 		Yellow_Black = 5,	// Enemies
-		White_Black = 6		// Default
+		White_Black = 6,	// Default/Human
+		White_Green = 7,	// Orc
+		White_Yellow = 8,	// Elf
+		White_Red = 9		// Dwarf
 	};
 
 	explicit GameObject(Type type);

@@ -1,6 +1,7 @@
 #include "Dungeon.h"
 
 #include <iostream>
+#include <memory>
 
 #include "../GameObjects/Terrains/Wall/HorizontalWall.h"
 #include "../GameObjects/Terrains/Wall/VerticalWall.h"
@@ -18,6 +19,8 @@
 #include "../GameObjects/Enemies/Skeleton/Skeleton.h"
 #include "../GameObjects/Enemies/Troll/Troll.h"
 #include "../GameObjects/Terrains/Stairs/Stairs.h"
+
+int Dungeon::dungeon_level = 1;
 
 Dungeon::Dungeon(int height, int width) 
 	: map_(height, width), map_error(4), min_room_height(4), 
@@ -57,6 +60,11 @@ void Dungeon::generate()
 	{
 		// Pick a random wall
 		Point p = getRandomWall();
+		if(p.x == -900)
+		{
+			continue;
+		}
+
 		p.x += p.x_mod;
 		p.y += p.y_mod;
 
@@ -100,6 +108,11 @@ void Dungeon::generate()
 	// Generate the downstairs
 	location = getRandomLit();
 	map_.at(location.y, location.x).top() = Stairs();
+}
+
+Map2D& Dungeon::map()
+{
+	return map_;
 }
 
 bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
@@ -422,6 +435,7 @@ Dungeon::Point Dungeon::getRandomWall()
 	{
 		p.y = rng_.nextInt(2, map_.height()-2);
 		p.x = rng_.nextInt(2, map_.width()-2);
+
 		GameObject::Type game_object_type = map_.at(p.y, p.x).top().type();
 
 		if((game_object_type == GameObject::Type::HorizontalWall) ||
@@ -461,6 +475,12 @@ Dungeon::Point Dungeon::getRandomWall()
 				{
 					ok = true;
 				}
+			}
+
+			if(!checkCorners(p))
+			{
+				ok = true;
+				p.x = -900;
 			}
 		}
 	}
@@ -539,14 +559,11 @@ bool Dungeon::spawn(Point &p, GameObject &game_object, int offset)
 			break;
 	}
 
-	if(t != nullptr)
+	if(t->top().walkable())
 	{
-		if(t->top().walkable())
-		{
-			t->add(game_object);
-
-			return true;
-		}
+		t->add(game_object);
+		
+		return true;
 	}
 
 	return false;
@@ -572,6 +589,42 @@ bool Dungeon::checkObjectsSurrounding(Point &loc, GameObject::Type type, int rad
 	return false;
 }
 
+bool Dungeon::checkCorners(Point &loc)
+{
+	if(map_.at(loc.y, loc.x).top().type() == GameObject::Type::VerticalWall)
+	{
+		// Upper-left corner
+		if((map_.at(loc.y+1, loc.x).top().type() == GameObject::Type::VerticalWall) &&
+		   (map_.at(loc.y, loc.x+1).top().type() == GameObject::Type::HorizontalWall))
+		{
+			return false;
+		}
+
+		// Upper-right corner
+		if((map_.at(loc.y+1, loc.x).top().type() == GameObject::Type::VerticalWall) &&
+			(map_.at(loc.y, loc.x-1).top().type() == GameObject::Type::HorizontalWall))
+		{
+			return false;
+		}
+
+		// Bottom-right corner
+		if((map_.at(loc.y-1, loc.x).top().type() == GameObject::Type::VerticalWall) &&
+			(map_.at(loc.y, loc.x-1).top().type() == GameObject::Type::HorizontalWall))
+		{
+			return false;
+		}
+
+		// Bottom-left corner
+		if((map_.at(loc.y-1, loc.x).top().type() == GameObject::Type::VerticalWall) &&
+			(map_.at(loc.y, loc.x+1).top().type() == GameObject::Type::HorizontalWall))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void Dungeon::draw(WINDOW *win)
 {
 	int height = map_.height();
@@ -589,6 +642,7 @@ void Dungeon::draw(WINDOW *win)
 			case GameObject::Type::Chest:
 				drawGameObject(win, i, j, g, GameObject::Color::Cyan_Black);
 				break;
+			case GameObject::Type::OpenedDoor:
 			case GameObject::Type::Corridor:
 			case GameObject::Type::Lit:
 				drawGameObject(win, i, j, g, GameObject::Color::Green_Black);
@@ -618,9 +672,9 @@ void Dungeon::draw(WINDOW *win)
 
 void Dungeon::drawGameObject(WINDOW *win, int y, int x, GameObject::Type g, GameObject::Color color)
 {
-	Crs::wattron(win, COLOR_PAIR(static_cast<int>(color)));
-	Crs::mvwaddch(win, y, x, static_cast<char>(g));
-	Crs::wattroff(win, COLOR_PAIR(static_cast<int>(color)));
+	Curses::wattron(win, COLOR_PAIR(static_cast<int>(color)));
+	Curses::mvwaddch(win, y, x, static_cast<char>(g));
+	Curses::wattroff(win, COLOR_PAIR(static_cast<int>(color)));
 }
 
 int Dungeon::num_rooms() const

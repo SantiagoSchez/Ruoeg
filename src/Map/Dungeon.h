@@ -7,25 +7,12 @@
 #include <vector>
 
 #include "../Utils/RNG.h"
-#include "../Crs/Crs.h"
+#include "../Curses/Curses.h"
 #include "../Map/Map2D.h"
 
 class Dungeon
 {
 public:
-	Dungeon(int height, int width);
-	~Dungeon();
-
-	void draw(WINDOW *win);
-	void generate();
-
-	// Some getters for get the number of features
-	int num_rooms() const;
-	int num_corridors() const;
-	int num_enemies() const;
-	int num_chests() const;
-
-private:
 	enum class Direction
 	{
 		None,
@@ -46,14 +33,29 @@ private:
 		int y_mod;
 	};
 
-	// Features to build. More can be added here.
-	bool makeSquaredRoom(Point &loc, int height, int width);
-	bool makeCorridor(Point &loc, int len);
+	Dungeon(int height, int width);
+	~Dungeon();
+
+	void draw(WINDOW *win);
+	void generate();
+
+	Map2D& map();
+
+	// Some getters for get the number of features
+	int num_rooms() const;
+	int num_corridors() const;
+	int num_enemies() const;
+	int num_chests() const;
 
 	// Helper methods
 	Point getRandomWall();
 	Point getRandomLit();
 	Point getRandomCorridor();
+
+private:
+	// Features to build. More can be added here.
+	bool makeSquaredRoom(Point &loc, int height, int width);
+	bool makeCorridor(Point &loc, int len);
 
 	// Spawns a GameObject in the given location and pushes back
 	// in the top of the tile
@@ -67,6 +69,9 @@ private:
 	// Check whether there are objects of the given type around the
 	// given location within the given radius.
 	bool checkObjectsSurrounding(Point &loc, GameObject::Type type, int radius);
+
+	// Check corners of rooms for not building
+	bool checkCorners(Point &loc);
 
 	// The random number generator object.
 	RNG rng_;
@@ -88,6 +93,11 @@ private:
 	// inside the window avoiding problems of index out of boundaries.
 	// Currently it's set to 4 i.e. (4, 4, height-4, width-4).
 	const int map_error;
+
+	// This is a variable used to save the number of dungeons 
+	// (or level of dungeon) we have generated. We'll use it to take 
+	// care the monsters are stronger at higher level.
+	static int dungeon_level;
 };
 
 #endif // RUOEG_MAP_DUNGEON_H_

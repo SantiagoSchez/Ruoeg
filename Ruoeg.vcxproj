@@ -81,6 +81,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\GameObjects\Player\Human\Human.cpp" />
     <ClCompile Include="src\GameObjects\Chests\Chest.cpp" />
     <ClCompile Include="src\GameObjects\Enemies\Troll\Troll.cpp" />
     <ClCompile Include="src\GameObjects\Enemies\SmallTroll\SmallTroll.cpp" />
@@ -90,11 +91,12 @@
     <ClCompile Include="src\GameObjects\Enemies\SmallGoblin\SmallGoblin.cpp" />
     <ClCompile Include="src\GameObjects\Enemies\Dragon\Dragon.cpp" />
     <ClCompile Include="src\GameObjects\Enemies\SmallDragon\SmallDragon.cpp" />
+    <ClCompile Include="src\GameObjects\Player\Orc\Orc.cpp" />
     <ClCompile Include="src\GameObjects\Player\Player.cpp" />
     <ClCompile Include="src\GameObjects\Terrains\Corridor\Corridor.cpp" />
     <ClCompile Include="src\GameObjects\Terrains\Door\Door.cpp" />
     <ClCompile Include="src\GameObjects\Debug\Dummy\Dummy.cpp" />
-    <ClCompile Include="src\Crs\Crs.cpp" />
+    <ClCompile Include="src\Curses\Curses.cpp" />
     <ClCompile Include="src\GameObjects\Terrains\None\None.cpp" />
     <ClCompile Include="src\GameObjects\Terrains\Stairs\Stairs.cpp" />
     <ClCompile Include="src\GameObjects\Terrains\Wall\HorizontalWall.cpp" />
@@ -109,6 +111,7 @@
     <ClCompile Include="src\GameObjects\Terrains\Wall\VerticalWall.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\GameObjects\Player\Human\Human.h" />
     <ClInclude Include="src\GameObjects\Chests\Chest.h" />
     <ClInclude Include="src\GameObjects\Enemies\Troll\Troll.h" />
     <ClInclude Include="src\GameObjects\Enemies\SmallTroll\SmallTroll.h" />
@@ -118,11 +121,12 @@
     <ClInclude Include="src\GameObjects\Enemies\SmallGoblin\SmallGoblin.h" />
     <ClInclude Include="src\GameObjects\Enemies\Dragon\Dragon.h" />
     <ClInclude Include="src\GameObjects\Enemies\SmallDragon\SmallDragon.h" />
+    <ClInclude Include="src\GameObjects\Player\Orc\Orc.h" />
     <ClInclude Include="src\GameObjects\Player\Player.h" />
     <ClInclude Include="src\GameObjects\Terrains\Corridor\Corridor.h" />
     <ClInclude Include="src\GameObjects\Terrains\Door\Door.h" />
     <ClInclude Include="src\GameObjects\Debug\Dummy\Dummy.h" />
-    <ClInclude Include="src\Crs\Crs.h" />
+    <ClInclude Include="src\Curses\Curses.h" />
     <ClInclude Include="src\GameObjects\Terrains\None\None.h" />
     <ClInclude Include="src\GameObjects\Terrains\Stairs\Stairs.h" />
     <ClInclude Include="src\GameObjects\Terrains\Wall\HorizontalWall.h" />

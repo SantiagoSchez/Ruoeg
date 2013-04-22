@@ -12,6 +12,8 @@ class Door : public GameObject
 public:
 	Door();
 	~Door();
+
+	void open();
 };
 
 #endif // RUOEG_GAMEOBJECTS_DOOR_H_

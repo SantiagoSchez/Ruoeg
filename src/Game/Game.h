@@ -7,9 +7,11 @@
 #define RUOEG_GAME_GAME_H_
 
 #include <vector>
+#include <memory>
 
-#include "../Crs/Crs.h"
+#include "../Curses/Curses.h"
 #include "../Map/Dungeon.h"
+#include "../GameObjects/Player/Player.h"
 
 class Game
 {
@@ -18,10 +20,12 @@ public:
 
 	void start();
 	void setUp();
-	void loop(Crs::Key exit_key = Crs::Key::Esc);
+	void loop(Curses::Key exit_key = Curses::Key::Esc);
 	void refreshWindows(std::vector<WINDOW *> windows);
 	void release();
 	void manageInput(WINDOW *win);
+
+	WINDOW* console();
 
 private:
 	enum class State 
@@ -34,6 +38,7 @@ private:
 
 	State state_;
 	Dungeon dungeon_;
+	std::unique_ptr<Player> player_;
 	std::vector<WINDOW *> windows_;
 
 	// Disallowing copy constructor and assignment operator
