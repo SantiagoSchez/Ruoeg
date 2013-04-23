@@ -672,9 +672,8 @@ void Dungeon::draw(WINDOW *win)
 
 void Dungeon::drawGameObject(WINDOW *win, int y, int x, GameObject::Type g, GameObject::Color color)
 {
-	Curses::wattron(win, COLOR_PAIR(static_cast<int>(color)));
-	Curses::mvwaddch(win, y, x, static_cast<char>(g));
-	Curses::wattroff(win, COLOR_PAIR(static_cast<int>(color)));
+	Curses::mvwaddch(win, y, x, static_cast<char>(g) | 
+		COLOR_PAIR(static_cast<int>(color)));
 }
 
 int Dungeon::num_rooms() const

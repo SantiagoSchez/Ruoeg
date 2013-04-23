@@ -88,7 +88,7 @@ public:
 	static int delwin(WINDOW *win);
 
 	// Surround a window with a frame
-	static int box(WINDOW *win, chtype verch, chtype horch);
+	static int wbox(WINDOW *win, chtype verch, chtype horch);
 
 	// Refresh the given window
 	static int refresh(WINDOW *win);

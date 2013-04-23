@@ -16,7 +16,7 @@ public:
 		Human = 1,	// =Health=Attack=Armor
 		Elf = 2,	// -Health-Attack-Armor
 		Orc = 3,	// +Health+Attack+Armor
-		Dwarf = 4	// +Health-Attack-Armor
+		Dwarf = 4	// -Health+Attack+Armor
 	};
 
 	explicit Player(Race race);
@@ -30,6 +30,7 @@ public:
 	virtual int level() const;
 	virtual bool isAlive() const;
 
+	virtual const Dungeon::Point& location() const;
 	virtual void placeIt(int x, int y);
 
 	virtual bool moveNorth(Map2D &map);

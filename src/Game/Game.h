@@ -23,9 +23,12 @@ public:
 	void loop(Curses::Key exit_key = Curses::Key::Esc);
 	void refreshWindows(std::vector<WINDOW *> windows);
 	void release();
-	void manageInput(WINDOW *win);
+	int manageInput(WINDOW *win);
+	void loadStrings();
 
-	WINDOW* console();
+	WINDOW* mapWindow();
+	WINDOW* consoleWindow();
+	WINDOW* statusWindow();
 
 private:
 	enum class State 

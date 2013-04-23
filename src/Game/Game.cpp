@@ -2,7 +2,11 @@
 
 #include <iostream>
 
+#include "ResourceManager.h"
+#include "../GameObjects/Player/Human/Human.h"
 #include "../GameObjects/Player/Orc/Orc.h"
+#include "../GameObjects/Player/Elf/Elf.h"
+#include "../GameObjects/Player/Dwarf/Dwarf.h"
 
 Game::Game() : dungeon_(30, 90)
 {
@@ -36,17 +40,16 @@ void Game::setUp()
 	windows_.push_back(Curses::newwin(10, 30, 30, 60)); // Status (Life, damage, armor)
 
 	// Input for map window
-	Curses::keypad(windows_.at(0), true);
-	Curses::nodelay(windows_.at(0), true);
+	Curses::keypad(windows_[0], true);
+	Curses::nodelay(windows_[0], true);
 
 	// Enables scroll for console window
-	Curses::scrollok(windows_.at(1), true);
+	Curses::scrollok(windows_[1], true);
 
 	// Adding a dummy line to bypass the top line in console window
-	Curses::waddstr(windows_.at(1), "\n");
+	Curses::waddstr(windows_[1], "\n");
 
-	state_ = State::Running;
-
+	// Init colors
 	if(!Curses::has_colors())
 	{	
 		Curses::endwin();
@@ -54,7 +57,6 @@ void Game::setUp()
 		exit(1);
 	}
 
-	// Init colors
 	Curses::start_color();
 	Curses::init_pair(static_cast<int>(GameObject::Color::Red_Black), COLOR_RED, COLOR_BLACK);
 	Curses::init_pair(static_cast<int>(GameObject::Color::Green_Black), COLOR_GREEN, COLOR_BLACK);
@@ -66,13 +68,18 @@ void Game::setUp()
 	Curses::init_pair(static_cast<int>(GameObject::Color::White_Yellow), COLOR_WHITE, COLOR_YELLOW);
 	Curses::init_pair(static_cast<int>(GameObject::Color::White_Red), COLOR_WHITE, COLOR_RED);
 
+	// Load resources
+	loadStrings();
+
 	// Init the player
 	// TODO: Make a presentation screen that allows the player to choose
 	// a race for playing.
 	player_.reset(new Orc());
-	
 	player_->placeIt(dungeon_.map().width()/2+1, dungeon_.map().height()/2+1);
 	//////////////////////////////////////////////////////////////
+
+	// Change game state
+	state_ = State::Running;
 }
 
 void Game::loop(Curses::Key /*= Crs::Key::ESC*/)
@@ -81,10 +88,14 @@ void Game::loop(Curses::Key /*= Crs::Key::ESC*/)
 
 	while(state_ == State::Running)
 	{
-		manageInput(windows_.at(0));
-		dungeon_.draw(windows_.at(0));
-		player_->draw(windows_.at(0));
+		if(manageInput(windows_[0]) != -1)
+		{
+			// Update here monsters behavior
+		}
 
+		dungeon_.draw(windows_[0]);
+		player_->draw(windows_[0]);
+		
 		refreshWindows(windows_);
 	}
 }
@@ -93,7 +104,7 @@ void Game::refreshWindows(std::vector<WINDOW *> windows)
 {
 	for(auto w : windows)
 	{
-		Curses::box(w, 0, 0);
+		Curses::wbox(w, 0, 0);
 		Curses::refresh(w);
 	}
 }
@@ -103,7 +114,7 @@ void Game::release()
 	Curses::endwin();
 }
 
-void Game::manageInput(WINDOW *win)
+int Game::manageInput(WINDOW *win)
 {
 	int key = Curses::wgetch(win);
 
@@ -133,9 +144,27 @@ void Game::manageInput(WINDOW *win)
 			player_->moveWest(dungeon_.map());
 		}
 	}
+
+	return key;
 }
 
-WINDOW* Game::console()
+WINDOW* Game::mapWindow()
 {
-	return windows_.at(1);
+	return windows_[0];
+}
+
+WINDOW* Game::consoleWindow()
+{
+	return windows_[1];
+}
+
+WINDOW* Game::statusWindow()
+{
+	return windows_[2];
+}
+
+void Game::loadStrings()
+{
+	ResourceManager::getInstance().addString("DOOR_OPENED",
+		" You opened the door.\n");
 }

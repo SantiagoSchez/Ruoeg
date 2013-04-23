@@ -81,6 +81,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game\ResourceManager.cpp" />
+    <ClCompile Include="src\GameObjects\Player\Dwarf\Dwarf.cpp" />
+    <ClCompile Include="src\GameObjects\Player\Elf\Elf.cpp" />
     <ClCompile Include="src\GameObjects\Player\Human\Human.cpp" />
     <ClCompile Include="src\GameObjects\Chests\Chest.cpp" />
     <ClCompile Include="src\GameObjects\Enemies\Troll\Troll.cpp" />
@@ -111,6 +114,9 @@
     <ClCompile Include="src\GameObjects\Terrains\Wall\VerticalWall.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Game\ResourceManager.h" />
+    <ClInclude Include="src\GameObjects\Player\Dwarf\Dwarf.h" />
+    <ClInclude Include="src\GameObjects\Player\Elf\Elf.h" />
     <ClInclude Include="src\GameObjects\Player\Human\Human.h" />
     <ClInclude Include="src\GameObjects\Chests\Chest.h" />
     <ClInclude Include="src\GameObjects\Enemies\Troll\Troll.h" />

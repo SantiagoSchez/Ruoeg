@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "../Terrains/Door/Door.h"
 #include "../../Game/Game.h"
+#include "../../Game/ResourceManager.h"
 
 Player::Player(Race race) : race_(race), 
 	GameObject(GameObject::Type::Player), experience_points_(0), level_(1)
@@ -46,6 +47,11 @@ int Player::level() const
 bool Player::isAlive() const
 {
 	return health_points_ > 0;
+}
+
+const Dungeon::Point& Player::location() const
+{
+	return location_;
 }
 
 void Player::placeIt(int x, int y)
@@ -116,9 +122,11 @@ bool Player::moveWest(Map2D &map)
 
 void Player::checkCollisions(GameObject &game_object)
 {
-	if(game_object.type() == GameObject::Type::Door)
+	switch(game_object.type())
 	{
+	case GameObject::Type::Door:
 		reinterpret_cast<Door&>(game_object).open();
-		Curses::waddstr(Game::getInstance().console(), " You open the door!\n");
+		Curses::waddstr(Game::getInstance().consoleWindow(), ResourceManager::getInstance().getString("DOOR_OPENED"));
+		break;
 	}
 }

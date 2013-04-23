@@ -117,7 +117,7 @@ int Curses::delwin(WINDOW *win)
 	return ::delwin(win);
 }
 
-int Curses::box(WINDOW *win, chtype verch, chtype horch)
+int Curses::wbox(WINDOW *win, chtype verch, chtype horch)
 {
 	return ::box(win, verch, horch);
 }

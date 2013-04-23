@@ -21,7 +21,7 @@ void Orc::levelUp()
 
 void Orc::draw(WINDOW *win)
 {
-	Curses::wattron(win, COLOR_PAIR(static_cast<int>(GameObject::Color::White_Green)));
-	Curses::mvwaddch(win, location_.y, location_.x, static_cast<char>(GameObject::Type::Player));
-	Curses::wattroff(win, COLOR_PAIR(static_cast<int>(GameObject::Color::White_Green)));
+	Curses::mvwaddch(win, location_.y, location_.x, 
+		static_cast<char>(type_) | 
+		COLOR_PAIR(static_cast<int>(GameObject::Color::White_Green)));
 }
