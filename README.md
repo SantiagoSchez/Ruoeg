@@ -5,7 +5,12 @@ Ruoeg
 Changes
 =======
 ### Current look
-![ScreenShot](https://raw.github.com/SantiagoSanchez/Ruoeg/master/screenshots/Ruoeg_4.21.13.png)
+![ScreenShot](https://raw.github.com/SantiagoSanchez/Ruoeg/master/screenshots/Ruoeg_4.23.13.png)
+
+### v0.1.1
+- Player movement added.
+- Player can now collide with the environment.
+- Race system added.
 
 ### v0.1.0
 - Dungeon generation added.
