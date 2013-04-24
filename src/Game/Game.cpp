@@ -49,6 +49,14 @@ void Game::setUp()
 	// Adding a dummy line to bypass the top line in console window
 	Curses::waddstr(windows_[1], "\n");
 
+	// TODO: 
+	//  - Make a presentation screen that allows the player to choose
+	//    a race for playing.
+	//  - Give the user an option for playing with or without colors
+	//  - Warn the user playing with colors may results in character
+	//    overlapping and so they should change to other not bitmap
+	//    font in their console window
+
 	// Init colors
 	if(!Curses::has_colors())
 	{	
@@ -71,11 +79,11 @@ void Game::setUp()
 	// Load resources
 	loadStrings();
 
-	// Init the player
-	// TODO: Make a presentation screen that allows the player to choose
-	// a race for playing.
-	player_.reset(new Orc());
-	player_->placeIt(dungeon_.map().width()/2+1, dungeon_.map().height()/2+1);
+	// Init the player and dungeon
+	dungeon_.generate();
+	Dungeon::Point loc = dungeon_.getRandomLit();
+	player_.reset(new Human());
+	player_->placeIt(loc.x, loc.y);
 	//////////////////////////////////////////////////////////////
 
 	// Change game state
@@ -84,8 +92,6 @@ void Game::setUp()
 
 void Game::loop(Curses::Key /*= Crs::Key::ESC*/)
 {
-	dungeon_.generate();
-
 	while(state_ == State::Running)
 	{
 		if(manageInput(windows_[0]) != -1)
