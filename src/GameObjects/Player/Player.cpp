@@ -130,3 +130,35 @@ void Player::checkCollisions(GameObject &game_object)
 		break;
 	}
 }
+
+void Player::doFOV(Map2D &map)
+{
+	float x, y, ox, oy;
+
+	for(int i = 0; i < 360; ++i)
+	{
+		x = cos(static_cast<float>(i*0.01745f));
+		y = sin(static_cast<float>(i*0.01745f));
+
+		ox = static_cast<float>(location_.x + 0.5f);
+		oy = static_cast<float>(location_.y + 0.5f);
+		
+		for(int j = 0; j < 4; ++j)
+		{
+			GameObject &g = map.at(static_cast<int>(oy), 
+				static_cast<int>(ox)).top();
+			g.set_in_fov(true);
+
+			if((g.type() == GameObject::Type::HorizontalWall) ||
+			   (g.type() == GameObject::Type::VerticalWall) ||
+			   (g.type() == GameObject::Type::None) ||
+			   (g.type() == GameObject::Type::Door))
+			{
+				break;
+			}
+
+			ox += x;
+			oy += y;
+		}
+	}
+}

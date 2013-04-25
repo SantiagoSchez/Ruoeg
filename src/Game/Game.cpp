@@ -99,6 +99,9 @@ void Game::loop(Curses::Key /*= Crs::Key::ESC*/)
 			// Update here monsters behavior
 		}
 
+		// Limit Field of View of the player
+		player_->doFOV(dungeon_.map());
+
 		dungeon_.draw(windows_[0]);
 		player_->draw(windows_[0]);
 		

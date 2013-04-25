@@ -39,6 +39,7 @@ public:
 	virtual bool moveWest(Map2D &map);
 
 	virtual void checkCollisions(GameObject &game_object);
+	virtual void doFOV(Map2D &map);
 
 	virtual void levelUp() = 0;
 	virtual void draw(WINDOW *win) = 0;

@@ -634,46 +634,75 @@ void Dungeon::draw(WINDOW *win)
 	{
 		for(int j = 0; j < width; ++j)
 		{
-			GameObject::Type g = map_.at(i, j).top().type();
+			GameObject g = map_.at(i, j).top();
+			GameObject::Type g_t = g.type();
 
-			switch(g)
+			if(!g.in_fov())
 			{
-			case GameObject::Type::Door:
-			case GameObject::Type::Chest:
-				drawGameObject(win, i, j, g, GameObject::Color::Cyan_Black);
-				break;
-			case GameObject::Type::OpenedDoor:
-			case GameObject::Type::Corridor:
-			case GameObject::Type::Lit:
-				drawGameObject(win, i, j, g, GameObject::Color::Green_Black);
-				break;
-			case GameObject::Type::HorizontalWall:
-			case GameObject::Type::VerticalWall:
-				drawGameObject(win, i, j, g, GameObject::Color::Red_Black);
-				break;
-			case GameObject::Type::SmallDragon:
-			case GameObject::Type::SmallGoblin:
-			case GameObject::Type::SmallSkeleton:
-			case GameObject::Type::SmallTroll:
-				drawGameObject(win, i, j, g, GameObject::Color::Yellow_Black);
-				break;
-			case GameObject::Type::Dragon:
-			case GameObject::Type::Goblin:
-			case GameObject::Type::Skeleton:
-			case GameObject::Type::Troll:
-				drawGameObject(win, i, j, g, GameObject::Color::Yellow_Red);
-				break;
-			default:
-				drawGameObject(win, i, j, g, GameObject::Color::White_Black);
+				switch(g_t)
+				{
+					case GameObject::Type::Chest:
+					case GameObject::Type::SmallDragon:
+					case GameObject::Type::SmallGoblin:
+					case GameObject::Type::SmallSkeleton:
+					case GameObject::Type::SmallTroll:
+					case GameObject::Type::DownStairs:
+						Curses::mvwaddch(win, i, j, static_cast<char>(GameObject::Type::Lit) | 
+							COLOR_PAIR(static_cast<int>(GameObject::Color::White_Black)));
+						break;
+					case GameObject::Type::Dragon:
+					case GameObject::Type::Goblin:
+					case GameObject::Type::Skeleton:
+					case GameObject::Type::Troll:
+						Curses::mvwaddch(win, i, j, static_cast<char>(GameObject::Type::Corridor) | 
+							COLOR_PAIR(static_cast<int>(GameObject::Color::White_Black)));
+						break;
+					default:
+						Curses::mvwaddch(win, i, j, static_cast<char>(g_t) | 
+							COLOR_PAIR(static_cast<int>(GameObject::Color::White_Black)));
+				}
+			}
+			else
+			{
+				switch(g_t)
+				{
+				case GameObject::Type::Door:
+				case GameObject::Type::Chest:
+					Curses::mvwaddch(win, i, j, static_cast<char>(g_t) | 
+						COLOR_PAIR(static_cast<int>(GameObject::Color::Cyan_Black)));
+					break;
+				case GameObject::Type::OpenedDoor:
+				case GameObject::Type::Corridor:
+				case GameObject::Type::Lit:
+					Curses::mvwaddch(win, i, j, static_cast<char>(g_t) | 
+						COLOR_PAIR(static_cast<int>(GameObject::Color::Green_Black)));
+					break;
+				case GameObject::Type::HorizontalWall:
+				case GameObject::Type::VerticalWall:
+					Curses::mvwaddch(win, i, j, static_cast<char>(g_t) | 
+						COLOR_PAIR(static_cast<int>(GameObject::Color::Red_Black)));
+					break;
+				case GameObject::Type::SmallDragon:
+				case GameObject::Type::SmallGoblin:
+				case GameObject::Type::SmallSkeleton:
+				case GameObject::Type::SmallTroll:
+					Curses::mvwaddch(win, i, j, static_cast<char>(g_t) | 
+						COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
+					break;
+				case GameObject::Type::Dragon:
+				case GameObject::Type::Goblin:
+				case GameObject::Type::Skeleton:
+				case GameObject::Type::Troll:
+					Curses::mvwaddch(win, i, j, static_cast<char>(g_t) | 
+						COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Red)));
+					break;
+				default:
+					Curses::mvwaddch(win, i, j, static_cast<char>(g_t) | 
+						COLOR_PAIR(static_cast<int>(GameObject::Color::White_Black)));
+				}
 			}
 		}
 	}
-}
-
-void Dungeon::drawGameObject(WINDOW *win, int y, int x, GameObject::Type g, GameObject::Color color)
-{
-	Curses::mvwaddch(win, y, x, static_cast<char>(g) | 
-		COLOR_PAIR(static_cast<int>(color)));
 }
 
 int Dungeon::num_rooms() const

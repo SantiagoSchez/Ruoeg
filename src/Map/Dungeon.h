@@ -62,10 +62,6 @@ private:
 	bool spawn(int row, int column, GameObject &game_object);
 	bool spawn(Point &p, GameObject &game_object, int offset);
 
-	// Draw the GameObject on the given position, on the given window
-	// and with the given color (1..n)
-	void drawGameObject(WINDOW *win, int y, int x, GameObject::Type g, GameObject::Color color);
-
 	// Check whether there are objects of the given type around the
 	// given location within the given radius.
 	bool checkObjectsSurrounding(Point &loc, GameObject::Type type, int radius);
