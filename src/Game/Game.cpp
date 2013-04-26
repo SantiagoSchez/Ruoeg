@@ -86,7 +86,7 @@ void Game::setUp()
 	// Init the player and dungeon
 	dungeon_.generate();
 	Dungeon::Point loc = dungeon_.getRandomLit();
-	player_.reset(new Orc(dungeon_.map()));
+	player_.reset(new Human(dungeon_.map()));
 	player_->placeIt(loc.x, loc.y);
 
 	// Change game state
