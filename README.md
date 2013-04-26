@@ -5,7 +5,13 @@ Ruoeg
 Changes
 =======
 ### Current look
-![ScreenShot](https://raw.github.com/SantiagoSanchez/Ruoeg/master/screenshots/Ruoeg_4.23.13.png)
+![ScreenShot](https://raw.github.com/SantiagoSanchez/Ruoeg/master/screenshots/Ruoeg_4.27.13.png)
+
+### v0.1.2
+- Field of View added to the player.
+- Music added. Randomly chosen when start playing from six songs.
+- UI elements added (Score, Dungeon exploration percentage, Level, Health, Armor, Attack, Experience, Number of chests and Number of enemies).
+- Player can now open chests.
 
 ### v0.1.1
 - Player movement added.
