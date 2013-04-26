@@ -86,9 +86,8 @@ void Game::setUp()
 	// Init the player and dungeon
 	dungeon_.generate();
 	Dungeon::Point loc = dungeon_.getRandomLit();
-	player_.reset(new Human(dungeon_.map()));
+	player_.reset(new Orc(dungeon_.map()));
 	player_->placeIt(loc.x, loc.y);
-	//////////////////////////////////////////////////////////////
 
 	// Change game state
 	state_ = State::Running;
@@ -96,7 +95,7 @@ void Game::setUp()
 	// Play some music
 	RNG rng;
 	int random_song = rng.nextInt(1, 6);
-	//uFMOD_PlaySong((char *)random_song, 0, XM_RESOURCE);
+	uFMOD_PlaySong((char *)random_song, 0, XM_RESOURCE);
 }
 
 void Game::loop(Curses::Key /*= Crs::Key::ESC*/)
@@ -296,7 +295,7 @@ void Game::set_hi_score(int hi_score)
 
 void Game::add_score(double factor)
 {
-	score_ += current_score_value_ * factor;
+	score_ += static_cast<int>(current_score_value_ * factor);
 	if(score_ > hi_score_)
 	{
 		hi_score_ = score_;
