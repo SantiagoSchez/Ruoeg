@@ -38,8 +38,7 @@ public:
 	int hi_score() const;
 	void set_score(int score);
 	void set_hi_score(int hi_score);
-	void set_current_score_value(int current_score_value);
-	void add_score();
+	void add_score(double factor);
 
 private:
 	enum class State 

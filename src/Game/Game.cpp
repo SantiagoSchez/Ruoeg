@@ -12,7 +12,7 @@
 #include "../GameObjects/Player/Dwarf/Dwarf.h"
 #include "../GameObjects/Chests/Chest.h"
 
-Game::Game() : dungeon_(30, 90), current_score_value_(50)
+Game::Game() : dungeon_(30, 90), current_score_value_(100)
 {
 }
 
@@ -294,16 +294,11 @@ void Game::set_hi_score(int hi_score)
 	hi_score_ = hi_score_;
 }
 
-void Game::add_score()
+void Game::add_score(double factor)
 {
-	score_ += current_score_value_;
+	score_ += current_score_value_ * factor;
 	if(score_ > hi_score_)
 	{
 		hi_score_ = score_;
 	}
-}
-
-void Game::set_current_score_value(int current_score_value)
-{
-	current_score_value_ = current_score_value;
 }

@@ -164,7 +164,7 @@ void Player::checkCollisions(GameObject &game_object)
 			ResourceManager::getInstance().getString("CHEST_GATHERED1"),
 			Game::getInstance().current_score_value(),
 			ResourceManager::getInstance().getString("CHEST_GATHERED2"));
-		Game::getInstance().add_score();
+		Game::getInstance().add_score(1);
 		game_object = Lit();
 		game_object.set_in_fov(true);
 		Chest::decrease_num_chests();
@@ -194,6 +194,7 @@ void Player::doFOV()
 				if(g.type() != GameObject::Type::None)
 				{
 					++explored_;
+					Game::getInstance().add_score(0.01);
 				}
 			}
 
