@@ -1,5 +1,8 @@
 ﻿#include "Game.h"
 
+#include "windows.h"
+#include "../../include/ufmod.h"
+
 #include <iostream>
 
 #include "ResourceManager.h"
@@ -82,12 +85,17 @@ void Game::setUp()
 	// Init the player and dungeon
 	dungeon_.generate();
 	Dungeon::Point loc = dungeon_.getRandomLit();
-	player_.reset(new Human());
+	player_.reset(new Human(dungeon_.map()));
 	player_->placeIt(loc.x, loc.y);
 	//////////////////////////////////////////////////////////////
 
 	// Change game state
 	state_ = State::Running;
+
+	// Play some music
+	RNG rng;
+	int random_song = rng.nextInt(1, 6);
+	uFMOD_PlaySong((char *)random_song, 0, XM_RESOURCE);
 }
 
 void Game::loop(Curses::Key /*= Crs::Key::ESC*/)
@@ -100,8 +108,6 @@ void Game::loop(Curses::Key /*= Crs::Key::ESC*/)
 		}
 
 		// Limit Field of View of the player
-		player_->doFOV(dungeon_.map());
-
 		dungeon_.draw(windows_[0]);
 		player_->draw(windows_[0]);
 		
@@ -138,19 +144,19 @@ int Game::manageInput(WINDOW *win)
 		// Player movement
 		if(key == static_cast<int>(Curses::Key::Up))
 		{
-			player_->moveNorth(dungeon_.map());
+			player_->moveNorth();
 		}
 		else if(key == static_cast<int>(Curses::Key::Right))
 		{
-			player_->moveEast(dungeon_.map());
+			player_->moveEast();
 		}
 		else if(key == static_cast<int>(Curses::Key::Down))
 		{
-			player_->moveSouth(dungeon_.map());
+			player_->moveSouth();
 		}
 		else if(key == static_cast<int>(Curses::Key::Left))
 		{
-			player_->moveWest(dungeon_.map());
+			player_->moveWest();
 		}
 	}
 

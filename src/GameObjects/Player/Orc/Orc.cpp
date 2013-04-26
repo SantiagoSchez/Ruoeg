@@ -1,6 +1,6 @@
 #include "Orc.h"
 
-Orc::Orc() : Player(Player::Race::Orc)
+Orc::Orc(Map2D &map) : Player(Player::Race::Orc, map)
 {
 	health_points_ = 150;
 	attack_points_ = 15;
@@ -21,6 +21,8 @@ void Orc::levelUp()
 
 void Orc::draw(WINDOW *win)
 {
+	doFOV();
+
 	Curses::mvwaddch(win, location_.y, location_.x, 
 		static_cast<char>(type_) | 
 		COLOR_PAIR(static_cast<int>(GameObject::Color::White_Green)));

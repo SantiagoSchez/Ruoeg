@@ -3,8 +3,9 @@
 #include "../../Game/Game.h"
 #include "../../Game/ResourceManager.h"
 
-Player::Player(Race race) : race_(race), 
-	GameObject(GameObject::Type::Player), experience_points_(0), level_(1)
+Player::Player(Race race, Map2D &map) : race_(race), 
+	GameObject(GameObject::Type::Player), experience_points_(0), level_(1),
+	map_(map)
 {
 	walkable_ = true;
 	location_.dir = Dungeon::Direction::North;
@@ -60,9 +61,9 @@ void Player::placeIt(int x, int y)
 	location_.y = y;
 }
 
-bool Player::moveNorth(Map2D &map)
+bool Player::moveNorth()
 {
-	GameObject &game_object = map.at(location_.y-1, location_.x).top();
+	GameObject &game_object = map_.at(location_.y-1, location_.x).top();
 	if(game_object.walkable())
 	{
 		location_.y -= 1;
@@ -75,9 +76,9 @@ bool Player::moveNorth(Map2D &map)
 	return false;
 }
 
-bool Player::moveEast(Map2D &map)
+bool Player::moveEast()
 {
-	GameObject &game_object = map.at(location_.y, location_.x+1).top();
+	GameObject &game_object = map_.at(location_.y, location_.x+1).top();
 	if(game_object.walkable())
 	{
 		location_.x += 1;
@@ -90,9 +91,9 @@ bool Player::moveEast(Map2D &map)
 	return false;
 }
 
-bool Player::moveSouth(Map2D &map)
+bool Player::moveSouth()
 {
-	GameObject &game_object = map.at(location_.y+1, location_.x).top();
+	GameObject &game_object = map_.at(location_.y+1, location_.x).top();
 	if(game_object.walkable())
 	{
 		location_.y += 1;
@@ -105,9 +106,9 @@ bool Player::moveSouth(Map2D &map)
 	return false;
 }
 
-bool Player::moveWest(Map2D &map)
+bool Player::moveWest()
 {
-	GameObject &game_object = map.at(location_.y, location_.x-1).top();
+	GameObject &game_object = map_.at(location_.y, location_.x-1).top();
 	if(game_object.walkable())
 	{
 		location_.x -= 1;
@@ -131,7 +132,7 @@ void Player::checkCollisions(GameObject &game_object)
 	}
 }
 
-void Player::doFOV(Map2D &map)
+void Player::doFOV()
 {
 	float x, y, ox, oy;
 
@@ -145,7 +146,7 @@ void Player::doFOV(Map2D &map)
 		
 		for(int j = 0; j < 4; ++j)
 		{
-			GameObject &g = map.at(static_cast<int>(oy), 
+			GameObject &g = map_.at(static_cast<int>(oy), 
 				static_cast<int>(ox)).top();
 			g.set_in_fov(true);
 

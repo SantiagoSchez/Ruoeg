@@ -1,6 +1,6 @@
 #include "Elf.h"
 
-Elf::Elf() : Player(Player::Race::Elf)
+Elf::Elf(Map2D &map) : Player(Player::Race::Elf, map)
 {
 	health_points_ = 50;
 	attack_points_ = 5;
@@ -21,6 +21,8 @@ void Elf::levelUp()
 
 void Elf::draw(WINDOW *win)
 {
+	doFOV();
+
 	Curses::mvwaddch(win, location_.y, location_.x, 
 		static_cast<char>(type_) | 
 		COLOR_PAIR(static_cast<int>(GameObject::Color::White_Yellow)));

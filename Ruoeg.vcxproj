@@ -59,7 +59,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Users\Santi\Documents\Visual Studio 2012\Projects\Ruoeg\Ruoeg\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>pdcurses.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>pdcurses.lib;ufmod.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -144,6 +144,14 @@
     <ClInclude Include="src\Utils\RNG.h" />
     <ClInclude Include="src\Map\Tile.h" />
     <ClInclude Include="src\GameObjects\Terrains\Wall\VerticalWall.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="songs\music1.rc" />
+    <ResourceCompile Include="songs\music2.rc" />
+    <ResourceCompile Include="songs\music3.rc" />
+    <ResourceCompile Include="songs\music4.rc" />
+    <ResourceCompile Include="songs\music5.rc" />
+    <ResourceCompile Include="songs\music6.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

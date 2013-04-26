@@ -10,7 +10,7 @@
 class Dwarf : public Player
 {
 public:
-	Dwarf();
+	Dwarf(Map2D &map);
 	~Dwarf();
 
 private:

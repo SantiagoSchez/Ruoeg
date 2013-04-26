@@ -19,7 +19,7 @@ public:
 		Dwarf = 4	// -Health+Attack+Armor
 	};
 
-	explicit Player(Race race);
+	explicit Player(Race race, Map2D &map);
 	virtual ~Player();
 
 	virtual Race race() const;
@@ -33,19 +33,20 @@ public:
 	virtual const Dungeon::Point& location() const;
 	virtual void placeIt(int x, int y);
 
-	virtual bool moveNorth(Map2D &map);
-	virtual bool moveEast(Map2D &map);
-	virtual bool moveSouth(Map2D &map);
-	virtual bool moveWest(Map2D &map);
-
-	virtual void checkCollisions(GameObject &game_object);
-	virtual void doFOV(Map2D &map);
+	virtual bool moveNorth();
+	virtual bool moveEast();
+	virtual bool moveSouth();
+	virtual bool moveWest();
 
 	virtual void levelUp() = 0;
 	virtual void draw(WINDOW *win) = 0;
 
 protected:
+	virtual void checkCollisions(GameObject &game_object);
+	virtual void doFOV();
+
 	Race race_;
+	Map2D &map_;
 
 	int health_points_;
 	int attack_points_;

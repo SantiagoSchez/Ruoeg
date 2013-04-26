@@ -1,6 +1,6 @@
 #include "Human.h"
 
-Human::Human() : Player(Player::Race::Human)
+Human::Human(Map2D &map) : Player(Player::Race::Human, map)
 {
 	health_points_ = 100;
 	attack_points_ = 10;
@@ -21,6 +21,8 @@ void Human::levelUp()
 
 void Human::draw(WINDOW *win)
 {
+	doFOV();
+
 	Curses::mvwaddch(win, location_.y, location_.x, 
 		static_cast<char>(type_) | 
 		COLOR_PAIR(static_cast<int>(GameObject::Color::White_Black)));
