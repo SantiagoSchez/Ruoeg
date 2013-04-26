@@ -1,7 +1,7 @@
 #include "Map2D.h"
 
 Map2D::Map2D(int height, int width) : 
-	vec_(height*width), height_(height), width_(width)
+	vec_(height*width), height_(height), width_(width), valid_objects_(0)
 {
 }
 
@@ -35,5 +35,16 @@ void Map2D::clear()
 	{
 		vec_.clear();
 		vec_.resize(height_*width_);
+		valid_objects_ = 0;
 	}
+}
+
+int Map2D::valid_objects() const
+{
+	return valid_objects_;
+}
+
+void Map2D::increase_valid_objects()
+{
+	++valid_objects_;
 }

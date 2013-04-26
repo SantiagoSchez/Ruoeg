@@ -11,6 +11,7 @@ Door::~Door()
 
 void Door::open()
 {
+	in_fov_ = true;
 	walkable_ = true;
 	type_ = GameObject::Type::OpenedDoor;
 }

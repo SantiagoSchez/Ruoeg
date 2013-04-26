@@ -26,9 +26,20 @@ public:
 	int manageInput(WINDOW *win);
 	void loadStrings();
 
+	void updateMapWindow();
+	void updateStatusWindow();
+
 	WINDOW* mapWindow();
 	WINDOW* consoleWindow();
 	WINDOW* statusWindow();
+
+	int current_score_value() const;
+	int score() const;
+	int hi_score() const;
+	void set_score(int score);
+	void set_hi_score(int hi_score);
+	void set_current_score_value(int current_score_value);
+	void add_score();
 
 private:
 	enum class State 
@@ -43,6 +54,7 @@ private:
 	Dungeon dungeon_;
 	std::unique_ptr<Player> player_;
 	std::vector<WINDOW *> windows_;
+	int score_, hi_score_, current_score_value_;
 
 	// Disallowing copy constructor and assignment operator
 	Game(Game const&);

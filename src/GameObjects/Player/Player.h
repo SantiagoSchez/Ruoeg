@@ -23,12 +23,17 @@ public:
 	virtual ~Player();
 
 	virtual Race race() const;
+	virtual const char* str_race() const;
 	virtual int health_points() const;
 	virtual int attack_points() const;
 	virtual int armor_points() const;
 	virtual int experience_points() const;
+	virtual int max_experience_points() const;
 	virtual int level() const;
 	virtual bool isAlive() const;
+
+	virtual int explored() const;
+	virtual void reset_explored();
 
 	virtual const Dungeon::Point& location() const;
 	virtual void placeIt(int x, int y);
@@ -46,13 +51,16 @@ protected:
 	virtual void doFOV();
 
 	Race race_;
+	char *str_race_;
 	Map2D &map_;
 
 	int health_points_;
 	int attack_points_;
 	int armor_points_;
 	int experience_points_;
+	int max_experience_points_;
 	int level_;
+	int explored_;
 
 	Dungeon::Point location_;
 };

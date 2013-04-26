@@ -21,7 +21,11 @@ public:
 	int width() const;
 	void clear();
 
+	int valid_objects() const;
+	void increase_valid_objects();
+
 private:
+	int valid_objects_;
 	int height_, width_;
 	std::vector<Tile> vec_;
 };

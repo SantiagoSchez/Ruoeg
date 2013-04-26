@@ -1,12 +1,31 @@
 #include "Player.h"
+#include "../Chests/Chest.h"
 #include "../Terrains/Door/Door.h"
+#include "../Terrains/Lit/Lit.h"
 #include "../../Game/Game.h"
 #include "../../Game/ResourceManager.h"
 
 Player::Player(Race race, Map2D &map) : race_(race), 
-	GameObject(GameObject::Type::Player), experience_points_(0), level_(1),
-	map_(map)
+	GameObject(GameObject::Type::Player), experience_points_(0), 
+	max_experience_points_(50), level_(1), map_(map), explored_(0)
 {
+	switch(race)
+	{
+	case Race::Human:
+		str_race_ = "Human\0";
+		break;
+	case Race::Orc:
+		str_race_ = "Orc\0";
+		break;
+	case Race::Elf:
+		str_race_ = "Elf\0";
+		break;
+	case Race::Dwarf:
+		str_race_ = "Dwarf\0";
+		break;
+	}
+
+	in_fov_ = true;
 	walkable_ = true;
 	location_.dir = Dungeon::Direction::North;
 }
@@ -18,6 +37,11 @@ Player::~Player()
 Player::Race Player::race() const
 {
 	return race_;
+}
+
+const char* Player::str_race() const
+{
+	return str_race_;
 }
 
 int Player::health_points() const
@@ -38,6 +62,11 @@ int Player::armor_points() const
 int Player::experience_points() const
 {
 	return experience_points_;
+}
+
+int Player::max_experience_points() const
+{
+	return max_experience_points_;
 }
 
 int Player::level() const
@@ -127,7 +156,18 @@ void Player::checkCollisions(GameObject &game_object)
 	{
 	case GameObject::Type::Door:
 		reinterpret_cast<Door&>(game_object).open();
-		Curses::waddstr(Game::getInstance().consoleWindow(), ResourceManager::getInstance().getString("DOOR_OPENED"));
+		Curses::wprintw(Game::getInstance().consoleWindow(), " %s\n", 
+			ResourceManager::getInstance().getString("DOOR_OPENED"));
+		break;
+	case GameObject::Type::Chest:
+		Curses::wprintw(Game::getInstance().consoleWindow(), " %s %d%s\n", 
+			ResourceManager::getInstance().getString("CHEST_GATHERED1"),
+			Game::getInstance().current_score_value(),
+			ResourceManager::getInstance().getString("CHEST_GATHERED2"));
+		Game::getInstance().add_score();
+		game_object = Lit();
+		game_object.set_in_fov(true);
+		Chest::decrease_num_chests();
 		break;
 	}
 }
@@ -148,7 +188,14 @@ void Player::doFOV()
 		{
 			GameObject &g = map_.at(static_cast<int>(oy), 
 				static_cast<int>(ox)).top();
-			g.set_in_fov(true);
+			if(!g.in_fov())
+			{
+				g.set_in_fov(true);
+				if(g.type() != GameObject::Type::None)
+				{
+					++explored_;
+				}
+			}
 
 			if((g.type() == GameObject::Type::HorizontalWall) ||
 			   (g.type() == GameObject::Type::VerticalWall) ||
@@ -162,4 +209,14 @@ void Player::doFOV()
 			oy += y;
 		}
 	}
+}
+
+int Player::explored() const
+{
+	return explored_;
+}
+
+void Player::reset_explored()
+{
+	explored_ = 0;
 }

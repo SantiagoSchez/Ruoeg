@@ -55,23 +55,26 @@ int Curses::mvwaddch(WINDOW *win, int y, int x, const chtype ch)
 	return ::mvwaddch(win, y, x, ch);
 }
 
-int Curses::mvwaddstr(WINDOW *win, int y, int x, const char *str)
-{
-	return ::mvwaddstr(win, y, x, str);
-}
-
-int Curses::waddstr(WINDOW *win, const char *str)
-{
-	return ::waddstr(win, str);
-}
-
 int Curses::wprintw(WINDOW *win, char *fmt, ...)
 {
 	int ret = ERR;
 
 	va_list args;
-	va_start(args,fmt);
-	ret = ::wprintw(win, fmt, args);
+	va_start(args, fmt);
+	ret = ::vwprintw(win, fmt, args);
+	va_end(args);
+
+	return ret;
+}
+
+int Curses::mvwprintw(WINDOW *win, int y, int x, char *fmt, ...)
+{
+	int ret = ERR;
+
+	va_list args;
+	va_start(args, fmt);
+	::wmove(win, y, x);
+	ret = ::vwprintw(win, fmt, args);
 	va_end(args);
 
 	return ret;
@@ -122,7 +125,7 @@ int Curses::wbox(WINDOW *win, chtype verch, chtype horch)
 	return ::box(win, verch, horch);
 }
 
-int Curses::refresh(WINDOW *win)
+int Curses::wrefresh(WINDOW *win)
 {
 	return ::wrefresh(win);
 }

@@ -24,8 +24,7 @@ int Dungeon::dungeon_level = 1;
 
 Dungeon::Dungeon(int height, int width) 
 	: map_(height, width), map_error(4), min_room_height(4), 
-	  min_room_width(4), num_rooms_(0), num_corridors_(0), num_enemies_(0), 
-	  num_chests_(0)
+	  min_room_width(4), num_rooms_(0), num_corridors_(0), num_enemies_(0)
 {
 }
 
@@ -38,7 +37,12 @@ void Dungeon::generate()
 	// Dungeon generation based on next algorithm:
 	// http://roguebasin.roguelikedevelopment.org/index.php?title=Dungeon-Building_Algorithm
 
+	// Restart map stuff
 	map_.clear();
+	Chest::reset_num_chests();
+	num_corridors_ = 0;
+	num_enemies_ = 0;
+	num_rooms_ = 0;
 
 	// Fill the whole map with solid earth
 	int size = map_.width() * map_.height();
@@ -108,6 +112,18 @@ void Dungeon::generate()
 	// Generate the downstairs
 	location = getRandomLit();
 	map_.at(location.y, location.x).top() = Stairs();
+
+	// Count the number of not explored tiles
+	for(int i = map_error; i <= map_.height()-map_error; ++i)
+	{
+		for(int j = map_error; j <= map_.width()-map_error; ++j)
+		{
+			if(map_.at(i, j).top().type() != GameObject::Type::None)
+			{
+				map_.increase_valid_objects();
+			}
+		}
+	}
 }
 
 Map2D& Dungeon::map()
@@ -313,7 +329,6 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 		// Spawn a chest
 		// The 2 means two tiles away walls
 		spawn(loc, Chest(), 2);
-		++num_chests_;
 	}
 	else if(chance < 100) // 80% <- (100-20)
 	{
@@ -718,9 +733,4 @@ int Dungeon::num_corridors() const
 int Dungeon::num_enemies() const
 {
 	return num_enemies_;
-}
-
-int Dungeon::num_chests() const
-{
-	return num_chests_;
 }

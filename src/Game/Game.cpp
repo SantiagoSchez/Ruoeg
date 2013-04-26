@@ -10,8 +10,9 @@
 #include "../GameObjects/Player/Orc/Orc.h"
 #include "../GameObjects/Player/Elf/Elf.h"
 #include "../GameObjects/Player/Dwarf/Dwarf.h"
+#include "../GameObjects/Chests/Chest.h"
 
-Game::Game() : dungeon_(30, 90)
+Game::Game() : dungeon_(30, 90), current_score_value_(50)
 {
 }
 
@@ -50,7 +51,7 @@ void Game::setUp()
 	Curses::scrollok(windows_[1], true);
 
 	// Adding a dummy line to bypass the top line in console window
-	Curses::waddstr(windows_[1], "\n");
+	Curses::wprintw(windows_[1], "\n");
 
 	// TODO: 
 	//  - Make a presentation screen that allows the player to choose
@@ -95,7 +96,7 @@ void Game::setUp()
 	// Play some music
 	RNG rng;
 	int random_song = rng.nextInt(1, 6);
-	uFMOD_PlaySong((char *)random_song, 0, XM_RESOURCE);
+	//uFMOD_PlaySong((char *)random_song, 0, XM_RESOURCE);
 }
 
 void Game::loop(Curses::Key /*= Crs::Key::ESC*/)
@@ -107,9 +108,8 @@ void Game::loop(Curses::Key /*= Crs::Key::ESC*/)
 			// Update here monsters behavior
 		}
 
-		// Limit Field of View of the player
-		dungeon_.draw(windows_[0]);
-		player_->draw(windows_[0]);
+		updateMapWindow();
+		updateStatusWindow();
 		
 		refreshWindows(windows_);
 	}
@@ -120,7 +120,7 @@ void Game::refreshWindows(std::vector<WINDOW *> windows)
 	for(auto w : windows)
 	{
 		Curses::wbox(w, 0, 0);
-		Curses::refresh(w);
+		Curses::wrefresh(w);
 	}
 }
 
@@ -178,8 +178,132 @@ WINDOW* Game::statusWindow()
 	return windows_[2];
 }
 
+void Game::updateMapWindow()
+{
+	// Draw player and dungeon
+	dungeon_.draw(windows_[0]);
+	player_->draw(windows_[0]);
+
+	// Show score and map exploration
+	Curses::wattron(windows_[0], COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
+	Curses::mvwprintw(windows_[0], 1, 1, " %s %d | %s %d", 
+		ResourceManager::getInstance().getString("SCORE"), 
+		score_,
+		ResourceManager::getInstance().getString("HI_SCORE"),
+		hi_score_);
+ 	Curses::mvwprintw(windows_[0], 1, dungeon_.map().width()-24, "%s %0.0f%%",
+ 		ResourceManager::getInstance().getString("EXPLORED"),
+ 		(player_->explored()/(float)dungeon_.map().valid_objects())*100);
+	Curses::wattroff(windows_[0], COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
+}
+
+void Game::updateStatusWindow()
+{
+	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Red_Black)));
+	Curses::mvwprintw(windows_[2], 1, 0, " %s %d ", 
+		ResourceManager::getInstance().getString("ENEMIES_NUMBER"), 
+		dungeon_.num_enemies());
+	Curses::mvwprintw(windows_[2], 2, 0, " %s %d ", 
+		ResourceManager::getInstance().getString("CHESTS_NUMBER"), 
+		Chest::num_chests());
+	Curses::wattroff(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Red_Black)));
+
+	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
+	Curses::mvwprintw(windows_[2], 4, 0, " %s %d %s", 
+		ResourceManager::getInstance().getString("PLAYER_LEVEL"), 
+		player_->level(),
+		player_->str_race());
+	Curses::wattroff(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
+
+	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Green_Black)));
+	Curses::mvwprintw(windows_[2], 5, 0, " %s %d", 
+		ResourceManager::getInstance().getString("PLAYER_HEALTH"), 
+		player_->health_points());
+	Curses::mvwprintw(windows_[2], 6, 0, " %s %d | %s %d", 
+		ResourceManager::getInstance().getString("PLAYER_ATTACK"), 
+		player_->attack_points(),
+		ResourceManager::getInstance().getString("PLAYER_ARMOR"),
+		player_->armor_points());
+	Curses::wattroff(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Green_Black)));
+
+	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Cyan_Black)));
+	Curses::mvwprintw(windows_[2], 8, 0, " %s %d/%d", 
+		ResourceManager::getInstance().getString("PLAYER_EXPERIENCE"), 
+		player_->experience_points(),
+		player_->max_experience_points());
+	Curses::wattroff(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Cyan_Black)));
+}
+
 void Game::loadStrings()
 {
+	// Log window
 	ResourceManager::getInstance().addString("DOOR_OPENED",
-		" You opened the door.\n");
+		"You open the door.");
+	ResourceManager::getInstance().addString("CHEST_GATHERED1",
+		"You open the chest.");
+	ResourceManager::getInstance().addString("CHEST_GATHERED2",
+		" gold obtained!");
+
+	// Status window
+	ResourceManager::getInstance().addString("CHESTS_NUMBER",
+		"CHESTS:");
+	ResourceManager::getInstance().addString("ENEMIES_NUMBER",
+		"ENEMIES:");
+	ResourceManager::getInstance().addString("PLAYER_HEALTH",
+		"HEALTH:");
+	ResourceManager::getInstance().addString("PLAYER_ATTACK",
+		"ATTACK:");
+	ResourceManager::getInstance().addString("PLAYER_ARMOR",
+		"ARMOR:");
+	ResourceManager::getInstance().addString("PLAYER_EXPERIENCE",
+		"EXPERIENCE:");
+	ResourceManager::getInstance().addString("PLAYER_LEVEL",
+		"LEVEL:");
+
+	// Map window
+	ResourceManager::getInstance().addString("SCORE",
+		"SCORE:");
+	ResourceManager::getInstance().addString("HI_SCORE",
+		"HI-SCORE:");
+	ResourceManager::getInstance().addString("EXPLORED",
+		"DUNGEON EXPLORED:");
+}
+
+int Game::current_score_value() const
+{
+	return current_score_value_;
+}
+
+int Game::score() const
+{
+	return score_;
+}
+
+int Game::hi_score() const
+{
+	return hi_score_;
+}
+
+void Game::set_score(int score)
+{
+	score_ = score;
+}
+
+void Game::set_hi_score(int hi_score)
+{
+	hi_score_ = hi_score_;
+}
+
+void Game::add_score()
+{
+	score_ += current_score_value_;
+	if(score_ > hi_score_)
+	{
+		hi_score_ = score_;
+	}
+}
+
+void Game::set_current_score_value(int current_score_value)
+{
+	current_score_value_ = current_score_value;
 }

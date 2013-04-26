@@ -53,14 +53,11 @@ public:
 	// Output 'ch' at (x,y) in win
 	static int mvwaddch(WINDOW *win, int y, int x, const chtype ch);
 
-	// Output the string str in win (scrolling way)
-	static int mvwaddstr(WINDOW *win, int y, int x, const char *str);
-
-	// Output the string str in win (scrolling way)
-	static int waddstr(WINDOW *win, const char *str);
-
 	// Output a formatted str in win
 	static int wprintw(WINDOW *win, char *fmt, ...);
+
+	// Output a formatted str in win in (x, y)
+	static int mvwprintw(WINDOW *win, int y, int x, char *fmt, ...);
 
 	// Wait for key input
 	static int wgetch(WINDOW *win);
@@ -91,7 +88,7 @@ public:
 	static int wbox(WINDOW *win, chtype verch, chtype horch);
 
 	// Refresh the given window
-	static int refresh(WINDOW *win);
+	static int wrefresh(WINDOW *win);
 };
 
 #endif // RUOEG_CURSES_CURSES_H_

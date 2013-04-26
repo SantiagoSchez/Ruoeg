@@ -45,7 +45,6 @@ public:
 	int num_rooms() const;
 	int num_corridors() const;
 	int num_enemies() const;
-	int num_chests() const;
 
 	// Helper methods
 	Point getRandomWall();
@@ -79,7 +78,6 @@ private:
 	int num_rooms_;
 	int num_corridors_;
 	int num_enemies_;
-	int num_chests_;
 
 	// Some min values
 	const int min_room_height;
@@ -92,7 +90,8 @@ private:
 
 	// This is a variable used to save the number of dungeons 
 	// (or level of dungeon) we have generated. We'll use it to take 
-	// care the monsters are stronger at higher level.
+	// care the monsters are stronger at higher level and chests give the
+	// player better scores
 	static int dungeon_level;
 };
 
