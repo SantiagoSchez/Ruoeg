@@ -12,8 +12,11 @@
 #define RUOEG_MAP_TILE_H_
 
 #include <vector>
+#include <memory>
 
 #include "../GameObjects/GameObject.h"
+
+typedef std::shared_ptr<GameObject> GameObjectPtr;
 
 class Tile
 {
@@ -21,15 +24,15 @@ public:
 	Tile();
 	~Tile();
 
-	GameObject& top();
-	GameObject& element(int layer);
-	void add(GameObject &game_object);
+	GameObjectPtr& top();
+	GameObjectPtr& element(int layer);
+	void add(GameObjectPtr game_object);
 	int elements() const;
 	bool visited() const;
 	void set_visited(bool visited);
 
 private:
-	std::vector<GameObject> raw_;
+	std::vector<GameObjectPtr> raw_;
 	bool visited_;
 };
 

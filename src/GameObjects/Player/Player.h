@@ -5,8 +5,9 @@
 #ifndef RUOEG_GAMEOBJECTS_PLAYER_H_
 #define RUOEG_GAMEOBJECTS_PLAYER_H_
 
-#include "../GameObject.h"
 #include "../../Map/Dungeon.h"
+#include "../Enemies/Enemy.h"
+#include "../Enemies/SmallGoblin/SmallGoblin.h"
 
 class Player : public GameObject
 {
@@ -19,7 +20,7 @@ public:
 		Dwarf = 4	// -Health+Attack+Armor
 	};
 
-	explicit Player(Race race, Map2D &map);
+	Player(Race race, Map2D &map);
 	virtual ~Player();
 
 	virtual Race race() const;
@@ -43,11 +44,13 @@ public:
 	virtual bool moveSouth();
 	virtual bool moveWest();
 
+	virtual void attack(GameObjectPtr game_object);
+
 	virtual void levelUp() = 0;
 	virtual void draw(WINDOW *win) = 0;
 
 protected:
-	virtual void checkCollisions(GameObject &game_object);
+	virtual void checkCollisions(GameObjectPtr game_object);
 	virtual void doFOV();
 
 	Race race_;

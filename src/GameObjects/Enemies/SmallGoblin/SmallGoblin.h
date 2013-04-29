@@ -2,16 +2,18 @@
 // A class representing a small goblin in the map
 // 
 
-#ifndef RUOEG_GAMEOBJECTS_SMALLGOBLIN_H_
-#define RUOEG_GAMEOBJECTS_SMALLGOBLIN_H_
+#ifndef RUOEG_GAMEOBJECTS_ENEMIES_SMALLGOBLIN_H_
+#define RUOEG_GAMEOBJECTS_ENEMIES_SMALLGOBLIN_H_
 
-#include "../../GameObject.h"
+#include "../Enemy.h"
 
-class SmallGoblin : public GameObject
+class SmallGoblin : public Enemy
 {
 public:
 	SmallGoblin();
 	~SmallGoblin();
+
+	void levelUp();
 };
 
-#endif // RUOEG_GAMEOBJECTS_SMALLGOBLIN_H_
+#endif // RUOEG_GAMEOBJECTS_ENEMIES_SMALLGOBLIN_H_

@@ -19,6 +19,11 @@ Tile& Map2D::at(int index)
 	return vec_[index];
 }
 
+int Map2D::size() const
+{
+	return vec_.size();
+}
+
 int Map2D::height() const
 {
 	return height_;

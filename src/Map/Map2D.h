@@ -17,6 +17,7 @@ public:
 
 	Tile& at(int row, int column);
 	Tile& at(int index);
+	int size() const;
 	int height() const;
 	int width() const;
 	void clear();

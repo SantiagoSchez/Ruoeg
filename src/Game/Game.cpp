@@ -242,6 +242,12 @@ void Game::loadStrings()
 		"You open the chest.");
 	ResourceManager::getInstance().addString("CHEST_GATHERED2",
 		" gold obtained!");
+	ResourceManager::getInstance().addString("ATTACK_ENEMY1",
+		" You attack enemy");
+	ResourceManager::getInstance().addString("ATTACK_ENEMY2",
+		"Damage:");
+	ResourceManager::getInstance().addString("ENEMY_LEVEL",
+		"Lvl.");
 
 	// Status window
 	ResourceManager::getInstance().addString("CHESTS_NUMBER",

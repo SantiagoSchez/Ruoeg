@@ -48,14 +48,14 @@ void Dungeon::generate()
 	int size = map_.width() * map_.height();
 	for(int i = 0; i < size; ++i)
 	{
-		map_.at(i).add(None());
+		map_.at(i).add(GameObjectPtr(new None));
 	}
 	
 	// Dig out a single room in the center of the map
 	Point location = {
 		map_.width()/2, 
 		map_.height()/2, 
-		static_cast<Direction>(rng_.nextInt(1, 4))
+		static_cast<Direction>(Direction::North)//static_cast<Direction>(rng_.nextInt(1, 4))
 	};
 	makeSquaredRoom(location, 6, 8);
 
@@ -77,15 +77,15 @@ void Dungeon::generate()
 		{
 			if(makeSquaredRoom(p, 6, 8)) // 75% for a room
 			{
-				map_.at(p.y-p.y_mod, p.x-p.x_mod).top() = Door();
-				map_.at(p.y, p.x).top() = Lit();
+				map_.at(p.y-p.y_mod, p.x-p.x_mod).top() = GameObjectPtr(new Door);
+				map_.at(p.y, p.x).top() = GameObjectPtr(new Lit);
 			}
 		}
 		else
 		{
 			if(makeCorridor(p, 6)) // 25% for a corridor
 			{
-				map_.at(p.y-p.y_mod, p.x-p.x_mod).top() = Door();
+				map_.at(p.y-p.y_mod, p.x-p.x_mod).top() = GameObjectPtr(new Door);
 			}
 		}
 	}
@@ -96,29 +96,29 @@ void Dungeon::generate()
  	switch(chance)
 	{
 	case 0:
-		spawn(location.y, location.x, Dragon());
+		spawn(location.y, location.x, GameObjectPtr(new Dragon));
 		break;
 	case 1:
-		spawn(location.y, location.x, Goblin());
+		spawn(location.y, location.x, GameObjectPtr(new Goblin));
 		break;
 	case 2:
-  		spawn(location.y, location.x, Skeleton());
+  		spawn(location.y, location.x, GameObjectPtr(new Skeleton));
 		break;
 	case 3:
-		spawn(location.y, location.x, Troll());
+		spawn(location.y, location.x, GameObjectPtr(new Troll));
 		break;
 	}
 
 	// Generate the downstairs
 	location = getRandomLit();
-	map_.at(location.y, location.x).top() = Stairs();
+	map_.at(location.y, location.x).top() = GameObjectPtr(new Stairs);
 
 	// Count the number of not explored tiles
 	for(int i = map_error; i <= map_.height()-map_error; ++i)
 	{
 		for(int j = map_error; j <= map_.width()-map_error; ++j)
 		{
-			if(map_.at(i, j).top().type() != GameObject::Type::None)
+			if(map_.at(i, j).top()->type() != GameObject::Type::None)
 			{
 				map_.increase_valid_objects();
 			}
@@ -150,7 +150,7 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 			{
 				if((j < map_error) || 
 				   (j > map_.width()-map_error) ||
-				   (map_.at(i, j).top().type() != GameObject::Type::None))
+				   (map_.at(i, j).top()->type() != GameObject::Type::None))
 				{
 					return false;
 				}
@@ -164,23 +164,23 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 			{
 				if (j == (loc.x-real_width/2))
 				{
-					map_.at(i, j).top() = VerticalWall();
+					map_.at(i, j).top() = GameObjectPtr(new VerticalWall);
 				}
 				else if(j == (loc.x+(real_width-1)/2))
 				{
-					map_.at(i, j).top() = VerticalWall();
+					map_.at(i, j).top() = GameObjectPtr(new VerticalWall);
 				}
 				else if(i == loc.y)
 				{
-					map_.at(i, j).top() = HorizontalWall();
+					map_.at(i, j).top() = GameObjectPtr(new HorizontalWall);
 				}
 				else if(i == (loc.y-real_height+1))
 				{
-					map_.at(i, j).top() = HorizontalWall();
+					map_.at(i, j).top() = GameObjectPtr(new HorizontalWall);
 				}
 				else 
 				{
-					map_.at(i, j).top() = Lit();
+					map_.at(i, j).top() = GameObjectPtr(new Lit);
 				}
 			}
 		}
@@ -196,7 +196,7 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 			{
 				if((j < map_error) || 
 				   (j > map_.width()-map_error) ||
-				   (map_.at(i, j).top().type() != GameObject::Type::None))
+				   (map_.at(i, j).top()->type() != GameObject::Type::None))
 				{
 					return false;
 				}
@@ -209,23 +209,23 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 			{
 				if(j == loc.x)
 				{
-					map_.at(i, j).top() = VerticalWall();
+					map_.at(i, j).top() = GameObjectPtr(new VerticalWall);
 				}
 				else if(j == (loc.x+real_width-1))
 				{
-					map_.at(i, j).top() = VerticalWall();;
+					map_.at(i, j).top() = GameObjectPtr(new VerticalWall);
 				}
 				else if(i == (loc.y-real_height/2))
 				{
-					map_.at(i, j).top() = HorizontalWall();
+					map_.at(i, j).top() = GameObjectPtr(new HorizontalWall);
 				}
 				else if(i == (loc.y+(real_height-1)/2))
 				{
-					map_.at(i, j).top() = HorizontalWall();
+					map_.at(i, j).top() = GameObjectPtr(new HorizontalWall);
 				}
 				else 
 				{
-					map_.at(i, j).top() = Lit();
+					map_.at(i, j).top() = GameObjectPtr(new Lit);
 				}
 			}
 		}
@@ -241,7 +241,7 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 			{
 				if((j < map_error) ||
 				   (j > map_.width()-map_error) ||
-				   (map_.at(i, j).top().type() != GameObject::Type::None)) 
+				   (map_.at(i, j).top()->type() != GameObject::Type::None)) 
 				{
 					return false;
 				}
@@ -254,23 +254,23 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 			{
 				if (j == (loc.x-real_width/2))
 				{
-					map_.at(i, j).top() = VerticalWall();
+					map_.at(i, j).top() = GameObjectPtr(new VerticalWall);
 				}
 				else if(j == (loc.x+(real_width-1)/2))
 				{
-					map_.at(i, j).top() = VerticalWall();
+					map_.at(i, j).top() = GameObjectPtr(new VerticalWall);
 				}
 				else if(i == loc.y)
 				{
-					map_.at(i, j).top() = HorizontalWall();
+					map_.at(i, j).top() = GameObjectPtr(new HorizontalWall);
 				}
 				else if(i == (loc.y+real_height-1))
 				{
-					map_.at(i, j).top() = HorizontalWall();
+					map_.at(i, j).top() = GameObjectPtr(new HorizontalWall);
 				}
 				else 
 				{
-					map_.at(i, j).top() = Lit();
+					map_.at(i, j).top() = GameObjectPtr(new Lit);
 				}
 			}
 		}
@@ -286,7 +286,7 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 			{
 				if((j < map_error) || 
 				   (j > map_.width()-map_error) ||
-				   (map_.at(i, j).top().type() != GameObject::Type::None))
+				   (map_.at(i, j).top()->type() != GameObject::Type::None))
 				{
 					return false;
 				}
@@ -299,23 +299,23 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 			{
 				if(j == loc.x)
 				{
-					map_.at(i, j).top() = VerticalWall();
+					map_.at(i, j).top() = GameObjectPtr(new VerticalWall);
 				}
 				else if(j == (loc.x-real_width+1))
 				{
-					map_.at(i, j).top() = VerticalWall();;
+					map_.at(i, j).top() = GameObjectPtr(new VerticalWall);
 				}
 				else if(i == (loc.y-real_height/2))
 				{
-					map_.at(i, j).top() = HorizontalWall();
+					map_.at(i, j).top() = GameObjectPtr(new HorizontalWall);
 				}
 				else if(i == (loc.y+(real_height-1)/2))
 				{
-					map_.at(i, j).top() = HorizontalWall();
+					map_.at(i, j).top() = GameObjectPtr(new HorizontalWall);
 				}
 				else 
 				{
-					map_.at(i, j).top() = Lit();
+					map_.at(i, j).top() = GameObjectPtr(new Lit);
 				}
 			}
 		}
@@ -328,7 +328,7 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 	{
 		// Spawn a chest
 		// The 2 means two tiles away walls
-		spawn(loc, Chest(), 2);
+		spawn(loc, GameObjectPtr(new Chest), 2);
 	}
 	else if(chance < 100) // 80% <- (100-20)
 	{
@@ -337,16 +337,16 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 		switch(monster_chance)
 		{
 		case 0:
-			spawn(loc, SmallTroll(), 1);
+			spawn(loc, GameObjectPtr(new SmallGoblin), 1);
 			break;
 		case 1:
-			spawn(loc, SmallGoblin(), 1);
+			spawn(loc, GameObjectPtr(new SmallDragon), 1);
 			break;
 		case 2:
-			spawn(loc, SmallSkeleton(), 1);
+			spawn(loc, GameObjectPtr(new SmallSkeleton), 1);
 			break;
 		case 3:
-			spawn(loc, SmallDragon(), 1);
+			spawn(loc, GameObjectPtr(new SmallTroll), 1);
 			break;
 		}
 
@@ -371,7 +371,7 @@ bool Dungeon::makeCorridor(Point &loc, int len)
 		{
 			if((i < map_error) || 
 			   (i > map_.height()-map_error) ||
-			   (map_.at(i, loc.x).top().type() != GameObject::Type::None)) 
+			   (map_.at(i, loc.x).top()->type() != GameObject::Type::None)) 
 			{
 				return false;
 			}
@@ -380,7 +380,7 @@ bool Dungeon::makeCorridor(Point &loc, int len)
 		// All went ok? Then build the corridor
 		for(int i = loc.y; i > (loc.y-length); --i)
 		{
-			map_.at(i, loc.x).top() = Corridor();
+			map_.at(i, loc.x).top() = GameObjectPtr(new Corridor);
 		}
 		break;
 	case Direction::East:
@@ -388,7 +388,7 @@ bool Dungeon::makeCorridor(Point &loc, int len)
 		{
 			if((i < map_error) || 
 			   (i > map_.width()-map_error) ||
-			   (map_.at(loc.y, i).top().type() != GameObject::Type::None)) 
+			   (map_.at(loc.y, i).top()->type() != GameObject::Type::None)) 
 			{
 				return false;
 			}
@@ -396,7 +396,7 @@ bool Dungeon::makeCorridor(Point &loc, int len)
 
 		for(int i = loc.x; i < (loc.x+length); ++i)
 		{
-			map_.at(loc.y, i).top() = Corridor();
+			map_.at(loc.y, i).top() = GameObjectPtr(new Corridor);
 		}
 		break;
 	case Direction::South:
@@ -404,7 +404,7 @@ bool Dungeon::makeCorridor(Point &loc, int len)
 		{
 			if((i < map_error) || 
 			   (i > map_.height()-map_error) ||
-			   (map_.at(i, loc.x).top().type() != GameObject::Type::None)) 
+			   (map_.at(i, loc.x).top()->type() != GameObject::Type::None)) 
 			{
 				return false;
 			}
@@ -412,7 +412,7 @@ bool Dungeon::makeCorridor(Point &loc, int len)
 
 		for(int i = loc.y; i < (loc.y+length); ++i)
 		{
-			map_.at(i, loc.x).top() = Corridor();
+			map_.at(i, loc.x).top() = GameObjectPtr(new Corridor);
 		}
 		break;
 	case Direction::West:
@@ -420,7 +420,7 @@ bool Dungeon::makeCorridor(Point &loc, int len)
 		{
 			if((i < map_error) || 
 			   (i > map_.width()-map_error) ||
-			   (map_.at(loc.y, i).top().type() != GameObject::Type::None)) 
+			   (map_.at(loc.y, i).top()->type() != GameObject::Type::None)) 
 			{
 				return false;
 			}
@@ -428,7 +428,7 @@ bool Dungeon::makeCorridor(Point &loc, int len)
 
 		for(int i = loc.x; i > (loc.x-length); --i)
 		{
-			map_.at(loc.y, i).top() = Corridor();
+			map_.at(loc.y, i).top() = GameObjectPtr(new Corridor);
 		}
 		break;
 	}
@@ -451,32 +451,32 @@ Dungeon::Point Dungeon::getRandomWall()
 		p.y = rng_.nextInt(2, map_.height()-2);
 		p.x = rng_.nextInt(2, map_.width()-2);
 
-		GameObject::Type game_object_type = map_.at(p.y, p.x).top().type();
+		GameObject::Type game_object_type = map_.at(p.y, p.x).top()->type();
 
 		if((game_object_type == GameObject::Type::HorizontalWall) ||
 		   (game_object_type == GameObject::Type::VerticalWall) ||
 		   (game_object_type == GameObject::Type::Corridor))
 		{
 			// Check if we can reach the place
-			if(map_.at(p.y+1, p.x).top().walkable())
+			if(map_.at(p.y+1, p.x).top()->walkable())
 			{
 				p.dir = Direction::North;
 				p.x_mod = 0;
 				p.y_mod = -1;
 			}
-			else if(map_.at(p.y, p.x-1).top().walkable())
+			else if(map_.at(p.y, p.x-1).top()->walkable())
 			{
 				p.dir = Direction::East;
 				p.x_mod = +1;
 				p.y_mod = 0;
 			}
-			else if(map_.at(p.y-1, p.x).top().walkable())
+			else if(map_.at(p.y-1, p.x).top()->walkable())
 			{
 				p.dir = Direction::South;
 				p.x_mod = 0;
 				p.y_mod = +1;
 			}
-			else if(map_.at(p.y, p.x+1).top().walkable())
+			else if(map_.at(p.y, p.x+1).top()->walkable())
 			{
 				p.dir = Direction::West;
 				p.x_mod = -1;
@@ -513,7 +513,7 @@ Dungeon::Point Dungeon::getRandomLit()
 		p.y = rng_.nextInt(2, map_.height()-2);
 		p.x = rng_.nextInt(2, map_.width()-2);
 
-		if(map_.at(p.y, p.x).top().type() == GameObject::Type::Lit)
+		if(map_.at(p.y, p.x).top()->type() == GameObject::Type::Lit)
 		{
 			ok = true;
 		}
@@ -532,7 +532,7 @@ Dungeon::Point Dungeon::getRandomCorridor()
 		p.y = rng_.nextInt(2, map_.height()-2);
 		p.x = rng_.nextInt(2, map_.width()-2);
 
-		if(map_.at(p.y, p.x).top().type() == GameObject::Type::Corridor)
+		if(map_.at(p.y, p.x).top()->type() == GameObject::Type::Corridor)
 		{
 			ok = true;
 		}
@@ -541,10 +541,10 @@ Dungeon::Point Dungeon::getRandomCorridor()
 	return p;
 }
 
-bool Dungeon::spawn(int row, int column, GameObject &game_object)
+bool Dungeon::spawn(int row, int column, GameObjectPtr game_object)
 {
 	Tile &t = map_.at(row, column);
-	if(t.top().walkable())
+	if(t.top()->walkable())
 	{
 		t.add(game_object);
 		
@@ -554,7 +554,7 @@ bool Dungeon::spawn(int row, int column, GameObject &game_object)
 	return false;
 }
 
-bool Dungeon::spawn(Point &p, GameObject &game_object, int offset)
+bool Dungeon::spawn(Point &p, GameObjectPtr game_object, int offset)
 {
 	Tile *t = nullptr;
 
@@ -574,7 +574,7 @@ bool Dungeon::spawn(Point &p, GameObject &game_object, int offset)
 			break;
 	}
 
-	if(t->top().walkable())
+	if(t->top()->walkable())
 	{
 		t->add(game_object);
 		
@@ -588,14 +588,14 @@ bool Dungeon::checkObjectsSurrounding(Point &loc, GameObject::Type type, int rad
 {
 	for(int i = 0; i <= radius; ++i)
 	{
-		if((map_.at(loc.y-i, loc.x).top().type() == type) || // North
-			(map_.at(loc.y, loc.x+i).top().type() == type) || // East
-			(map_.at(loc.y+i, loc.x).top().type() == type) || // South
-			(map_.at(loc.y, loc.x-i).top().type() == type) || // West
-			(map_.at(loc.y-i, loc.x+i).top().type() == type) || // North-East
-			(map_.at(loc.y+i, loc.x+i).top().type() == type) || // South-East
-			(map_.at(loc.y+i, loc.x-i).top().type() == type) || // South-West
-			(map_.at(loc.y-i, loc.x-i).top().type() == type))   // North-West
+		if((map_.at(loc.y-i, loc.x).top()->type() == type) || // North
+			(map_.at(loc.y, loc.x+i).top()->type() == type) || // East
+			(map_.at(loc.y+i, loc.x).top()->type() == type) || // South
+			(map_.at(loc.y, loc.x-i).top()->type() == type) || // West
+			(map_.at(loc.y-i, loc.x+i).top()->type() == type) || // North-East
+			(map_.at(loc.y+i, loc.x+i).top()->type() == type) || // South-East
+			(map_.at(loc.y+i, loc.x-i).top()->type() == type) || // South-West
+			(map_.at(loc.y-i, loc.x-i).top()->type() == type))   // North-West
 		{
 			return true;
 		}
@@ -606,32 +606,32 @@ bool Dungeon::checkObjectsSurrounding(Point &loc, GameObject::Type type, int rad
 
 bool Dungeon::checkCorners(Point &loc)
 {
-	if(map_.at(loc.y, loc.x).top().type() == GameObject::Type::VerticalWall)
+	if(map_.at(loc.y, loc.x).top()->type() == GameObject::Type::VerticalWall)
 	{
 		// Upper-left corner
-		if((map_.at(loc.y+1, loc.x).top().type() == GameObject::Type::VerticalWall) &&
-		   (map_.at(loc.y, loc.x+1).top().type() == GameObject::Type::HorizontalWall))
+		if((map_.at(loc.y+1, loc.x).top()->type() == GameObject::Type::VerticalWall) &&
+		   (map_.at(loc.y, loc.x+1).top()->type() == GameObject::Type::HorizontalWall))
 		{
 			return false;
 		}
 
 		// Upper-right corner
-		if((map_.at(loc.y+1, loc.x).top().type() == GameObject::Type::VerticalWall) &&
-			(map_.at(loc.y, loc.x-1).top().type() == GameObject::Type::HorizontalWall))
+		if((map_.at(loc.y+1, loc.x).top()->type() == GameObject::Type::VerticalWall) &&
+			(map_.at(loc.y, loc.x-1).top()->type() == GameObject::Type::HorizontalWall))
 		{
 			return false;
 		}
 
 		// Bottom-right corner
-		if((map_.at(loc.y-1, loc.x).top().type() == GameObject::Type::VerticalWall) &&
-			(map_.at(loc.y, loc.x-1).top().type() == GameObject::Type::HorizontalWall))
+		if((map_.at(loc.y-1, loc.x).top()->type() == GameObject::Type::VerticalWall) &&
+			(map_.at(loc.y, loc.x-1).top()->type() == GameObject::Type::HorizontalWall))
 		{
 			return false;
 		}
 
 		// Bottom-left corner
-		if((map_.at(loc.y-1, loc.x).top().type() == GameObject::Type::VerticalWall) &&
-			(map_.at(loc.y, loc.x+1).top().type() == GameObject::Type::HorizontalWall))
+		if((map_.at(loc.y-1, loc.x).top()->type() == GameObject::Type::VerticalWall) &&
+			(map_.at(loc.y, loc.x+1).top()->type() == GameObject::Type::HorizontalWall))
 		{
 			return false;
 		}
@@ -649,10 +649,10 @@ void Dungeon::draw(WINDOW *win)
 	{
 		for(int j = 0; j < width; ++j)
 		{
-			GameObject g = map_.at(i, j).top();
-			GameObject::Type g_t = g.type();
+			GameObjectPtr g = map_.at(i, j).top();
+			GameObject::Type g_t = g->type();
 
-			if(!g.in_fov())
+			if(!g->in_fov())
 			{
 				switch(g_t)
 				{

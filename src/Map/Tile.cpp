@@ -8,17 +8,17 @@ Tile::~Tile()
 {
 }
 
-GameObject& Tile::top()
+GameObjectPtr& Tile::top()
 {
 	return raw_.back();
 }
 
-GameObject& Tile::element(int layer)
+GameObjectPtr& Tile::element(int layer)
 {
 	return raw_.at(layer);
 }
 
-void Tile::add(GameObject &game_object)
+void Tile::add(GameObjectPtr game_object)
 {
 	raw_.push_back(game_object);
 }

@@ -2,16 +2,18 @@
 // A class representing a goblin in the map
 // 
 
-#ifndef RUOEG_GAMEOBJECTS_GOBLIN_H_
-#define RUOEG_GAMEOBJECTS_GOBLIN_H_
+#ifndef RUOEG_GAMEOBJECTS_ENEMIES_GOBLIN_H_
+#define RUOEG_GAMEOBJECTS_ENEMIES_GOBLIN_H_
 
-#include "../../GameObject.h"
+#include "../Enemy.h"
 
-class Goblin : public GameObject
+class Goblin : public Enemy
 {
 public:
 	Goblin();
 	~Goblin();
+
+	void levelUp();
 };
 
-#endif // RUOEG_GAMEOBJECTS_GOBLIN_H_
+#endif // RUOEG_GAMEOBJECTS_ENEMIES_GOBLIN_H_

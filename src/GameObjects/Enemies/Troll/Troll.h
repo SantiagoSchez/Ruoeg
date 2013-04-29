@@ -2,16 +2,18 @@
 // A class representing a troll in the map
 // 
 
-#ifndef RUOEG_GAMEOBJECTS_TROLL_H_
-#define RUOEG_GAMEOBJECTS_TROLL_H_
+#ifndef RUOEG_GAMEOBJECTS_ENEMIES_TROLL_H_
+#define RUOEG_GAMEOBJECTS_ENEMIES_TROLL_H_
 
-#include "../../GameObject.h"
+#include "../Enemy.h"
 
-class Troll : public GameObject
+class Troll : public Enemy
 {
 public:
 	Troll();
 	~Troll();
+
+	void levelUp();
 };
 
-#endif // RUOEG_GAMEOBJECTS_TROLL_H_
+#endif // RUOEG_GAMEOBJECTS_ENEMIES_TROLL_H_

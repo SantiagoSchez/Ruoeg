@@ -58,8 +58,8 @@ private:
 
 	// Spawns a GameObject in the given location and pushes back
 	// in the top of the tile
-	bool spawn(int row, int column, GameObject &game_object);
-	bool spawn(Point &p, GameObject &game_object, int offset);
+	bool spawn(int row, int column, GameObjectPtr game_object);
+	bool spawn(Point &p, GameObjectPtr game_object, int offset);
 
 	// Check whether there are objects of the given type around the
 	// given location within the given radius.

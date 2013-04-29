@@ -1,6 +1,10 @@
+#include <iostream>
+#include <typeinfo>
+
 #include "Player.h"
 #include "../Chests/Chest.h"
 #include "../Terrains/Door/Door.h"
+#include "../Enemies/SmallGoblin/SmallGoblin.h"
 #include "../Terrains/Lit/Lit.h"
 #include "../../Game/Game.h"
 #include "../../Game/ResourceManager.h"
@@ -12,16 +16,16 @@ Player::Player(Race race, Map2D &map) : race_(race),
 	switch(race)
 	{
 	case Race::Human:
-		str_race_ = "Human\0";
+		str_race_ = "Human";
 		break;
 	case Race::Orc:
-		str_race_ = "Orc\0";
+		str_race_ = "Orc";
 		break;
 	case Race::Elf:
-		str_race_ = "Elf\0";
+		str_race_ = "Elf";
 		break;
 	case Race::Dwarf:
-		str_race_ = "Dwarf\0";
+		str_race_ = "Dwarf";
 		break;
 	}
 
@@ -92,70 +96,70 @@ void Player::placeIt(int x, int y)
 
 bool Player::moveNorth()
 {
-	GameObject &game_object = map_.at(location_.y-1, location_.x).top();
-	if(game_object.walkable())
+	GameObjectPtr game_object = map_.at(location_.y-1, location_.x).top();
+	if(game_object->walkable())
 	{
 		location_.y -= 1;
 
 		return true;
 	}
 
-	checkCollisions(game_object);
+	checkCollisions(std::move(game_object));
 
 	return false;
 }
 
 bool Player::moveEast()
 {
-	GameObject &game_object = map_.at(location_.y, location_.x+1).top();
-	if(game_object.walkable())
+	GameObjectPtr game_object = map_.at(location_.y, location_.x+1).top();
+	if(game_object->walkable())
 	{
 		location_.x += 1;
 
 		return true;
 	}
 	
-	checkCollisions(game_object);
+	checkCollisions(std::move(game_object));
 
 	return false;
 }
 
 bool Player::moveSouth()
 {
-	GameObject &game_object = map_.at(location_.y+1, location_.x).top();
-	if(game_object.walkable())
+	GameObjectPtr game_object = map_.at(location_.y+1, location_.x).top();
+	if(game_object->walkable())
 	{
 		location_.y += 1;
 
 		return true;
 	}
 
-	checkCollisions(game_object);
+	checkCollisions(std::move(game_object));
 
 	return false;
 }
 
 bool Player::moveWest()
 {
-	GameObject &game_object = map_.at(location_.y, location_.x-1).top();
-	if(game_object.walkable())
+	GameObjectPtr game_object = map_.at(location_.y, location_.x-1).top();
+	if(game_object->walkable())
 	{
 		location_.x -= 1;
 
 		return true;
 	}
 
-	checkCollisions(game_object);
+	checkCollisions(std::move(game_object));
 
 	return false;
 }
 
-void Player::checkCollisions(GameObject &game_object)
+void Player::checkCollisions(GameObjectPtr game_object)
 {
-	switch(game_object.type())
+	switch(game_object->type())
 	{
 	case GameObject::Type::Door:
-		reinterpret_cast<Door&>(game_object).open();
+		dynamic_cast<Door&>(*game_object).open();
 		Curses::wprintw(Game::getInstance().consoleWindow(), " %s\n", 
 			ResourceManager::getInstance().getString("DOOR_OPENED"));
 		break;
@@ -165,11 +169,55 @@ void Player::checkCollisions(GameObject &game_object)
 			Game::getInstance().current_score_value(),
 			ResourceManager::getInstance().getString("CHEST_GATHERED2"));
 		Game::getInstance().add_score(1);
-		game_object = Lit();
-		game_object.set_in_fov(true);
+		// Remove chest
+		game_object->set_in_fov(true);
 		Chest::decrease_num_chests();
 		break;
+	case GameObject::Type::Dragon:
+	case GameObject::Type::Goblin:
+	case GameObject::Type::Skeleton:
+	case GameObject::Type::Troll:
+	case GameObject::Type::SmallDragon:
+	case GameObject::Type::SmallGoblin:
+	case GameObject::Type::SmallSkeleton:
+	case GameObject::Type::SmallTroll:
+		attack(game_object);
+		break;
 	}
+}
+
+void Player::attack(GameObjectPtr game_object)
+{
+	Enemy &enemy = dynamic_cast<Enemy&>(*game_object);
+	int damage = enemy.receiveDamage(attack_points_);
+
+	// Show enemy level and life
+	Curses::wattron(Game::getInstance().consoleWindow(), 
+		COLOR_PAIR(GameObject::Color::Yellow_Black));
+	Curses::wprintw(Game::getInstance().consoleWindow(), " %s %d | [%d/%d]",
+		ResourceManager::getInstance().getString("ENEMY_LEVEL"),
+		enemy.level(),
+		enemy.health(),
+		enemy.max_health());
+	Curses::wattroff(Game::getInstance().consoleWindow(), 
+		COLOR_PAIR(GameObject::Color::Yellow_Black));
+
+	// Show enemy attack sentence
+	Curses::wprintw(Game::getInstance().consoleWindow(), " %s ", 
+		ResourceManager::getInstance().getString("ATTACK_ENEMY1"));
+	Curses::wattron(Game::getInstance().consoleWindow(), 
+		COLOR_PAIR(GameObject::Color::Yellow_Black));
+	Curses::wprintw(Game::getInstance().consoleWindow(), "%s ",
+		enemy.name());
+	Curses::wattroff(Game::getInstance().consoleWindow(), 
+		COLOR_PAIR(GameObject::Color::Yellow_Black));
+	Curses::wattron(Game::getInstance().consoleWindow(), 
+		COLOR_PAIR(GameObject::Color::Red_Black));
+	Curses::wprintw(Game::getInstance().consoleWindow(), "(%s %d)\n",
+		ResourceManager::getInstance().getString("ATTACK_ENEMY2"),
+		damage);
+	Curses::wattroff(Game::getInstance().consoleWindow(), 
+		COLOR_PAIR(GameObject::Color::Red_Black));
 }
 
 void Player::doFOV()
@@ -183,25 +231,25 @@ void Player::doFOV()
 
 		ox = static_cast<float>(location_.x + 0.5f);
 		oy = static_cast<float>(location_.y + 0.5f);
-		
+
 		for(int j = 0; j < 4; ++j)
 		{
-			GameObject &g = map_.at(static_cast<int>(oy), 
+			GameObjectPtr g = map_.at(static_cast<int>(oy), 
 				static_cast<int>(ox)).top();
-			if(!g.in_fov())
+			if(!g->in_fov())
 			{
-				g.set_in_fov(true);
-				if(g.type() != GameObject::Type::None)
+				g->set_in_fov(true);
+				if(g->type() != GameObject::Type::None)
 				{
 					++explored_;
 					Game::getInstance().add_score(0.01);
 				}
 			}
 
-			if((g.type() == GameObject::Type::HorizontalWall) ||
-			   (g.type() == GameObject::Type::VerticalWall) ||
-			   (g.type() == GameObject::Type::None) ||
-			   (g.type() == GameObject::Type::Door))
+			if((g->type() == GameObject::Type::HorizontalWall) ||
+				(g->type() == GameObject::Type::VerticalWall) ||
+				(g->type() == GameObject::Type::None) ||
+				(g->type() == GameObject::Type::Door))
 			{
 				break;
 			}

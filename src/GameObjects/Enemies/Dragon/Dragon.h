@@ -2,16 +2,18 @@
 // A class representing a dragon in the map
 // 
 
-#ifndef RUOEG_GAMEOBJECTS_DRAGON_H_
-#define RUOEG_GAMEOBJECTS_DRAGON_H_
+#ifndef RUOEG_GAMEOBJECTS_ENEMIES_DRAGON_H_
+#define RUOEG_GAMEOBJECTS_ENEMIES_DRAGON_H_
 
-#include "../../GameObject.h"
+#include "../Enemy.h"
 
-class Dragon : public GameObject
+class Dragon : public Enemy
 {
 public:
 	Dragon();
 	~Dragon();
+
+	void levelUp();
 };
 
-#endif // RUOEG_GAMEOBJECTS_DRAGON_H_
+#endif // RUOEG_GAMEOBJECTS_ENEMIES_DRAGON_H_
