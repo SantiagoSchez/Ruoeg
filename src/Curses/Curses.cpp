@@ -129,3 +129,28 @@ int Curses::wrefresh(WINDOW *win)
 {
 	return ::wrefresh(win);
 }
+
+int Curses::wnoutrefresh(WINDOW *win)
+{
+	return ::wnoutrefresh(win);
+}
+
+int Curses::doupdate()
+{
+	return ::doupdate();
+}
+
+int Curses::beep()
+{
+	return ::beep();
+}
+
+int Curses::flash()
+{
+	return ::flash();
+}
+
+int Curses::napms(int ms)
+{
+	return ::napms(ms);
+}

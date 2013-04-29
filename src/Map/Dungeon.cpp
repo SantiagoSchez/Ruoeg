@@ -39,7 +39,6 @@ void Dungeon::generate()
 
 	// Restart map stuff
 	map_.clear();
-	Chest::reset_num_chests();
 	num_corridors_ = 0;
 	num_enemies_ = 0;
 	num_rooms_ = 0;
@@ -48,7 +47,7 @@ void Dungeon::generate()
 	int size = map_.width() * map_.height();
 	for(int i = 0; i < size; ++i)
 	{
-		map_.at(i).add(GameObjectPtr(new None));
+		map_.at(i).add(std::make_shared<None>());
 	}
 	
 	// Dig out a single room in the center of the map
@@ -77,15 +76,15 @@ void Dungeon::generate()
 		{
 			if(makeSquaredRoom(p, 6, 8)) // 75% for a room
 			{
-				map_.at(p.y-p.y_mod, p.x-p.x_mod).top() = GameObjectPtr(new Door);
-				map_.at(p.y, p.x).top() = GameObjectPtr(new Lit);
+				map_.at(p.y-p.y_mod, p.x-p.x_mod).add(std::make_shared<Door>());
+				map_.at(p.y, p.x).add(std::make_shared<Lit>());
 			}
 		}
 		else
 		{
 			if(makeCorridor(p, 6)) // 25% for a corridor
 			{
-				map_.at(p.y-p.y_mod, p.x-p.x_mod).top() = GameObjectPtr(new Door);
+				map_.at(p.y-p.y_mod, p.x-p.x_mod).add(std::make_shared<Door>());
 			}
 		}
 	}
@@ -96,22 +95,22 @@ void Dungeon::generate()
  	switch(chance)
 	{
 	case 0:
-		spawn(location.y, location.x, GameObjectPtr(new Dragon));
+		spawn(location.y, location.x, std::make_shared<Dragon>());
 		break;
 	case 1:
-		spawn(location.y, location.x, GameObjectPtr(new Goblin));
+		spawn(location.y, location.x, std::make_shared<Goblin>());
 		break;
 	case 2:
-  		spawn(location.y, location.x, GameObjectPtr(new Skeleton));
+  		spawn(location.y, location.x, std::make_shared<Skeleton>());
 		break;
 	case 3:
-		spawn(location.y, location.x, GameObjectPtr(new Troll));
+		spawn(location.y, location.x, std::make_shared<Troll>());
 		break;
 	}
 
 	// Generate the downstairs
 	location = getRandomLit();
-	map_.at(location.y, location.x).top() = GameObjectPtr(new Stairs);
+	map_.at(location.y, location.x).add(std::make_shared<Stairs>());
 
 	// Count the number of not explored tiles
 	for(int i = map_error; i <= map_.height()-map_error; ++i)
@@ -164,23 +163,23 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 			{
 				if (j == (loc.x-real_width/2))
 				{
-					map_.at(i, j).top() = GameObjectPtr(new VerticalWall);
+					map_.at(i, j).add(std::make_shared<VerticalWall>());
 				}
 				else if(j == (loc.x+(real_width-1)/2))
 				{
-					map_.at(i, j).top() = GameObjectPtr(new VerticalWall);
+					map_.at(i, j).add(std::make_shared<VerticalWall>());
 				}
 				else if(i == loc.y)
 				{
-					map_.at(i, j).top() = GameObjectPtr(new HorizontalWall);
+					map_.at(i, j).add(std::make_shared<HorizontalWall>());
 				}
 				else if(i == (loc.y-real_height+1))
 				{
-					map_.at(i, j).top() = GameObjectPtr(new HorizontalWall);
+					map_.at(i, j).add(std::make_shared<HorizontalWall>());
 				}
 				else 
 				{
-					map_.at(i, j).top() = GameObjectPtr(new Lit);
+					map_.at(i, j).add(std::make_shared<Lit>());
 				}
 			}
 		}
@@ -209,23 +208,23 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 			{
 				if(j == loc.x)
 				{
-					map_.at(i, j).top() = GameObjectPtr(new VerticalWall);
+					map_.at(i, j).add(std::make_shared<VerticalWall>());
 				}
 				else if(j == (loc.x+real_width-1))
 				{
-					map_.at(i, j).top() = GameObjectPtr(new VerticalWall);
+					map_.at(i, j).add(std::make_shared<VerticalWall>());
 				}
 				else if(i == (loc.y-real_height/2))
 				{
-					map_.at(i, j).top() = GameObjectPtr(new HorizontalWall);
+					map_.at(i, j).add(std::make_shared<HorizontalWall>());
 				}
 				else if(i == (loc.y+(real_height-1)/2))
 				{
-					map_.at(i, j).top() = GameObjectPtr(new HorizontalWall);
+					map_.at(i, j).add(std::make_shared<HorizontalWall>());
 				}
 				else 
 				{
-					map_.at(i, j).top() = GameObjectPtr(new Lit);
+					map_.at(i, j).add(std::make_shared<Lit>());
 				}
 			}
 		}
@@ -254,23 +253,23 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 			{
 				if (j == (loc.x-real_width/2))
 				{
-					map_.at(i, j).top() = GameObjectPtr(new VerticalWall);
+					map_.at(i, j).add(std::make_shared<VerticalWall>());
 				}
 				else if(j == (loc.x+(real_width-1)/2))
 				{
-					map_.at(i, j).top() = GameObjectPtr(new VerticalWall);
+					map_.at(i, j).add(std::make_shared<VerticalWall>());
 				}
 				else if(i == loc.y)
 				{
-					map_.at(i, j).top() = GameObjectPtr(new HorizontalWall);
+					map_.at(i, j).add(std::make_shared<HorizontalWall>());
 				}
 				else if(i == (loc.y+real_height-1))
 				{
-					map_.at(i, j).top() = GameObjectPtr(new HorizontalWall);
+					map_.at(i, j).add(std::make_shared<HorizontalWall>());
 				}
 				else 
 				{
-					map_.at(i, j).top() = GameObjectPtr(new Lit);
+					map_.at(i, j).add(std::make_shared<Lit>());
 				}
 			}
 		}
@@ -299,23 +298,23 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 			{
 				if(j == loc.x)
 				{
-					map_.at(i, j).top() = GameObjectPtr(new VerticalWall);
+					map_.at(i, j).add(std::make_shared<VerticalWall>());
 				}
 				else if(j == (loc.x-real_width+1))
 				{
-					map_.at(i, j).top() = GameObjectPtr(new VerticalWall);
+					map_.at(i, j).add(std::make_shared<VerticalWall>());
 				}
 				else if(i == (loc.y-real_height/2))
 				{
-					map_.at(i, j).top() = GameObjectPtr(new HorizontalWall);
+					map_.at(i, j).add(std::make_shared<HorizontalWall>());
 				}
 				else if(i == (loc.y+(real_height-1)/2))
 				{
-					map_.at(i, j).top() = GameObjectPtr(new HorizontalWall);
+					map_.at(i, j).add(std::make_shared<HorizontalWall>());
 				}
 				else 
 				{
-					map_.at(i, j).top() = GameObjectPtr(new Lit);
+					map_.at(i, j).add(std::make_shared<Lit>());
 				}
 			}
 		}
@@ -328,7 +327,7 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 	{
 		// Spawn a chest
 		// The 2 means two tiles away walls
-		spawn(loc, GameObjectPtr(new Chest), 2);
+		spawn(loc, std::make_shared<Chest>(), 2);
 	}
 	else if(chance < 100) // 80% <- (100-20)
 	{
@@ -337,16 +336,16 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 		switch(monster_chance)
 		{
 		case 0:
-			spawn(loc, GameObjectPtr(new SmallGoblin), 1);
+			spawn(loc, std::make_shared<SmallGoblin>(), 1);
 			break;
 		case 1:
-			spawn(loc, GameObjectPtr(new SmallDragon), 1);
+			spawn(loc, std::make_shared<SmallDragon>(), 1);
 			break;
 		case 2:
-			spawn(loc, GameObjectPtr(new SmallSkeleton), 1);
+			spawn(loc, std::make_shared<SmallSkeleton>(), 1);
 			break;
 		case 3:
-			spawn(loc, GameObjectPtr(new SmallTroll), 1);
+			spawn(loc, std::make_shared<SmallTroll>(), 1);
 			break;
 		}
 
@@ -380,7 +379,7 @@ bool Dungeon::makeCorridor(Point &loc, int len)
 		// All went ok? Then build the corridor
 		for(int i = loc.y; i > (loc.y-length); --i)
 		{
-			map_.at(i, loc.x).top() = GameObjectPtr(new Corridor);
+			map_.at(i, loc.x).add(std::make_shared<Corridor>());
 		}
 		break;
 	case Direction::East:
@@ -396,7 +395,7 @@ bool Dungeon::makeCorridor(Point &loc, int len)
 
 		for(int i = loc.x; i < (loc.x+length); ++i)
 		{
-			map_.at(loc.y, i).top() = GameObjectPtr(new Corridor);
+			map_.at(loc.y, i).add(std::make_shared<Corridor>());
 		}
 		break;
 	case Direction::South:
@@ -412,7 +411,7 @@ bool Dungeon::makeCorridor(Point &loc, int len)
 
 		for(int i = loc.y; i < (loc.y+length); ++i)
 		{
-			map_.at(i, loc.x).top() = GameObjectPtr(new Corridor);
+			map_.at(i, loc.x).add(std::make_shared<Corridor>());
 		}
 		break;
 	case Direction::West:
@@ -428,7 +427,7 @@ bool Dungeon::makeCorridor(Point &loc, int len)
 
 		for(int i = loc.x; i > (loc.x-length); --i)
 		{
-			map_.at(loc.y, i).top() = GameObjectPtr(new Corridor);
+			map_.at(loc.y, i).add(std::make_shared<Corridor>());
 		}
 		break;
 	}

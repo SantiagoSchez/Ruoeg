@@ -42,6 +42,7 @@ public:
 
 	enum class Color
 	{
+		None = 0,
 		Red_Black = 1,		// Walls/Non-walkable
 		Green_Black = 2,	// Floor/Walkable
 		Yellow_Red = 3,		// Bosses
@@ -58,7 +59,8 @@ public:
 
 	virtual Type type() const;
 	virtual bool walkable() const;
-
+	virtual bool delete_object() const;
+	virtual void kill_object();
 	virtual bool in_fov() const;
 	virtual void set_in_fov(bool in_fov);
 
@@ -66,6 +68,7 @@ protected:
 	Type type_;
 	bool walkable_;
 	bool in_fov_;
+	bool delete_object_;
 };
 
 #endif // RUOEG_GAMEOBJECTS_GAMEOBJECT_H_

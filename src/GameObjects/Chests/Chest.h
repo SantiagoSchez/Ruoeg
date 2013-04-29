@@ -13,9 +13,7 @@ public:
 	Chest();
 	~Chest();
 
-	static void reset_num_chests();
 	static int num_chests();
-	static void decrease_num_chests();
 
 private:
 	static int num_chests_;

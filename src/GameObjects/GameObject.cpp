@@ -1,6 +1,7 @@
 #include "GameObject.h"
 
-GameObject::GameObject(Type type) : type_(type), in_fov_(false)
+GameObject::GameObject(Type type) : type_(type), in_fov_(false), 
+	delete_object_(false)
 {
 }
 
@@ -16,6 +17,16 @@ GameObject::Type GameObject::type() const
 bool GameObject::walkable() const
 {
 	return walkable_;
+}
+
+bool GameObject::delete_object() const
+{
+	return delete_object_;
+}
+
+void GameObject::kill_object()
+{
+	delete_object_ = true;
 }
 
 bool GameObject::in_fov() const

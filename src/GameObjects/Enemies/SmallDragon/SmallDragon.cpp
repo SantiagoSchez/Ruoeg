@@ -3,7 +3,7 @@
 SmallDragon::SmallDragon() : Enemy(GameObject::Type::SmallDragon)
 {
 	walkable_ = false;
-	name_ = "SmallDragon";
+	name_ = "Small Dragon";
 
 	level_ = 1;
 	health_ = max_health_ = 25;

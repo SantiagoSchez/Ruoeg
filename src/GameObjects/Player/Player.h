@@ -7,7 +7,8 @@
 
 #include "../../Map/Dungeon.h"
 #include "../Enemies/Enemy.h"
-#include "../Enemies/SmallGoblin/SmallGoblin.h"
+#include "../Chests/Chest.h"
+#include "../Terrains/Door/Door.h"
 
 class Player : public GameObject
 {
@@ -44,19 +45,25 @@ public:
 	virtual bool moveSouth();
 	virtual bool moveWest();
 
-	virtual void attack(GameObjectPtr game_object);
+	virtual void openDoor(Door &door);
+	virtual void openChest(Chest &chest);
+	virtual void attack(Enemy &enemy);
+	virtual void color(GameObject::Color color);
 
 	virtual void levelUp() = 0;
 	virtual void draw(WINDOW *win) = 0;
 
+	// DEBUG
+	bool ghost_mode;
 protected:
-	virtual void checkCollisions(GameObjectPtr game_object);
+	virtual void checkCollisions(Tile &tile);
 	virtual void doFOV();
 
 	Race race_;
 	char *str_race_;
 	Map2D &map_;
 
+	GameObject::Color color_;
 	int health_points_;
 	int attack_points_;
 	int armor_points_;

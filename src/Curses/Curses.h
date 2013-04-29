@@ -89,6 +89,21 @@ public:
 
 	// Refresh the given window
 	static int wrefresh(WINDOW *win);
+
+	// Refresh but doesn't update the screen
+	static int wnoutrefresh(WINDOW *win);
+
+	// Updates the screen
+	static int doupdate();
+
+	// Emits a system sound
+	static int beep();
+
+	// Flash the window
+	static int flash();
+
+	// Wait ms milliseconds
+	static int napms(int ms);
 };
 
 #endif // RUOEG_CURSES_CURSES_H_

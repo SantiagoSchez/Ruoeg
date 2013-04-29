@@ -5,7 +5,11 @@ Ruoeg
 Changes
 =======
 ### Current look
-![ScreenShot](https://raw.github.com/SantiagoSanchez/Ruoeg/master/screenshots/Ruoeg_4.27.13.png)
+![ScreenShot](https://raw.github.com/SantiagoSanchez/Ruoeg/master/screenshots/Ruoeg_4.29.13.png)
+
+### v0.2.0
+- Player can now kill enemies.
+- Fixed a bug with dungeon exploration.
 
 ### v0.1.2
 - Field of View added to the player.

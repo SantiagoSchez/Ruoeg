@@ -10,19 +10,10 @@ Chest::Chest() : GameObject(GameObject::Type::Chest)
 
 Chest::~Chest()
 {
-}
-
-void Chest::reset_num_chests()
-{
-	num_chests_ = 0;
+	--num_chests_;
 }
 
 int Chest::num_chests()
 {
 	return num_chests_;
-}
-
-void Chest::decrease_num_chests()
-{
-	--num_chests_;
 }

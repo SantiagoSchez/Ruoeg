@@ -64,7 +64,6 @@ void Game::setUp()
 	// Init colors
 	if(!Curses::has_colors())
 	{	
-		Curses::endwin();
 		std::cout << "Your terminal does not support color" << std::endl;
 		exit(1);
 	}
@@ -79,6 +78,8 @@ void Game::setUp()
 	Curses::init_pair(static_cast<int>(GameObject::Color::White_Green), COLOR_WHITE, COLOR_GREEN);
 	Curses::init_pair(static_cast<int>(GameObject::Color::White_Yellow), COLOR_WHITE, COLOR_YELLOW);
 	Curses::init_pair(static_cast<int>(GameObject::Color::White_Red), COLOR_WHITE, COLOR_RED);
+
+	atexit(Curses::endwin);
 
 	// Load resources
 	loadStrings();
@@ -106,7 +107,7 @@ void Game::loop(Curses::Key /*= Crs::Key::ESC*/)
 		{
 			// Update here monsters behavior
 		}
-
+		
 		updateMapWindow();
 		updateStatusWindow();
 		
@@ -119,8 +120,10 @@ void Game::refreshWindows(std::vector<WINDOW *> windows)
 	for(auto w : windows)
 	{
 		Curses::wbox(w, 0, 0);
-		Curses::wrefresh(w);
+		Curses::wnoutrefresh(w);
 	}
+
+	Curses::doupdate();
 }
 
 void Game::release()
@@ -137,7 +140,7 @@ int Game::manageInput(WINDOW *win)
 		// Stuff for testing 
 		if(key == static_cast<int>(Curses::Key::Space))
 		{
-			dungeon_.generate();
+			player_->ghost_mode = !player_->ghost_mode;
 		}
 
 		// Player movement
@@ -190,7 +193,7 @@ void Game::updateMapWindow()
 		score_,
 		ResourceManager::getInstance().getString("HI_SCORE"),
 		hi_score_);
- 	Curses::mvwprintw(windows_[0], 1, dungeon_.map().width()-24, "%s %0.0f%%",
+ 	Curses::mvwprintw(windows_[0], 1, dungeon_.map().width()-27, "%s %.2f%%",
  		ResourceManager::getInstance().getString("EXPLORED"),
  		(player_->explored()/(float)dungeon_.map().valid_objects())*100);
 	Curses::wattroff(windows_[0], COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
@@ -201,7 +204,7 @@ void Game::updateStatusWindow()
 	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Red_Black)));
 	Curses::mvwprintw(windows_[2], 1, 0, " %s %d ", 
 		ResourceManager::getInstance().getString("ENEMIES_NUMBER"), 
-		dungeon_.num_enemies());
+		Enemy::num_enemies());
 	Curses::mvwprintw(windows_[2], 2, 0, " %s %d ", 
 		ResourceManager::getInstance().getString("CHESTS_NUMBER"), 
 		Chest::num_chests());
@@ -243,7 +246,7 @@ void Game::loadStrings()
 	ResourceManager::getInstance().addString("CHEST_GATHERED2",
 		" gold obtained!");
 	ResourceManager::getInstance().addString("ATTACK_ENEMY1",
-		" You attack enemy");
+		"You attack enemy:");
 	ResourceManager::getInstance().addString("ATTACK_ENEMY2",
 		"Damage:");
 	ResourceManager::getInstance().addString("ENEMY_LEVEL",
