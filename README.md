@@ -10,6 +10,7 @@ Changes
 ### v0.2.0
 - Player can now kill enemies.
 - Fixed a bug with dungeon exploration.
+- Ability to change whether enabling map view or not (blind mode).
 
 ### v0.1.2
 - Field of View added to the player.
