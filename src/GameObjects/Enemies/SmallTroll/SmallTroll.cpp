@@ -4,6 +4,7 @@ SmallTroll::SmallTroll() : Enemy(GameObject::Type::SmallTroll)
 {
 	walkable_ = false;
 	name_ = "Troll";
+	color_ = GameObject::Color::Yellow_Black;
 
 	level_ = 1;
 	health_ = max_health_ = 25;

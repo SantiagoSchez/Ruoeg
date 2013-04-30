@@ -1,4 +1,5 @@
 #include "Curses.h"
+#include <iostream>
 
 WINDOW* Curses::initscr()
 {
@@ -153,4 +154,9 @@ int Curses::flash()
 int Curses::napms(int ms)
 {
 	return ::napms(ms);
+}
+
+int Curses::werase(WINDOW *win)
+{
+	return ::werase(win);
 }

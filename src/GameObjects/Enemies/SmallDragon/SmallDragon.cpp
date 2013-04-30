@@ -4,6 +4,7 @@ SmallDragon::SmallDragon() : Enemy(GameObject::Type::SmallDragon)
 {
 	walkable_ = false;
 	name_ = "Small Dragon";
+	color_ = GameObject::Color::Yellow_Black;
 
 	level_ = 1;
 	health_ = max_health_ = 25;

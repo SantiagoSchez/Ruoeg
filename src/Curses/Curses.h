@@ -17,7 +17,11 @@ public:
 		Left = 0x104, 
 		Right = 0x105, 
 		Esc = 0x1B,
-		Space = 0x20
+		Space = 0x20,
+		F1 = KEY_F(1),
+		F2 = KEY_F(2),
+		F3 = KEY_F(3),
+		F4 = KEY_F(4)
 	};
 
 	// Starts curses mode
@@ -104,6 +108,9 @@ public:
 
 	// Wait ms milliseconds
 	static int napms(int ms);
+
+	// Clear the given window
+	static int werase(WINDOW *win);
 };
 
 #endif // RUOEG_CURSES_CURSES_H_

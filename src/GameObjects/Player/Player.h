@@ -48,7 +48,7 @@ public:
 	virtual void openDoor(Door &door);
 	virtual void openChest(Chest &chest);
 	virtual void attack(Enemy &enemy);
-	virtual void color(GameObject::Color color);
+	virtual void flash(GameObject::Color color);
 
 	virtual void levelUp() = 0;
 	virtual void draw(WINDOW *win) = 0;
@@ -63,7 +63,6 @@ protected:
 	char *str_race_;
 	Map2D &map_;
 
-	GameObject::Color color_;
 	int health_points_;
 	int attack_points_;
 	int armor_points_;

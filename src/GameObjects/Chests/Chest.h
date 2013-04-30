@@ -10,12 +10,15 @@
 class Chest : public GameObject
 {
 public:
-	Chest();
+	Chest(int score);
 	~Chest();
+
+	int score() const;
 
 	static int num_chests();
 
 private:
+	int score_;
 	static int num_chests_;
 };
 

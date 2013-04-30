@@ -3,17 +3,19 @@
 #include "windows.h"
 #include "../../include/ufmod.h"
 
-#include <iostream>
-
 #include "ResourceManager.h"
 #include "../GameObjects/Player/Human/Human.h"
 #include "../GameObjects/Player/Orc/Orc.h"
 #include "../GameObjects/Player/Elf/Elf.h"
 #include "../GameObjects/Player/Dwarf/Dwarf.h"
-#include "../GameObjects/Chests/Chest.h"
 
-Game::Game() : dungeon_(30, 90), current_score_value_(100)
+Game::Game() : dungeon_(30, 90), score_factor_(0.5), view_map_(false)
 {
+}
+
+Game::~Game()
+{
+	Curses::endwin();
 }
 
 Game& Game::getInstance()
@@ -26,7 +28,6 @@ void Game::start()
 {
 	setUp();
 	loop();
-	release();
 }
 
 void Game::setUp()
@@ -64,7 +65,7 @@ void Game::setUp()
 	// Init colors
 	if(!Curses::has_colors())
 	{	
-		std::cout << "Your terminal does not support color" << std::endl;
+		//std::cout << "Your terminal does not support color" << std::endl;
 		exit(1);
 	}
 
@@ -78,8 +79,7 @@ void Game::setUp()
 	Curses::init_pair(static_cast<int>(GameObject::Color::White_Green), COLOR_WHITE, COLOR_GREEN);
 	Curses::init_pair(static_cast<int>(GameObject::Color::White_Yellow), COLOR_WHITE, COLOR_YELLOW);
 	Curses::init_pair(static_cast<int>(GameObject::Color::White_Red), COLOR_WHITE, COLOR_RED);
-
-	atexit(Curses::endwin);
+	Curses::init_pair(static_cast<int>(GameObject::Color::Black_Black), COLOR_BLACK, COLOR_BLACK);
 
 	// Load resources
 	loadStrings();
@@ -96,7 +96,7 @@ void Game::setUp()
 	// Play some music
 	RNG rng;
 	int random_song = rng.nextInt(1, 6);
-	uFMOD_PlaySong((char *)random_song, 0, XM_RESOURCE);
+	uFMOD_PlaySong(reinterpret_cast<char*>(random_song), 0, XM_RESOURCE);
 }
 
 void Game::loop(Curses::Key /*= Crs::Key::ESC*/)
@@ -126,21 +126,23 @@ void Game::refreshWindows(std::vector<WINDOW *> windows)
 	Curses::doupdate();
 }
 
-void Game::release()
-{
-	Curses::endwin();
-}
-
 int Game::manageInput(WINDOW *win)
 {
 	int key = Curses::wgetch(win);
 
 	if(key != -1)
 	{
-		// Stuff for testing 
-		if(key == static_cast<int>(Curses::Key::Space))
+		// Stuff for debugging 
+		if(key == static_cast<int>(Curses::Key::F1))
 		{
 			player_->ghost_mode = !player_->ghost_mode;
+			Curses::wprintw(windows_[1], " GHOST MODE: %d\n", player_->ghost_mode);
+		}
+		else if(key == static_cast<int>(Curses::Key::F2))
+		{
+			view_map_ = !view_map_;
+			Curses::werase(windows_[0]);
+			Curses::wprintw(windows_[1], " VIEW MAP: %d\n", view_map_);
 		}
 
 		// Player movement
@@ -159,6 +161,12 @@ int Game::manageInput(WINDOW *win)
 		else if(key == static_cast<int>(Curses::Key::Left))
 		{
 			player_->moveWest();
+		}
+
+		// Exit
+		if(key == static_cast<int>(Curses::Key::Esc))
+		{
+			state_ = State::Finish;
 		}
 	}
 
@@ -201,6 +209,7 @@ void Game::updateMapWindow()
 
 void Game::updateStatusWindow()
 {
+	// Number of enemies and chests
 	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Red_Black)));
 	Curses::mvwprintw(windows_[2], 1, 0, " %s %d ", 
 		ResourceManager::getInstance().getString("ENEMIES_NUMBER"), 
@@ -210,6 +219,7 @@ void Game::updateStatusWindow()
 		Chest::num_chests());
 	Curses::wattroff(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Red_Black)));
 
+	// Player level
 	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
 	Curses::mvwprintw(windows_[2], 4, 0, " %s %d %s", 
 		ResourceManager::getInstance().getString("PLAYER_LEVEL"), 
@@ -217,6 +227,7 @@ void Game::updateStatusWindow()
 		player_->str_race());
 	Curses::wattroff(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
 
+	// Basic stats for the player: Health, Attack and Armor points
 	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Green_Black)));
 	Curses::mvwprintw(windows_[2], 5, 0, " %s %d", 
 		ResourceManager::getInstance().getString("PLAYER_HEALTH"), 
@@ -228,6 +239,7 @@ void Game::updateStatusWindow()
 		player_->armor_points());
 	Curses::wattroff(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Green_Black)));
 
+	// Experience gained for the player
 	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Cyan_Black)));
 	Curses::mvwprintw(windows_[2], 8, 0, " %s %d/%d", 
 		ResourceManager::getInstance().getString("PLAYER_EXPERIENCE"), 
@@ -241,10 +253,8 @@ void Game::loadStrings()
 	// Log window
 	ResourceManager::getInstance().addString("DOOR_OPENED",
 		"You open the door.");
-	ResourceManager::getInstance().addString("CHEST_GATHERED1",
-		"You open the chest.");
-	ResourceManager::getInstance().addString("CHEST_GATHERED2",
-		" gold obtained!");
+	ResourceManager::getInstance().addString("CHEST_GATHERED",
+		"gold gathered from chest!");
 	ResourceManager::getInstance().addString("ATTACK_ENEMY1",
 		"You attack enemy:");
 	ResourceManager::getInstance().addString("ATTACK_ENEMY2",
@@ -277,11 +287,6 @@ void Game::loadStrings()
 		"DUNGEON EXPLORED:");
 }
 
-int Game::current_score_value() const
-{
-	return current_score_value_;
-}
-
 int Game::score() const
 {
 	return score_;
@@ -302,11 +307,21 @@ void Game::set_hi_score(int hi_score)
 	hi_score_ = hi_score_;
 }
 
-void Game::add_score(double factor)
+void Game::add_score(int score)
 {
-	score_ += static_cast<int>(current_score_value_ * factor);
+	score_ += static_cast<int>(score_factor_ * score);
 	if(score_ > hi_score_)
 	{
 		hi_score_ = score_;
 	}
+}
+
+double Game::score_factor() const
+{
+	return score_factor_;
+}
+
+bool Game::view_map() const
+{
+	return view_map_;
 }

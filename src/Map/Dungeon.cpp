@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 
+#include "../Game/Game.h"
 #include "../GameObjects/Terrains/Wall/HorizontalWall.h"
 #include "../GameObjects/Terrains/Wall/VerticalWall.h"
 #include "../GameObjects/Terrains/Corridor/Corridor.h"
@@ -54,7 +55,7 @@ void Dungeon::generate()
 	Point location = {
 		map_.width()/2, 
 		map_.height()/2, 
-		static_cast<Direction>(Direction::North)//static_cast<Direction>(rng_.nextInt(1, 4))
+		static_cast<Direction>(rng_.nextInt(1, 4))
 	};
 	makeSquaredRoom(location, 6, 8);
 
@@ -76,15 +77,15 @@ void Dungeon::generate()
 		{
 			if(makeSquaredRoom(p, 6, 8)) // 75% for a room
 			{
-				map_.at(p.y-p.y_mod, p.x-p.x_mod).add(std::make_shared<Door>());
-				map_.at(p.y, p.x).add(std::make_shared<Lit>());
+				*(map_.at(p.y-p.y_mod, p.x-p.x_mod).top()) = Door();
+				*(map_.at(p.y, p.x).top()) = Lit();
 			}
 		}
 		else
 		{
 			if(makeCorridor(p, 6)) // 25% for a corridor
 			{
-				map_.at(p.y-p.y_mod, p.x-p.x_mod).add(std::make_shared<Door>());
+				*(map_.at(p.y-p.y_mod, p.x-p.x_mod).top()) = Door();
 			}
 		}
 	}
@@ -327,7 +328,9 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 	{
 		// Spawn a chest
 		// The 2 means two tiles away walls
-		spawn(loc, std::make_shared<Chest>(), 2);
+		spawn(loc, 
+			std::make_shared<Chest>(static_cast<int>(rng_.nextInt(100, 1000)*Game::getInstance().score_factor())), 
+			2);
 	}
 	else if(chance < 100) // 80% <- (100-20)
 	{
@@ -649,71 +652,26 @@ void Dungeon::draw(WINDOW *win)
 		for(int j = 0; j < width; ++j)
 		{
 			GameObjectPtr g = map_.at(i, j).top();
-			GameObject::Type g_t = g->type();
 
 			if(!g->in_fov())
 			{
-				switch(g_t)
+				Tile &t = map_.at(i, j);
+
+				if(Game::getInstance().view_map())
 				{
-					case GameObject::Type::Chest:
-					case GameObject::Type::SmallDragon:
-					case GameObject::Type::SmallGoblin:
-					case GameObject::Type::SmallSkeleton:
-					case GameObject::Type::SmallTroll:
-					case GameObject::Type::DownStairs:
-						Curses::mvwaddch(win, i, j, static_cast<char>(GameObject::Type::Lit) | 
+					if(t.elements() > 1)
+					{
+						Curses::mvwaddch(win, i, j, 
+							static_cast<char>(t.element(1)->type()) | 
 							COLOR_PAIR(static_cast<int>(GameObject::Color::White_Black)));
-						break;
-					case GameObject::Type::Dragon:
-					case GameObject::Type::Goblin:
-					case GameObject::Type::Skeleton:
-					case GameObject::Type::Troll:
-						Curses::mvwaddch(win, i, j, static_cast<char>(GameObject::Type::Corridor) | 
-							COLOR_PAIR(static_cast<int>(GameObject::Color::White_Black)));
-						break;
-					default:
-						Curses::mvwaddch(win, i, j, static_cast<char>(g_t) | 
-							COLOR_PAIR(static_cast<int>(GameObject::Color::White_Black)));
+					}
 				}
 			}
 			else
 			{
-				switch(g_t)
-				{
-				case GameObject::Type::Door:
-				case GameObject::Type::Chest:
-					Curses::mvwaddch(win, i, j, static_cast<char>(g_t) | 
-						COLOR_PAIR(static_cast<int>(GameObject::Color::Cyan_Black)));
-					break;
-				case GameObject::Type::OpenedDoor:
-				case GameObject::Type::Corridor:
-				case GameObject::Type::Lit:
-					Curses::mvwaddch(win, i, j, static_cast<char>(g_t) | 
-						COLOR_PAIR(static_cast<int>(GameObject::Color::Green_Black)));
-					break;
-				case GameObject::Type::HorizontalWall:
-				case GameObject::Type::VerticalWall:
-					Curses::mvwaddch(win, i, j, static_cast<char>(g_t) | 
-						COLOR_PAIR(static_cast<int>(GameObject::Color::Red_Black)));
-					break;
-				case GameObject::Type::SmallDragon:
-				case GameObject::Type::SmallGoblin:
-				case GameObject::Type::SmallSkeleton:
-				case GameObject::Type::SmallTroll:
-					Curses::mvwaddch(win, i, j, static_cast<char>(g_t) | 
-						COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
-					break;
-				case GameObject::Type::Dragon:
-				case GameObject::Type::Goblin:
-				case GameObject::Type::Skeleton:
-				case GameObject::Type::Troll:
-					Curses::mvwaddch(win, i, j, static_cast<char>(g_t) | 
-						COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Red)));
-					break;
-				default:
-					Curses::mvwaddch(win, i, j, static_cast<char>(g_t) | 
-						COLOR_PAIR(static_cast<int>(GameObject::Color::White_Black)));
-				}
+				Curses::mvwaddch(win, i, j, 
+					static_cast<char>(g->type()) | 
+					COLOR_PAIR(static_cast<int>(g->color())));
 			}
 		}
 	}

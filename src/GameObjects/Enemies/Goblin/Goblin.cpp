@@ -4,6 +4,7 @@ Goblin::Goblin() : Enemy(GameObject::Type::Goblin)
 {
 	walkable_ = false;
 	name_ = "Big Goblin";
+	color_ = GameObject::Color::Yellow_Red;
 
 	level_ = 2;
 	health_ = max_health_ = 50;

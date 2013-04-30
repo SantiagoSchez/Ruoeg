@@ -17,12 +17,12 @@ class Game
 {
 public:
 	static Game& getInstance();
+	~Game();
 
 	void start();
 	void setUp();
 	void loop(Curses::Key exit_key = Curses::Key::Esc);
 	void refreshWindows(std::vector<WINDOW *> windows);
-	void release();
 	int manageInput(WINDOW *win);
 	void loadStrings();
 
@@ -33,12 +33,14 @@ public:
 	WINDOW* consoleWindow();
 	WINDOW* statusWindow();
 
-	int current_score_value() const;
 	int score() const;
 	int hi_score() const;
 	void set_score(int score);
 	void set_hi_score(int hi_score);
-	void add_score(double factor);
+	void add_score(int score);
+	double score_factor() const;
+
+	bool view_map() const;
 
 private:
 	enum class State 
@@ -53,7 +55,9 @@ private:
 	Dungeon dungeon_;
 	std::unique_ptr<Player> player_;
 	std::vector<WINDOW *> windows_;
-	int score_, hi_score_, current_score_value_;
+	int score_, hi_score_;
+	double score_factor_;
+	bool view_map_;
 
 	// Disallowing copy constructor and assignment operator
 	Game(Game const&);

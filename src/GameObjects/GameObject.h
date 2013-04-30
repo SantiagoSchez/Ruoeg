@@ -52,12 +52,15 @@ public:
 		White_Green = 7,	// Orc
 		White_Yellow = 8,	// Elf
 		White_Red = 9,		// Dwarf
+		Black_Black = 10	// None
 	};
 
 	explicit GameObject(Type type);
 	virtual ~GameObject();
 
+	virtual Color color() const;
 	virtual Type type() const;
+	virtual bool enemy() const;
 	virtual bool walkable() const;
 	virtual bool delete_object() const;
 	virtual void kill_object();
@@ -65,7 +68,9 @@ public:
 	virtual void set_in_fov(bool in_fov);
 
 protected:
+	Color color_;
 	Type type_;
+	bool enemy_;
 	bool walkable_;
 	bool in_fov_;
 	bool delete_object_;

@@ -19,7 +19,7 @@ public:
 	~Tile();
 
 	GameObjectPtr top();
-	GameObjectPtr element(int layer);
+	GameObjectPtr element(int index);
 	void add(GameObjectPtr game_object);
 	void pop();
 	int elements() const;

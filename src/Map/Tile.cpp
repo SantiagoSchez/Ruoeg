@@ -20,19 +20,14 @@ GameObjectPtr Tile::top()
 	return raw_.back();
 }
 
-GameObjectPtr Tile::element(int layer)
+GameObjectPtr Tile::element(int index)
 {
-	return raw_.at(layer);
+	return raw_[index];
 }
 
 void Tile::add(GameObjectPtr game_object)
 {
 	raw_.push_back(game_object);
-}
-
-void Tile::pop()
-{
-	raw_.pop_back();
 }
 
 int Tile::elements() const

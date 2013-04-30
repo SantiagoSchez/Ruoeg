@@ -12,7 +12,7 @@
 Player::Player(Race race, Map2D &map) : race_(race), 
 	GameObject(GameObject::Type::Player), experience_points_(0), 
 	max_experience_points_(50), level_(1), map_(map), explored_(0),
-	color_(GameObject::Color::None), ghost_mode(false)
+	ghost_mode(false)
 {
 	switch(race)
 	{
@@ -195,48 +195,51 @@ void Player::checkCollisions(Tile &tile)
 	case GameObject::Type::Chest:
 		openChest(static_cast<Chest&>(*game_object));
 		break;
-	case GameObject::Type::Dragon:
-	case GameObject::Type::Goblin:
-	case GameObject::Type::Skeleton:
-	case GameObject::Type::Troll:
-	case GameObject::Type::SmallDragon:
-	case GameObject::Type::SmallGoblin:
-	case GameObject::Type::SmallSkeleton:
-	case GameObject::Type::SmallTroll:
-		attack(static_cast<Enemy&>(*game_object));
-		break;
+	default:
+		if(game_object->enemy())
+		{
+			attack(static_cast<Enemy&>(*game_object));
+		}
 	}
 }
 
 void Player::openDoor(Door &door)
 {
 	door.open();
+	Curses::wattron(Game::getInstance().consoleWindow(), 
+		COLOR_PAIR(GameObject::Color::Cyan_Black));
 	Curses::wprintw(Game::getInstance().consoleWindow(), " %s\n", 
 		ResourceManager::getInstance().getString("DOOR_OPENED"));
+	Curses::wattroff(Game::getInstance().consoleWindow(), 
+		COLOR_PAIR(GameObject::Color::Cyan_Black));
 }
 
 void Player::openChest(Chest &chest)
 {
-	Curses::wprintw(Game::getInstance().consoleWindow(), " %s %d%s\n", 
-		ResourceManager::getInstance().getString("CHEST_GATHERED1"),
-		Game::getInstance().current_score_value(),
-		ResourceManager::getInstance().getString("CHEST_GATHERED2"));
+	int score = chest.score();
 
-	Game::getInstance().add_score(1);
+	Curses::wattron(Game::getInstance().consoleWindow(), 
+		COLOR_PAIR(GameObject::Color::Green_Black));
+	Curses::wprintw(Game::getInstance().consoleWindow(), " %d %s\n", 
+		score,
+		ResourceManager::getInstance().getString("CHEST_GATHERED"));
+	Curses::wattroff(Game::getInstance().consoleWindow(), 
+		COLOR_PAIR(GameObject::Color::Green_Black));
 
+	Game::getInstance().add_score(score);
 	chest.kill_object();
 }
 
 void Player::attack(Enemy &enemy)
 {
-	color_ = GameObject::Color::Red_Black; // Flash the player to red
+	flash(GameObject::Color::Red_Black); // Flash the player to red
 
 	int damage = enemy.receiveDamage(attack_points_);
 
-	Curses::wprintw(Game::getInstance().consoleWindow(), " %s\n",
-		ResourceManager::getInstance().getString("ATTACK_ENEMY1"));
 	Curses::wattron(Game::getInstance().consoleWindow(), 
 		COLOR_PAIR(GameObject::Color::Yellow_Black));
+	Curses::wprintw(Game::getInstance().consoleWindow(), " %s\n",
+		ResourceManager::getInstance().getString("ATTACK_ENEMY1"));
 	Curses::wprintw(Game::getInstance().consoleWindow(), " %s",
 		ResourceManager::getInstance().getString("ENEMY_LEVEL"));
 	Curses::wprintw(Game::getInstance().consoleWindow(), " %s",
@@ -274,7 +277,7 @@ void Player::doFOV()
 				if(g->type() != GameObject::Type::None)
 				{
 					++explored_;
-					Game::getInstance().add_score(0.01);
+					Game::getInstance().add_score(1);
 				}
 			}
 
@@ -302,7 +305,7 @@ void Player::reset_explored()
 	explored_ = 0;
 }
 
-void Player::color(GameObject::Color color)
+void Player::flash(GameObject::Color color)
 {
 	color_ = color;
 }

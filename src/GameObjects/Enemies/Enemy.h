@@ -35,6 +35,7 @@ protected:
 	int max_health_;
 	int attack_;
 	int armor_;
+	int score_;
 
 	RNG rng_;
 	std::string string_;

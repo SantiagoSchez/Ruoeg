@@ -7,6 +7,7 @@ Enemy::Enemy(Type type) : GameObject(type), name_("!"), level_(-1),
 {
 	walkable_ = false;
 	++num_enemies_;
+	enemy_ = true;
 }
 
 Enemy::~Enemy()
@@ -47,7 +48,7 @@ int Enemy::armor() const
 int Enemy::receiveDamage(int attack_points)
 {
 	int damage = rng_.nextInt(attack_points-2, attack_points+2) - armor_;
-	if(damage < 0)
+	if(damage <= 0)
 	{
 		damage = 1;
 	}

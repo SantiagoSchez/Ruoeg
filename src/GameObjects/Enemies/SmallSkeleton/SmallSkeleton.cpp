@@ -4,6 +4,7 @@ SmallSkeleton::SmallSkeleton() : Enemy(GameObject::Type::SmallSkeleton)
 {
 	walkable_ = false;
 	name_ = "Skeleton";
+	color_ = GameObject::Color::Yellow_Black;
 
 	level_ = 1;
 	health_ = max_health_ = 25;

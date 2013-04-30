@@ -2,7 +2,9 @@
 
 SmallGoblin::SmallGoblin() : Enemy(GameObject::Type::SmallGoblin)
 {
+	walkable_ = false;
 	name_ = "Goblin";
+	color_ = GameObject::Color::Yellow_Black;
 
 	level_ = 1;
 	health_ = max_health_ = 25;
