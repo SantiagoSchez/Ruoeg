@@ -14,7 +14,7 @@ GameObjectPtr Tile::top()
 	if(raw_.back()->delete_object())
 	{
 		raw_.pop_back();
-		raw_.back()->set_in_fov(true);
+		raw_.back()->set_discovered(true);
 	}
 
 	return raw_.back();

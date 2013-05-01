@@ -9,6 +9,8 @@
 #include "../GameObjects/Player/Elf/Elf.h"
 #include "../GameObjects/Player/Dwarf/Dwarf.h"
 
+#include <algorithm>
+
 Game::Game() : dungeon_(30, 90), score_factor_(0.5), view_map_(false)
 {
 }
@@ -42,7 +44,7 @@ void Game::setUp()
 	// Creating the three windows
 	windows_.push_back(Curses::newwin(30, 90, 0, 0)); // Map
 	windows_.push_back(Curses::newwin(10, 60, 30, 0)); // Console
-	windows_.push_back(Curses::newwin(10, 30, 30, 60)); // Status (Life, damage, armor)
+	windows_.push_back(Curses::newwin(10, 30, 30, 60)); // Status
 
 	// Input for map window
 	Curses::keypad(windows_[0], true);
@@ -86,8 +88,8 @@ void Game::setUp()
 
 	// Init the player and dungeon
 	dungeon_.generate();
-	Dungeon::Point loc = dungeon_.getRandomLit();
-	player_.reset(new Human(dungeon_.map()));
+	Point loc = dungeon_.getRandomLit();
+	player_.reset(new Human(dungeon_));
 	player_->placeIt(loc.x, loc.y);
 
 	// Change game state
@@ -103,9 +105,11 @@ void Game::loop(Curses::Key /*= Crs::Key::ESC*/)
 {
 	while(state_ == State::Running)
 	{
+		updateEnemyDeaths();
+
 		if(manageInput(windows_[0]) != -1)
 		{
-			// Update here monsters behavior
+			updateEnemies();
 		}
 		
 		updateMapWindow();
@@ -113,6 +117,34 @@ void Game::loop(Curses::Key /*= Crs::Key::ESC*/)
 		
 		refreshWindows(windows_);
 	}
+}
+
+void Game::updateEnemies()
+{
+	for(auto enemy : dungeon_.enemies())
+	{
+		if(enemy->discovered())
+		{
+			enemy->update(*player_);
+		}
+	}
+}
+
+void Game::updateEnemyDeaths()
+{
+	std::vector<EnemyPtr> &enemies = dungeon_.enemies();
+
+	enemies.erase(
+		std::remove_if(
+			enemies.begin(),
+			enemies.end(),
+			[](EnemyPtr enemy) -> bool 
+			{
+				return enemy->delete_object();
+			}
+		),
+		enemies.end()
+	);
 }
 
 void Game::refreshWindows(std::vector<WINDOW *> windows)
@@ -194,6 +226,12 @@ void Game::updateMapWindow()
 	dungeon_.draw(windows_[0]);
 	player_->draw(windows_[0]);
 
+	// Draw enemies
+	for(auto enemy : dungeon_.enemies())
+	{
+		enemy->draw(windows_[0]);
+	}
+
 	// Show score and map exploration
 	Curses::wattron(windows_[0], COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
 	Curses::mvwprintw(windows_[0], 1, 1, " %s %d | %s %d", 
@@ -211,17 +249,17 @@ void Game::updateStatusWindow()
 {
 	// Number of enemies and chests
 	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Red_Black)));
-	Curses::mvwprintw(windows_[2], 1, 0, " %s %d ", 
+	Curses::mvwprintw(windows_[2], 1, 0, " %s %d  ", 
 		ResourceManager::getInstance().getString("ENEMIES_NUMBER"), 
 		Enemy::num_enemies());
-	Curses::mvwprintw(windows_[2], 2, 0, " %s %d ", 
+	Curses::mvwprintw(windows_[2], 2, 0, " %s %d  ", 
 		ResourceManager::getInstance().getString("CHESTS_NUMBER"), 
 		Chest::num_chests());
 	Curses::wattroff(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Red_Black)));
 
 	// Player level
 	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
-	Curses::mvwprintw(windows_[2], 4, 0, " %s %d %s", 
+	Curses::mvwprintw(windows_[2], 4, 0, " %s %d %s  ", 
 		ResourceManager::getInstance().getString("PLAYER_LEVEL"), 
 		player_->level(),
 		player_->str_race());
@@ -229,10 +267,10 @@ void Game::updateStatusWindow()
 
 	// Basic stats for the player: Health, Attack and Armor points
 	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Green_Black)));
-	Curses::mvwprintw(windows_[2], 5, 0, " %s %d", 
+	Curses::mvwprintw(windows_[2], 5, 0, " %s %d  ", 
 		ResourceManager::getInstance().getString("PLAYER_HEALTH"), 
 		player_->health_points());
-	Curses::mvwprintw(windows_[2], 6, 0, " %s %d | %s %d", 
+	Curses::mvwprintw(windows_[2], 6, 0, " %s %d | %s %d  ", 
 		ResourceManager::getInstance().getString("PLAYER_ATTACK"), 
 		player_->attack_points(),
 		ResourceManager::getInstance().getString("PLAYER_ARMOR"),
@@ -241,7 +279,7 @@ void Game::updateStatusWindow()
 
 	// Experience gained for the player
 	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Cyan_Black)));
-	Curses::mvwprintw(windows_[2], 8, 0, " %s %d/%d", 
+	Curses::mvwprintw(windows_[2], 8, 0, " %s %d/%d  ", 
 		ResourceManager::getInstance().getString("PLAYER_EXPERIENCE"), 
 		player_->experience_points(),
 		player_->max_experience_points());

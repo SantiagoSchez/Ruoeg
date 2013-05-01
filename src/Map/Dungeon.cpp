@@ -52,11 +52,8 @@ void Dungeon::generate()
 	}
 	
 	// Dig out a single room in the center of the map
-	Point location = {
-		map_.width()/2, 
-		map_.height()/2, 
-		static_cast<Direction>(rng_.nextInt(1, 4))
-	};
+	Point location(map_.width()/2, map_.height()/2);
+	location.dir = static_cast<Direction>(rng_.nextInt(1, 4));
 	makeSquaredRoom(location, 6, 8);
 
 	// Build some features. It will try 1000 times to add the features
@@ -96,16 +93,16 @@ void Dungeon::generate()
  	switch(chance)
 	{
 	case 0:
-		spawn(location.y, location.x, std::make_shared<Dragon>());
+		spawnEnemy(location.y, location.x, std::make_shared<Dragon>(*this, location.x, location.y));
 		break;
 	case 1:
-		spawn(location.y, location.x, std::make_shared<Goblin>());
+		spawnEnemy(location.y, location.x, std::make_shared<Goblin>(*this, location.x, location.y));
 		break;
 	case 2:
-  		spawn(location.y, location.x, std::make_shared<Skeleton>());
+  		spawnEnemy(location.y, location.x, std::make_shared<Skeleton>(*this, location.x, location.y));
 		break;
 	case 3:
-		spawn(location.y, location.x, std::make_shared<Troll>());
+		spawnEnemy(location.y, location.x, std::make_shared<Troll>(*this, location.x, location.y));
 		break;
 	}
 
@@ -339,16 +336,16 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 		switch(monster_chance)
 		{
 		case 0:
-			spawn(loc, std::make_shared<SmallGoblin>(), 1);
+			spawnEnemy(loc, std::make_shared<SmallGoblin>(*this, loc.x, loc.y), 1);
 			break;
 		case 1:
-			spawn(loc, std::make_shared<SmallDragon>(), 1);
+			spawnEnemy(loc, std::make_shared<SmallDragon>(*this, loc.x, loc.y), 1);
 			break;
 		case 2:
-			spawn(loc, std::make_shared<SmallSkeleton>(), 1);
+			spawnEnemy(loc, std::make_shared<SmallSkeleton>(*this, loc.x, loc.y), 1);
 			break;
 		case 3:
-			spawn(loc, std::make_shared<SmallTroll>(), 1);
+			spawnEnemy(loc, std::make_shared<SmallTroll>(*this, loc.x, loc.y), 1);
 			break;
 		}
 
@@ -440,12 +437,9 @@ bool Dungeon::makeCorridor(Point &loc, int len)
 	return true;
 }
 
-Dungeon::Point Dungeon::getRandomWall()
+Point Dungeon::getRandomWall()
 {
 	Point p;
-	p.dir = Direction::None;
-	p.x_mod = 0;
-	p.y_mod = 0;
 
 	bool ok = false;
 	while(!ok) 
@@ -505,7 +499,7 @@ Dungeon::Point Dungeon::getRandomWall()
 	return p;
 }
 
-Dungeon::Point Dungeon::getRandomLit()
+Point Dungeon::getRandomLit()
 {
 	Point p;
 
@@ -524,7 +518,7 @@ Dungeon::Point Dungeon::getRandomLit()
 	return p;
 }
 
-Dungeon::Point Dungeon::getRandomCorridor()
+Point Dungeon::getRandomCorridor()
 {
 	Point p;
 
@@ -556,30 +550,93 @@ bool Dungeon::spawn(int row, int column, GameObjectPtr game_object)
 	return false;
 }
 
+bool Dungeon::spawnEnemy(int row, int column, GameObjectPtr game_object)
+{
+	Tile &t = map_.at(row, column);
+	if(t.top()->walkable())
+	{
+		EnemyPtr eptr = std::dynamic_pointer_cast<Enemy>(game_object);
+		eptr->location().x = column;
+		eptr->location().y = row;
+		enemies_.push_back(eptr);
+
+		return true;
+	}
+
+	return false;
+}
+
 bool Dungeon::spawn(Point &p, GameObjectPtr game_object, int offset)
 {
-	Tile *t = nullptr;
+	int real_x = 0;
+	int real_y = 0;
 
 	switch(p.dir)
 	{
 		case Direction::North:
-			t = &map_.at(p.y-min_room_height+offset, p.x);
+			real_x = p.x;
+			real_y = p.y-min_room_height+offset;
 			break;
 		case Direction::East:
-			t = &map_.at(p.y, p.x+min_room_width-offset);
+			real_x = p.x+min_room_width-offset;
+			real_y = p.y;
 			break;
 		case Direction::South:
-			t = &map_.at(p.y+min_room_height-offset, p.x);
+			real_x = p.x;
+			real_y = p.y+min_room_height-offset;
 			break;
 		case Direction::West:
-			t = &map_.at(p.y, p.x-min_room_width+offset);
+			real_x = p.x-min_room_width+offset;
+			real_y = p.y;
 			break;
 	}
 
-	if(t->top()->walkable())
+	Tile &t = map_.at(real_y, real_x);
+
+	if(t.top()->walkable())
 	{
-		t->add(game_object);
+		t.add(game_object);
 		
+		return true;
+	}
+
+	return false;
+}
+
+bool Dungeon::spawnEnemy(Point &p, EnemyPtr game_object, int offset)
+{
+	int real_x = 0;
+	int real_y = 0;
+
+	switch(p.dir)
+	{
+	case Direction::North:
+		real_x = p.x;
+		real_y = p.y-min_room_height+offset;
+		break;
+	case Direction::East:
+		real_x = p.x+min_room_width-offset;
+		real_y = p.y;
+		break;
+	case Direction::South:
+		real_x = p.x;
+		real_y = p.y+min_room_height-offset;
+		break;
+	case Direction::West:
+		real_x = p.x-min_room_width+offset;
+		real_y = p.y;
+		break;
+	}
+
+	Tile &t = map_.at(real_y, real_x);
+
+	if(t.top()->walkable())
+	{
+		EnemyPtr eptr = std::dynamic_pointer_cast<Enemy>(game_object);
+		eptr->location().x = real_x;
+		eptr->location().y = real_y;
+		enemies_.push_back(eptr);
+
 		return true;
 	}
 
@@ -653,12 +710,11 @@ void Dungeon::draw(WINDOW *win)
 		{
 			GameObjectPtr g = map_.at(i, j).top();
 
-			if(!g->in_fov())
+			if(!g->discovered())
 			{
-				Tile &t = map_.at(i, j);
-
 				if(Game::getInstance().view_map())
 				{
+					Tile &t = map_.at(i, j);
 					if(t.elements() > 1)
 					{
 						Curses::mvwaddch(win, i, j, 
@@ -690,4 +746,9 @@ int Dungeon::num_corridors() const
 int Dungeon::num_enemies() const
 {
 	return num_enemies_;
+}
+
+std::vector<EnemyPtr>& Dungeon::enemies()
+{
+	return enemies_;
 }

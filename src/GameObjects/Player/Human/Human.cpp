@@ -1,6 +1,6 @@
 #include "Human.h"
 
-Human::Human(Map2D &map) : Player(Player::Race::Human, map)
+Human::Human(Dungeon &dungeon) : Player(Player::Race::Human, dungeon)
 {
 	health_points_ = 100;
 	attack_points_ = 10;

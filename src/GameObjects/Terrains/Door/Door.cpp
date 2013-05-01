@@ -12,7 +12,7 @@ Door::~Door()
 
 void Door::open()
 {
-	in_fov_ = true;
+	discovered_ = true;
 	walkable_ = true;
 	type_ = GameObject::Type::OpenedDoor;
 	color_ = GameObject::Color::Green_Black;

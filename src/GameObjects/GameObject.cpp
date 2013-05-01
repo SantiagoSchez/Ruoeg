@@ -1,7 +1,7 @@
 #include "GameObject.h"
 
-GameObject::GameObject(Type type) : type_(type), enemy_(false),
-	in_fov_(false), delete_object_(false), color_(GameObject::Color::None)
+GameObject::GameObject(Type type) : type_(type), discovered_(false), 
+	delete_object_(false), color_(GameObject::Color::None)
 {
 }
 
@@ -19,11 +19,6 @@ GameObject::Type GameObject::type() const
 	return type_;
 }
 
-bool GameObject::enemy() const
-{
-	return enemy_;
-}
-
 bool GameObject::walkable() const
 {
 	return walkable_;
@@ -39,12 +34,12 @@ void GameObject::kill_object()
 	delete_object_ = true;
 }
 
-bool GameObject::in_fov() const
+bool GameObject::discovered() const
 {
-	return in_fov_;
+	return discovered_;
 }
 
-void GameObject::set_in_fov(bool in_fov)
+void GameObject::set_discovered(bool discovered)
 {
-	in_fov_ = in_fov;
+	discovered_ = discovered;
 }

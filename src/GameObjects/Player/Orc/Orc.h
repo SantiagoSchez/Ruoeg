@@ -10,7 +10,7 @@
 class Orc : public Player
 {
 public:
-	Orc(Map2D &map);
+	Orc(Dungeon &dungeon);
 	~Orc();
 
 private:

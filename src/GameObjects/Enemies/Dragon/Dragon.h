@@ -10,7 +10,7 @@
 class Dragon : public Enemy
 {
 public:
-	Dragon();
+	Dragon(Dungeon &dungeon, int x, int y);
 	~Dragon();
 
 	void levelUp();

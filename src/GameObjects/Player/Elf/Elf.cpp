@@ -1,6 +1,6 @@
 #include "Elf.h"
 
-Elf::Elf(Map2D &map) : Player(Player::Race::Elf, map)
+Elf::Elf(Dungeon &dungeon) : Player(Player::Race::Elf, dungeon)
 {
 	health_points_ = 50;
 	attack_points_ = 5;

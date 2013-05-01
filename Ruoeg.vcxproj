@@ -109,8 +109,9 @@
     <ClCompile Include="src\GameObjects\GameObject.cpp" />
     <ClCompile Include="src\GameObjects\Terrains\Lit\Lit.cpp" />
     <ClCompile Include="src\Map\Map2D.cpp" />
-    <ClCompile Include="src\Utils\RNG.cpp" />
     <ClCompile Include="src\Ruoeg.cpp" />
+    <ClCompile Include="src\Utils\RNG.cpp" />
+    <ClCompile Include="src\Utils\Point.h" />
     <ClCompile Include="src\Map\Tile.cpp" />
     <ClCompile Include="src\GameObjects\Terrains\Wall\VerticalWall.cpp" />
   </ItemGroup>
@@ -143,6 +144,7 @@
     <ClInclude Include="src\GameObjects\GameObject.h" />
     <ClInclude Include="src\GameObjects\Terrains\Lit\Lit.h" />
     <ClInclude Include="src\Map\Map2D.h" />
+    <ClInclude Include="src\Utils\Direction.h" />
     <ClInclude Include="src\Utils\RNG.h" />
     <ClInclude Include="src\Map\Tile.h" />
     <ClInclude Include="src\GameObjects\Terrains\Wall\VerticalWall.h" />

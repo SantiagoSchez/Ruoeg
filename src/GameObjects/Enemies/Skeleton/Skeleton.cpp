@@ -1,6 +1,7 @@
 #include "Skeleton.h"
 
-Skeleton::Skeleton() : Enemy(GameObject::Type::Skeleton)
+Skeleton::Skeleton(Dungeon &dungeon, int x, int y) : 
+	Enemy(GameObject::Type::Skeleton, dungeon, x, y)
 {
 	walkable_ = false;
 	name_ = "Big Skeleton";

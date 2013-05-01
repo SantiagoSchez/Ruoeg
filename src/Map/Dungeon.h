@@ -4,35 +4,20 @@
 #ifndef RUOEG_MAP_DUNGEON_H_
 #define RUOEG_MAP_DUNGEON_H_
 
-#include <vector>
-
 #include "../Utils/RNG.h"
+#include "../Utils/Point.h"
+#include "../Utils/Direction.h"
 #include "../Curses/Curses.h"
 #include "../Map/Map2D.h"
+#include "../GameObjects/Enemies/Enemy.h"
+
+#include <vector>
+
+typedef std::shared_ptr<Enemy> EnemyPtr;
 
 class Dungeon
 {
 public:
-	enum class Direction
-	{
-		None,
-		North,
-		East,
-		South,
-		West,
-	};
-
-	struct Point
-	{
-		int x;
-		int y;
-		Direction dir;
-		// Variables used to modify the prior ones when building a 
-		// connection between features i.e. a door/lit.
-		int x_mod;
-		int y_mod;
-	};
-
 	Dungeon(int height, int width);
 	~Dungeon();
 
@@ -40,6 +25,8 @@ public:
 	void generate();
 
 	Map2D& map();
+
+	std::vector<EnemyPtr>& enemies();
 
 	// Some getters for get the number of features
 	int num_rooms() const;
@@ -59,7 +46,9 @@ private:
 	// Spawns a GameObject in the given location and pushes back
 	// in the top of the tile
 	bool spawn(int row, int column, GameObjectPtr game_object);
+	bool spawnEnemy(int row, int column, GameObjectPtr game_object);
 	bool spawn(Point &p, GameObjectPtr game_object, int offset);
+	bool spawnEnemy(Point &p, EnemyPtr game_object, int offset);
 
 	// Check whether there are objects of the given type around the
 	// given location within the given radius.
@@ -73,6 +62,9 @@ private:
 
 	// The internal object to keep the dungeon's map.
 	Map2D map_;
+
+	// A list of enemies.
+	std::vector<EnemyPtr> enemies_;
 
 	// Information variables about the features.
 	int num_rooms_;

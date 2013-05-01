@@ -10,7 +10,7 @@
 class SmallGoblin : public Enemy
 {
 public:
-	SmallGoblin();
+	SmallGoblin(Dungeon &dungeon, int x, int y);
 	~SmallGoblin();
 
 	void levelUp();

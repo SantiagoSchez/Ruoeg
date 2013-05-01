@@ -60,19 +60,17 @@ public:
 
 	virtual Color color() const;
 	virtual Type type() const;
-	virtual bool enemy() const;
 	virtual bool walkable() const;
 	virtual bool delete_object() const;
 	virtual void kill_object();
-	virtual bool in_fov() const;
-	virtual void set_in_fov(bool in_fov);
+	virtual bool discovered() const;
+	virtual void set_discovered(bool discovered);
 
 protected:
 	Color color_;
 	Type type_;
-	bool enemy_;
 	bool walkable_;
-	bool in_fov_;
+	bool discovered_;
 	bool delete_object_;
 };
 

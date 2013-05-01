@@ -5,10 +5,13 @@
 #ifndef RUOEG_GAMEOBJECTS_PLAYER_H_
 #define RUOEG_GAMEOBJECTS_PLAYER_H_
 
+#include "../../Utils/Point.h"
+#include "../../Utils/Direction.h"
 #include "../../Map/Dungeon.h"
-#include "../Enemies/Enemy.h"
 #include "../Chests/Chest.h"
 #include "../Terrains/Door/Door.h"
+
+class Enemy;
 
 class Player : public GameObject
 {
@@ -21,7 +24,7 @@ public:
 		Dwarf = 4	// -Health+Attack+Armor
 	};
 
-	Player(Race race, Map2D &map);
+	Player(Race race, Dungeon &dungeon);
 	virtual ~Player();
 
 	virtual Race race() const;
@@ -33,11 +36,12 @@ public:
 	virtual int max_experience_points() const;
 	virtual int level() const;
 	virtual bool isAlive() const;
+	virtual int receiveDamage(int attack_points);
 
 	virtual int explored() const;
 	virtual void reset_explored();
 
-	virtual const Dungeon::Point& location() const;
+	virtual const Point& location() const;
 	virtual void placeIt(int x, int y);
 
 	virtual bool moveNorth();
@@ -56,12 +60,13 @@ public:
 	// DEBUG
 	bool ghost_mode;
 protected:
-	virtual void checkCollisions(Tile &tile);
+	virtual void checkMapCollisions(Tile &tile);
 	virtual void doFOV();
 
+	RNG rng_;
 	Race race_;
 	char *str_race_;
-	Map2D &map_;
+	Dungeon &dungeon_;
 
 	int health_points_;
 	int attack_points_;
@@ -70,8 +75,7 @@ protected:
 	int max_experience_points_;
 	int level_;
 	int explored_;
-
-	Dungeon::Point location_;
+	Point location_;
 };
 
 #endif // RUOEG_GAMEOBJECTS_PLAYER_H_

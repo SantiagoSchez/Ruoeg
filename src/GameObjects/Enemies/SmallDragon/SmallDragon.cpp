@@ -1,6 +1,7 @@
 #include "SmallDragon.h"
 
-SmallDragon::SmallDragon() : Enemy(GameObject::Type::SmallDragon)
+SmallDragon::SmallDragon(Dungeon &dungeon, int x, int y) : 
+	Enemy(GameObject::Type::SmallDragon, dungeon, x, y)
 {
 	walkable_ = false;
 	name_ = "Small Dragon";

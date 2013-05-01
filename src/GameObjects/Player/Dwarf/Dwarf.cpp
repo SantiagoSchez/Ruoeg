@@ -1,6 +1,6 @@
 #include "Dwarf.h"
 
-Dwarf::Dwarf(Map2D &map) : Player(Player::Race::Dwarf, map)
+Dwarf::Dwarf(Dungeon &dungeon) : Player(Player::Race::Dwarf, dungeon)
 {
 	health_points_ = 50;
 	attack_points_ = 15;

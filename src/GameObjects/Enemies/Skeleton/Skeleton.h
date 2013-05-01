@@ -10,7 +10,7 @@
 class Skeleton : public Enemy
 {
 public:
-	Skeleton();
+	Skeleton(Dungeon &dungeon, int x, int y);
 	~Skeleton();
 
 	void levelUp();

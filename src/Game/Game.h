@@ -26,6 +26,8 @@ public:
 	int manageInput(WINDOW *win);
 	void loadStrings();
 
+	void updateEnemies();
+	void updateEnemyDeaths();
 	void updateMapWindow();
 	void updateStatusWindow();
 

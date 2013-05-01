@@ -1,6 +1,6 @@
 #include "Orc.h"
 
-Orc::Orc(Map2D &map) : Player(Player::Race::Orc, map)
+Orc::Orc(Dungeon &dungeon) : Player(Player::Race::Orc, dungeon)
 {
 	health_points_ = 150;
 	attack_points_ = 15;

@@ -10,7 +10,7 @@
 class Goblin : public Enemy
 {
 public:
-	Goblin();
+	Goblin(Dungeon &dungeon, int x, int y);
 	~Goblin();
 
 	void levelUp();

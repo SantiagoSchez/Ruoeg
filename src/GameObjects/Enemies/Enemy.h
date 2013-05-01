@@ -5,14 +5,21 @@
 #ifndef RUOEG_GAMEOBJECTS_ENEMIES_ENEMY_H_
 #define RUOEG_GAMEOBJECTS_ENEMIES_ENEMY_H_
 
-#include "../GameObject.h"
 #include "../../Utils/RNG.h"
+#include "../../Utils/Point.h"
+#include "../../Curses/Curses.h"
+#include "../GameObject.h"
+#include "../../Map/Map2D.h"
+
 #include <string>
+
+class Player;
+class Dungeon;
 
 class Enemy : public GameObject
 {
 public:
-	Enemy(Type type);
+	Enemy(Type type, Dungeon &dungeon, int x, int y);
 	virtual ~Enemy();
 	
 	virtual const char* name() const;
@@ -23,12 +30,24 @@ public:
 	virtual int armor() const;
 	virtual int receiveDamage(int attack_points);
 	virtual const char* toString();
+	virtual Point& location();
+
+	virtual void draw(WINDOW *win);
+	virtual void update(Player &player);
 
 	virtual void levelUp() = 0;
 
 	static int num_enemies();
 
 protected:
+	virtual bool moveNorth(Player &player);
+	virtual bool moveEast(Player &player);
+	virtual bool moveSouth(Player &player);
+	virtual bool moveWest(Player &player);
+
+	Point location_;
+	Dungeon &dungeon_;
+
 	char *name_;
 	int level_;
 	int health_;

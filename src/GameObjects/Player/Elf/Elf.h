@@ -10,7 +10,7 @@
 class Elf : public Player
 {
 public:
-	Elf(Map2D &map);
+	Elf(Dungeon &dungeon);
 	~Elf();
 
 private:

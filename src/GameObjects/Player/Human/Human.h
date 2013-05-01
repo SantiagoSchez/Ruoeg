@@ -10,7 +10,7 @@
 class Human : public Player
 {
 public:
-	Human(Map2D &map);
+	Human(Dungeon &dungeon);
 	~Human();
 
 private:

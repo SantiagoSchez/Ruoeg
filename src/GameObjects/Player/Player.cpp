@@ -2,6 +2,7 @@
 #include <typeinfo>
 
 #include "Player.h"
+#include "../Enemies/Enemy.h"
 #include "../Chests/Chest.h"
 #include "../Terrains/Door/Door.h"
 #include "../Enemies/SmallGoblin/SmallGoblin.h"
@@ -9,9 +10,9 @@
 #include "../../Game/Game.h"
 #include "../../Game/ResourceManager.h"
 
-Player::Player(Race race, Map2D &map) : race_(race), 
+Player::Player(Race race, Dungeon &dungeon) : race_(race), 
 	GameObject(GameObject::Type::Player), experience_points_(0), 
-	max_experience_points_(50), level_(1), map_(map), explored_(0),
+	max_experience_points_(50), level_(1), dungeon_(dungeon), explored_(0),
 	ghost_mode(false)
 {
 	switch(race)
@@ -30,9 +31,9 @@ Player::Player(Race race, Map2D &map) : race_(race),
 		break;
 	}
 
-	in_fov_ = true;
+	discovered_ = true;
 	walkable_ = true;
-	location_.dir = Dungeon::Direction::North;
+	location_.dir = Direction::North;
 }
 
 Player::~Player()
@@ -84,7 +85,7 @@ bool Player::isAlive() const
 	return health_points_ > 0;
 }
 
-const Dungeon::Point& Player::location() const
+const Point& Player::location() const
 {
 	return location_;
 }
@@ -104,15 +105,26 @@ bool Player::moveNorth()
 		return true;
 	}
 
-	Tile &t = map_.at(location_.y-1, location_.x);
+	for(auto enemy : dungeon_.enemies())
+	{
+		if(enemy->location().y == location_.y-1)
+		{
+			if(enemy->location().x == location_.x)
+			{
+				attack(*enemy);
+				return false;
+			}
+		}
+	}
+
+	Tile &t = dungeon_.map().at(location_.y-1, location_.x);
 	if(t.top()->walkable())
 	{
 		location_.y -= 1;
-
 		return true;
 	}
 
-	checkCollisions(t);
+	checkMapCollisions(t);
 
 	return false;
 }
@@ -126,15 +138,26 @@ bool Player::moveEast()
 		return true;
 	}
 
-	Tile &t = map_.at(location_.y, location_.x+1);
+	for(auto enemy : dungeon_.enemies())
+	{
+		if(enemy->location().x == location_.x+1)
+		{
+			if(enemy->location().y == location_.y)
+			{
+				attack(*enemy);
+				return false;
+			}
+		}
+	}
+
+	Tile &t = dungeon_.map().at(location_.y, location_.x+1);
 	if(t.top()->walkable())
 	{
 		location_.x += 1;
-
 		return true;
 	}
 	
-	checkCollisions(t);
+	checkMapCollisions(t);
 
 	return false;
 }
@@ -148,15 +171,26 @@ bool Player::moveSouth()
 		return true;
 	}
 
-	Tile &t = map_.at(location_.y+1, location_.x);
+	for(auto enemy : dungeon_.enemies())
+	{
+		if(enemy->location().y == location_.y+1)
+		{
+			if(enemy->location().x == location_.x)
+			{
+				attack(*enemy);
+				return false;
+			}
+		}
+	}
+
+	Tile &t = dungeon_.map().at(location_.y+1, location_.x);
 	if(t.top()->walkable())
 	{
 		location_.y += 1;
-
 		return true;
 	}
 
-	checkCollisions(t);
+	checkMapCollisions(t);
 
 	return false;
 }
@@ -170,20 +204,31 @@ bool Player::moveWest()
 		return true;
 	}
 
-	Tile &t = map_.at(location_.y, location_.x-1);
+	for(auto enemy : dungeon_.enemies())
+	{
+		if(enemy->location().x == location_.x-1)
+		{
+			if(enemy->location().y == location_.y)
+			{
+				attack(*enemy);
+				return false;
+			}
+		}
+	}
+
+	Tile &t = dungeon_.map().at(location_.y, location_.x-1);
 	if(t.top()->walkable())
 	{
 		location_.x -= 1;
-
 		return true;
 	}
 
-	checkCollisions(t);
+	checkMapCollisions(t);
 
 	return false;
 }
 
-void Player::checkCollisions(Tile &tile)
+void Player::checkMapCollisions(Tile &tile)
 {
 	GameObjectPtr game_object = tile.top();
 
@@ -195,11 +240,6 @@ void Player::checkCollisions(Tile &tile)
 	case GameObject::Type::Chest:
 		openChest(static_cast<Chest&>(*game_object));
 		break;
-	default:
-		if(game_object->enemy())
-		{
-			attack(static_cast<Enemy&>(*game_object));
-		}
 	}
 }
 
@@ -247,19 +287,19 @@ void Player::attack(Enemy &enemy)
 	Curses::wattroff(Game::getInstance().consoleWindow(), 
 		COLOR_PAIR(GameObject::Color::Yellow_Black));
 	Curses::wattron(Game::getInstance().consoleWindow(), 
-		COLOR_PAIR(GameObject::Color::Red_Black));
+		COLOR_PAIR(GameObject::Color::Green_Black));
 	Curses::wprintw(Game::getInstance().consoleWindow(), " (%s %d)\n",
 		ResourceManager::getInstance().getString("ATTACK_ENEMY2"),
 		damage);
 	Curses::wattroff(Game::getInstance().consoleWindow(), 
-		COLOR_PAIR(GameObject::Color::Red_Black));
+		COLOR_PAIR(GameObject::Color::Green_Black));
 }
 
 void Player::doFOV()
 {
 	float x, y, ox, oy;
 
-	for(int i = 0; i < 360; ++i)
+	for(int i = 0; i < 360; i += 4)
 	{
 		x = cos(static_cast<float>(i*0.01745f));
 		y = sin(static_cast<float>(i*0.01745f));
@@ -269,15 +309,30 @@ void Player::doFOV()
 
 		for(int j = 0; j < 4; ++j)
 		{
-			GameObjectPtr g = map_.at(static_cast<int>(oy), 
+			// Check for static objects
+			GameObjectPtr g = dungeon_.map().at(static_cast<int>(oy), 
 				static_cast<int>(ox)).top();
-			if(!g->in_fov())
+
+			if(!g->discovered())
 			{
-				g->set_in_fov(true);
+				g->set_discovered(true);
+
 				if(g->type() != GameObject::Type::None)
 				{
 					++explored_;
 					Game::getInstance().add_score(1);
+				}
+			}
+
+			// Check for enemies
+			for(auto enemy : dungeon_.enemies())
+			{
+				if(enemy->location().x == static_cast<int>(ox))
+				{
+					if(enemy->location().y == static_cast<int>(oy))
+					{
+						enemy->set_discovered(true);
+					}
 				}
 			}
 
@@ -288,7 +343,7 @@ void Player::doFOV()
 			{
 				break;
 			}
-
+			
 			ox += x;
 			oy += y;
 		}
@@ -310,3 +365,20 @@ void Player::flash(GameObject::Color color)
 	color_ = color;
 }
 
+int Player::receiveDamage(int attack_points)
+{
+	int damage = rng_.nextInt(attack_points-2, attack_points+2) - armor_points_;
+	if(damage <= 0)
+	{
+		damage = 1;
+	}
+	health_points_ -= damage;
+
+	if(health_points_ <= 0)
+	{
+		// Player is dead
+		health_points_ = 0;
+	}
+
+	return damage;
+}
