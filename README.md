@@ -7,9 +7,15 @@ Changes
 ### Current look
 ![ScreenShot](https://raw.github.com/SantiagoSanchez/Ruoeg/master/screenshots/Ruoeg_4.29.13.png)
 
+### v0.2.1
+- Enemies now follow and attack you once they have been discovered.
+- Some improvements made in the main code of the engine.
+- Could we say game is almost finished? :)
+
 ### v0.2.0
 - Player can now kill enemies.
 - Fixed a bug with dungeon exploration.
+- Ability to change whether enabling map view or not (blind mode).
 
 ### v0.1.2
 - Field of View added to the player.
