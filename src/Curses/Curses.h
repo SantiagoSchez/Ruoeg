@@ -12,10 +12,10 @@ class Curses
 public:
 	static enum class Key 
 	{
-		Down = 0x102, 
-		Up = 0x103, 
-		Left = 0x104, 
-		Right = 0x105, 
+		Down = KEY_DOWN, 
+		Up = KEY_UP, 
+		Left = KEY_LEFT, 
+		Right = KEY_RIGHT, 
 		Esc = 0x1B,
 		Space = 0x20,
 		F1 = KEY_F(1),

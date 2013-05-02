@@ -2,7 +2,7 @@
 
 Human::Human(Dungeon &dungeon) : Player(Player::Race::Human, dungeon)
 {
-	max_health_points_ = 100;
+	max_health_points_ = 1;
 	health_points_ = max_health_points_;
 	attack_points_ = 10;
 	armor_points_ = 10;

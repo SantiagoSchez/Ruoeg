@@ -19,13 +19,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120_CTP_Nov2012</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120_CTP_Nov2012</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -81,6 +81,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\GameObjects\Chests\MapItem.cpp" />
     <ClCompile Include="src\GameObjects\Enemies\Enemy.cpp" />
     <ClCompile Include="src\Game\ResourceManager.cpp" />
     <ClCompile Include="src\GameObjects\Player\Dwarf\Dwarf.cpp" />
@@ -116,6 +117,7 @@
     <ClCompile Include="src\GameObjects\Terrains\Wall\VerticalWall.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\GameObjects\Chests\MapItem.h" />
     <ClInclude Include="src\GameObjects\Enemies\Enemy.h" />
     <ClInclude Include="src\Game\ResourceManager.h" />
     <ClInclude Include="src\GameObjects\Player\Dwarf\Dwarf.h" />

@@ -19,10 +19,10 @@ struct Point
 	int x_mod;
 	int y_mod;
 
-	Point& Point::operator=(Point rhs)
+	Point& Point::operator=(Point p)
 	{
-		x = rhs.x;
-		y = rhs.y;
+		x = p.x;
+		y = p.y;
 		return *this;
 	}
 };

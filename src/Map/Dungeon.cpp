@@ -11,6 +11,7 @@
 #include "../GameObjects/Terrains/Door/Door.h"
 #include "../GameObjects/Terrains/None/None.h"
 #include "../GameObjects/Chests/Chest.h"
+#include "../GameObjects/Chests/MapItem.h"
 #include "../GameObjects/Enemies/SmallDragon/SmallDragon.h"
 #include "../GameObjects/Enemies/SmallGoblin/SmallGoblin.h"
 #include "../GameObjects/Enemies/SmallSkeleton/SmallSkeleton.h"
@@ -143,6 +144,10 @@ void Dungeon::generate()
 			);
 		break;
 	}
+
+	// Generate a map item of the dungeon
+	location = getRandomLit();
+	map_.at(location.y, location.x).add(std::make_shared<MapItem>());
 
 	// Generate the downstairs
 	stairs_location_ = location = getRandomLit();
@@ -795,6 +800,13 @@ void Dungeon::draw(WINDOW *win)
 						Curses::mvwaddch(win, i, j, 
 							static_cast<char>(t.element(1)->type()) | 
 							COLOR_PAIR(static_cast<int>(GameObject::Color::White_Black)));
+					}
+
+					if(g->type() == GameObject::Type::DownStairs)
+					{
+						Curses::mvwaddch(win, i, j, 
+							static_cast<char>(g->type()) | 
+							COLOR_PAIR(static_cast<int>(g->color())));
 					}
 				}
 			}

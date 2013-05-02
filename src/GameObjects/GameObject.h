@@ -33,8 +33,9 @@ public:
 		SmallTroll = 't',
 		Troll = 'T',
 
-		// Chests
+		// Chests/Items
 		Chest = 'c',
+		MapItem = 'M',
 
 		// Debug purposes
 		Dummy = '?'

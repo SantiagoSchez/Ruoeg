@@ -7,6 +7,13 @@ Changes
 ### Current look
 ![ScreenShot](https://raw.github.com/SantiagoSanchez/Ruoeg/master/screenshots/Ruoeg_4.29.13.png)
 
+### v0.4.0
+- Title screen added.
+- Ability to choose the starting race.
+- Game now saves and loads the high scores.
+- Player can now use the downstairs.
+- A map item added to show the whole map (without enemies nor chests).
+
 ### v0.3.0
 - Enemies fully working.
 - Score and experience system adjusted.

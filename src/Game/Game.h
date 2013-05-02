@@ -25,6 +25,7 @@ public:
 	void refreshWindows(std::vector<WINDOW *> windows);
 	int manageInput(WINDOW *win);
 	void loadStrings();
+	void titleScreen();
 
 	void updateEnemies();
 	void updateEnemyDeaths();
@@ -40,12 +41,20 @@ public:
 	void set_score(int score);
 	void set_hi_score(int hi_score);
 	void add_score(int score);
+	int deepest_floor() const;
+	void set_deepest_floor(int deepest_floor);
 
 	double score_factor() const;
 	double exp_factor() const;
 	void increase_factors();
 
 	bool view_map() const;
+	void set_view_map(bool view_map);
+
+	void end();
+
+	bool saveData();
+	bool loadData();
 
 private:
 	enum class State 
@@ -60,9 +69,10 @@ private:
 	Dungeon dungeon_;
 	std::unique_ptr<Player> player_;
 	std::vector<WINDOW *> windows_;
-	int score_, hi_score_;
+	int score_, hi_score_, deepest_floor_;
 	double score_factor_, exp_factor_;
 	bool view_map_;
+	Point first_location_;
 
 	// Disallowing copy constructor and assignment operator
 	Game(Game const&);

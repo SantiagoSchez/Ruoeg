@@ -12,6 +12,7 @@
 #include "../Terrains/Door/Door.h"
 
 class Enemy;
+class MapItem;
 
 class Player : public GameObject
 {
@@ -39,7 +40,8 @@ public:
 	virtual int level() const;
 	virtual bool isAlive() const;
 	virtual int receiveDamage(Enemy &enemy);
-	virtual bool goDeep();
+	virtual bool goDeeper();
+	virtual void getMap(MapItem &map);
 
 	virtual int explored() const;
 	virtual void reset_explored();

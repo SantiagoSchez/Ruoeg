@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "../Enemies/Enemy.h"
 #include "../Chests/Chest.h"
+#include "../Chests/MapItem.h"
 #include "../Terrains/Door/Door.h"
 #include "../Enemies/SmallGoblin/SmallGoblin.h"
 #include "../Terrains/Lit/Lit.h"
@@ -246,13 +247,29 @@ void Player::checkMapCollisions(Tile &tile)
 		openChest(static_cast<Chest&>(*game_object));
 		break;
 	case GameObject::Type::DownStairs:
-		if(!goDeep())
+		if(!goDeeper())
 		{
 			location_ = dungeon_.stairs_location();
 			Game::getInstance().increase_factors();
 		}
 		break;
+	case GameObject::Type::MapItem:
+		getMap(static_cast<MapItem&>(*game_object));
+		break;
 	}
+}
+
+void Player::getMap(MapItem &map)
+{
+	Curses::wattron(Game::getInstance().consoleWindow(), 
+		COLOR_PAIR(GameObject::Color::Green_Black));
+	Curses::wprintw(Game::getInstance().consoleWindow(), " %s\n",
+		ResourceManager::getInstance().getString("MAP_OBTAINED"));
+	Curses::wattroff(Game::getInstance().consoleWindow(), 
+		COLOR_PAIR(GameObject::Color::Green_Black));
+
+	Game::getInstance().set_view_map(true);
+	map.kill_object();
 }
 
 void Player::openDoor(Door &door)
@@ -428,7 +445,7 @@ void Player::addExp(int exp)
 	}
 }
 
-bool Player::goDeep()
+bool Player::goDeeper()
 {
 	WINDOW *prompt = Curses::derwin(Game::getInstance().mapWindow(), 
 		5, 35, dungeon_.map().height()/2-2, dungeon_.map().width()/2-17);
@@ -437,16 +454,13 @@ bool Player::goDeep()
 	
 	while(prompt != NULL)
 	{
-		if(prompt != NULL)
-		{
-			Curses::mvwprintw(prompt, 1, 1, "You will go deeper in the dungeon.");
-			Curses::mvwprintw(prompt, 2, 1, "                                  ");
-			Curses::mvwprintw(prompt, 3, 1, "           [Y]es | [N]o           ");
-			Curses::mvwprintw(prompt, 4, 1, "                                  ");
+		Curses::mvwprintw(prompt, 1, 1, "You will go deeper in the dungeon.");
+		Curses::mvwprintw(prompt, 2, 1, "                                  ");
+		Curses::mvwprintw(prompt, 3, 1, "           [Y]es | [N]o           ");
+		Curses::mvwprintw(prompt, 4, 1, "                                  ");
 
-			Curses::wbox(prompt, 0, 0);
-			Curses::wrefresh(prompt);
-		}
+		Curses::wbox(prompt, 0, 0);
+		Curses::wrefresh(prompt);
 
 		int key = Curses::wgetch(prompt);
 		if(key != -1)
@@ -455,6 +469,13 @@ bool Player::goDeep()
 			{
 				explored_ = 0;
 				dungeon_.generate();
+				location_ = dungeon_.getRandomLit();
+				Game::getInstance().set_view_map(false);
+				Game::getInstance().increase_factors();
+				if(dungeon_.floor() >= Game::getInstance().deepest_floor())
+				{
+					Game::getInstance().set_deepest_floor(dungeon_.floor());
+				}
 				Curses::delwin(prompt);
 
 				return true;
@@ -463,6 +484,7 @@ bool Player::goDeep()
 			{
 				Curses::delwin(prompt);
 				Curses::werase(Game::getInstance().mapWindow());
+
 				return false;
 			}
 		}

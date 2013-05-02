@@ -8,11 +8,15 @@
 #include "../GameObjects/Player/Orc/Orc.h"
 #include "../GameObjects/Player/Elf/Elf.h"
 #include "../GameObjects/Player/Dwarf/Dwarf.h"
+#include "../GameObjects/Chests/Chest.h"
+#include "../Map/Dungeon.h"
+#include "../GameObjects/Player/Player.h"
 
 #include <algorithm>
+#include <fstream>
 
 Game::Game() : dungeon_(30, 90), score_factor_(0.10), exp_factor_(0.50),
-	view_map_(false)
+	view_map_(false), deepest_floor_(1), hi_score_(0)
 {
 }
 
@@ -29,7 +33,17 @@ Game& Game::getInstance()
 
 void Game::start()
 {
+	// Setup Curses stuff and dungeon
 	setUp();
+
+	// Title screen
+	titleScreen();
+
+	// Init the player
+	first_location_ = dungeon_.getRandomLit();
+	player_->placeIt(first_location_.x, first_location_.y);
+
+	// Game loop
 	loop();
 }
 
@@ -88,11 +102,8 @@ void Game::setUp()
 	// Load resources
 	loadStrings();
 
-	// Init the player and dungeon
+	// Init the dungeon
 	dungeon_.generate();
-	Point loc = dungeon_.getRandomLit();
-	player_.reset(new Human(dungeon_));
-	player_->placeIt(loc.x, loc.y);
 
 	// Change game state
 	state_ = State::Running;
@@ -109,9 +120,14 @@ void Game::loop(Curses::Key /*= Crs::Key::ESC*/)
 	{
 		updateEnemyDeaths();
 
-		if(manageInput(windows_[0]) != -1)
+		if(manageInput(mapWindow()) != -1)
 		{
 			updateEnemies();
+		}
+
+		if(!player_->isAlive())
+		{
+			end();
 		}
 		
 		updateMapWindow();
@@ -170,13 +186,13 @@ int Game::manageInput(WINDOW *win)
 		if(key == static_cast<int>(Curses::Key::F1))
 		{
 			player_->ghost_mode = !player_->ghost_mode;
-			Curses::wprintw(windows_[1], " GHOST MODE: %d\n", player_->ghost_mode);
+			Curses::wprintw(consoleWindow(), " GHOST MODE: %d\n", player_->ghost_mode);
 		}
 		else if(key == static_cast<int>(Curses::Key::F2))
 		{
 			view_map_ = !view_map_;
-			Curses::werase(windows_[0]);
-			Curses::wprintw(windows_[1], " VIEW MAP: %d\n", view_map_);
+			Curses::werase(mapWindow());
+			Curses::wprintw(consoleWindow(), " VIEW MAP: %d\n", view_map_);
 		}
 		else if(key == static_cast<int>(Curses::Key::F3))
 		{
@@ -229,70 +245,70 @@ WINDOW* Game::statusWindow()
 void Game::updateMapWindow()
 {
 	// Draw player and dungeon
-	dungeon_.draw(windows_[0]);
-	player_->draw(windows_[0]);
+	dungeon_.draw(mapWindow());
+	player_->draw(mapWindow());
 
 	// Draw enemies
 	for(auto enemy : dungeon_.enemies())
 	{
-		enemy->draw(windows_[0]);
+		enemy->draw(mapWindow());
 	}
 
 	// Show score and map exploration
-	Curses::wattron(windows_[0], COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
-	Curses::mvwprintw(windows_[0], 1, 1, " %s %d | %s %d", 
+	Curses::wattron(mapWindow(), COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
+	Curses::mvwprintw(mapWindow(), 1, 1, " %s %d | %s %d", 
 		ResourceManager::getInstance().getString("SCORE"), 
 		score_,
 		ResourceManager::getInstance().getString("HI_SCORE"),
 		hi_score_);
-	Curses::mvwprintw(windows_[0], 1, dungeon_.map().width()-54, "%s -%d",
+	Curses::mvwprintw(mapWindow(), 1, dungeon_.map().width()-54, "%s -%d",
 		ResourceManager::getInstance().getString("CURRENT_FLOOR"),
 		dungeon_.floor());
- 	Curses::mvwprintw(windows_[0], 1, dungeon_.map().width()-27, "%s %.2f%%",
+ 	Curses::mvwprintw(mapWindow(), 1, dungeon_.map().width()-27, "%s %.2f%%",
  		ResourceManager::getInstance().getString("EXPLORED"),
  		(player_->explored()/(float)dungeon_.map().valid_objects())*100);
-	Curses::wattroff(windows_[0], COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
+	Curses::wattroff(mapWindow(), COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
 }
 
 void Game::updateStatusWindow()
 {
 	// Number of enemies and chests
-	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Red_Black)));
-	Curses::mvwprintw(windows_[2], 1, 0, " %s %d  ", 
+	Curses::wattron(statusWindow(), COLOR_PAIR(static_cast<int>(GameObject::Color::Red_Black)));
+	Curses::mvwprintw(statusWindow(), 1, 0, " %s %d  ", 
 		ResourceManager::getInstance().getString("ENEMIES_NUMBER"), 
 		Enemy::num_enemies());
-	Curses::mvwprintw(windows_[2], 2, 0, " %s %d  ", 
+	Curses::mvwprintw(statusWindow(), 2, 0, " %s %d  ", 
 		ResourceManager::getInstance().getString("CHESTS_NUMBER"), 
 		Chest::num_chests());
-	Curses::wattroff(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Red_Black)));
+	Curses::wattroff(statusWindow(), COLOR_PAIR(static_cast<int>(GameObject::Color::Red_Black)));
 
 	// Player level
-	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
-	Curses::mvwprintw(windows_[2], 4, 0, " %s %d %s  ", 
+	Curses::wattron(statusWindow(), COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
+	Curses::mvwprintw(statusWindow(), 4, 0, " %s %d %s  ", 
 		ResourceManager::getInstance().getString("PLAYER_LEVEL"), 
 		player_->level(),
 		player_->str_race());
-	Curses::wattroff(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
+	Curses::wattroff(statusWindow(), COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
 
 	// Basic stats for the player: Health, Attack and Armor points
-	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Green_Black)));
-	Curses::mvwprintw(windows_[2], 5, 0, " %s %d  ", 
+	Curses::wattron(statusWindow(), COLOR_PAIR(static_cast<int>(GameObject::Color::Green_Black)));
+	Curses::mvwprintw(statusWindow(), 5, 0, " %s %d  ", 
 		ResourceManager::getInstance().getString("PLAYER_HEALTH"), 
 		player_->health_points());
-	Curses::mvwprintw(windows_[2], 6, 0, " %s %d | %s %d  ", 
+	Curses::mvwprintw(statusWindow(), 6, 0, " %s %d | %s %d  ", 
 		ResourceManager::getInstance().getString("PLAYER_ATTACK"), 
 		player_->attack_points(),
 		ResourceManager::getInstance().getString("PLAYER_ARMOR"),
 		player_->armor_points());
-	Curses::wattroff(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Green_Black)));
+	Curses::wattroff(statusWindow(), COLOR_PAIR(static_cast<int>(GameObject::Color::Green_Black)));
 
 	// Experience gained for the player
-	Curses::wattron(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Cyan_Black)));
-	Curses::mvwprintw(windows_[2], 8, 0, " %s %d/%d  ", 
+	Curses::wattron(statusWindow(), COLOR_PAIR(static_cast<int>(GameObject::Color::Cyan_Black)));
+	Curses::mvwprintw(statusWindow(), 8, 0, " %s %d/%d  ", 
 		ResourceManager::getInstance().getString("PLAYER_EXPERIENCE"), 
 		player_->experience_points(),
 		player_->max_experience_points());
-	Curses::wattroff(windows_[2], COLOR_PAIR(static_cast<int>(GameObject::Color::Cyan_Black)));
+	Curses::wattroff(statusWindow(), COLOR_PAIR(static_cast<int>(GameObject::Color::Cyan_Black)));
 }
 
 void Game::loadStrings()
@@ -302,6 +318,8 @@ void Game::loadStrings()
 		addString("DOOR_OPENED", "You open the door.");
 	ResourceManager::getInstance().
 		addString("CHEST_GATHERED", "gold gathered from chest!");
+	ResourceManager::getInstance().
+		addString("MAP_OBTAINED", "Map of the dungeon obtained!");
 	ResourceManager::getInstance().
 		addString("YOU_RECEIVE", "You receive");
 	ResourceManager::getInstance().
@@ -372,6 +390,16 @@ void Game::set_hi_score(int hi_score)
 	hi_score_ = hi_score_;
 }
 
+int Game::deepest_floor() const
+{
+	return deepest_floor_;
+}
+
+void Game::set_deepest_floor(int deepest_floor)
+{
+	deepest_floor_ = deepest_floor;
+}
+
 void Game::add_score(int score)
 {
 	int score_to_add = static_cast<int>(score_factor_ * score);
@@ -399,6 +427,11 @@ bool Game::view_map() const
 	return view_map_;
 }
 
+void Game::set_view_map(bool view_map)
+{
+	view_map_ = view_map;
+}
+
 double Game::exp_factor() const
 {
 	return exp_factor_;
@@ -408,4 +441,155 @@ void Game::increase_factors()
 {
 	score_factor_ += 0.15;
 	exp_factor_ += 0.50;
+}
+
+void Game::end()
+{
+	WINDOW *prompt = Curses::derwin(mapWindow(), 
+		12, 45, dungeon_.map().height()/2-5, dungeon_.map().width()/2-22);
+	Curses::wbkgd(prompt, COLOR_PAIR(GameObject::Color::Red_Black));
+
+	saveData();
+
+	while(prompt != NULL)
+	{
+		Curses::mvwprintw(prompt, 1, 1, "Congratulations %s, you are dead!           ", player_->str_race());
+		Curses::mvwprintw(prompt, 2, 1, "                                            ");
+		Curses::mvwprintw(prompt, 3, 1, "But don't worry, you have reached           ");
+		Curses::mvwprintw(prompt, 4, 1, "the floor -%d in the dungeon!               ", dungeon_.floor());
+		Curses::mvwprintw(prompt, 5, 1, "                                            ");
+		Curses::mvwprintw(prompt, 6, 1, "Your HI-SCORE is saved, so don't be scared  ");
+		Curses::mvwprintw(prompt, 7, 1, "of going through the dungeon again brave    ");
+		Curses::mvwprintw(prompt, 8, 1, "warrior!                                    ");
+		Curses::mvwprintw(prompt, 9, 1, "                                            ");
+		Curses::mvwprintw(prompt, 10, 1, "       <PRESS [ENTER] TO CONTINUE>          ");
+
+		Curses::wbox(prompt, 0, 0);
+		Curses::wrefresh(prompt);
+
+		int key = Curses::wgetch(prompt);
+		if(key != -1)
+		{
+			if(key == static_cast<int>(Curses::Key::Space))
+			{
+				Curses::delwin(prompt);
+
+				return;
+			}
+		}
+	}
+}
+
+void Game::titleScreen()
+{
+	WINDOW *win = Curses::newwin(40, 90, 0, 0);
+
+	loadData();
+
+	while(win != NULL)
+	{
+		Curses::wattron(win, COLOR_PAIR(static_cast<int>(GameObject::Color::Red_Black)));
+		Curses::mvwprintw(win,  1, 0, "              ,-.----.                                                                   ");
+		Curses::mvwprintw(win,  2, 0, "              \\    /  \\                                                                  ");
+		Curses::mvwprintw(win,  3, 0, "              ;   :    \\           ,--,     ,---.                                        ");
+		Curses::mvwprintw(win,  4, 0, "              |   | .\\ :         ,'_ /|    '   ,'\\               ,----._,.               ");
+		Curses::mvwprintw(win,  5, 0, "              .   : |: |    .--. |  | :   /   /   |    ,---.    /   /  ' /               ");
+		Curses::mvwprintw(win,  6, 0, "              |   |  \\ :  ,'_ /| :  . |  .   ; ,. :   /     \\  |   :     |               ");
+		Curses::mvwprintw(win,  7, 0, "              |   : .  /  |  ' | |  . .  '   | |: :  /    /  | |   | .\\  .               ");
+		Curses::mvwprintw(win,  8, 0, "              ;   | |  \\  |  | ' |  | |  '   | .; : .    ' / | .   ; ';  |               ");
+		Curses::mvwprintw(win,  9, 0, "              |   | ;\\  \\ :  | : ;  ; |  |   :    | '   ;   /| '   .   . |               ");
+		Curses::mvwprintw(win, 10, 0, "              :   ' | \\.' '  :  `--'   \\  \\   \\  /  '   |  / |  `---`-'| |               ");
+		Curses::mvwprintw(win, 11, 0, "              :   : :-'   :  ,      .-./   `----'   |   :    |  .'__/\\_: |               ");
+		Curses::mvwprintw(win, 12, 0, "              |   |.'      `--`----'                 \\   \\  /   |   :    :               ");
+		Curses::mvwprintw(win, 13, 0, "              `---'                                   `----'     \\   \\  /                ");
+		Curses::mvwprintw(win, 14, 0, "                                                                  `--`-'                 ");
+		Curses::mvwprintw(win, 16, 30, "~ A minimalist roguelike game ~");
+		Curses::wattroff(win, COLOR_PAIR(static_cast<int>(GameObject::Color::Red_Black)));
+
+		Curses::wattron(win, COLOR_PAIR(static_cast<int>(GameObject::Color::Cyan_Black)));
+		Curses::mvwprintw(win, 20, 30, "Choose your race, brave warrior!");
+		Curses::wattroff(win, COLOR_PAIR(static_cast<int>(GameObject::Color::Cyan_Black)));
+
+		Curses::mvwaddch(win, 22, 29, '@');
+		Curses::mvwprintw(win, 23, 26, "[H]uman");
+		Curses::mvwaddch(win, 22, 41, '@' | COLOR_PAIR(static_cast<int>(GameObject::Color::White_Yellow)));
+		Curses::mvwprintw(win, 23, 39, "[E]lf");
+		Curses::mvwaddch(win, 22, 51, '@' | COLOR_PAIR(static_cast<int>(GameObject::Color::White_Green)));
+		Curses::mvwprintw(win, 23, 49, "[O]rc");
+		Curses::mvwaddch(win, 22, 62, '@' | COLOR_PAIR(static_cast<int>(GameObject::Color::White_Red)));
+		Curses::mvwprintw(win, 23, 59, "[D]warf");
+
+		Curses::wattron(win, COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
+		Curses::mvwprintw(win, 30, 30, "Deepest floor: -%d | Best score: %d", deepest_floor_, hi_score_);
+		Curses::wattroff(win, COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
+
+		Curses::mvwprintw(win, 39, 0, "Copyright (c) 2013 Santiago Sanchez Sobrino.");
+		Curses::wrefresh(win);
+
+		int key = Curses::wgetch(win);
+		if(key != -1)
+		{
+			if((key == 'h') || (key == 'H'))
+			{
+				Curses::delwin(win);
+				player_.reset(new Human(dungeon_));
+				Curses::flash();
+				return;
+			}
+			else if((key == 'e') || (key == 'E'))
+			{
+				Curses::delwin(win);
+				player_.reset(new Elf(dungeon_));
+				Curses::flash();
+				return;
+			}
+			else if((key == 'o') || (key == 'O'))
+			{
+				Curses::delwin(win);
+				player_.reset(new Orc(dungeon_));
+				Curses::flash();
+				return;
+			}
+			else if((key == 'd') || (key == 'D'))
+			{
+				Curses::delwin(win);
+				player_.reset(new Dwarf(dungeon_));
+				Curses::flash();
+				return;
+			}
+		}
+	}
+}
+
+bool Game::saveData()
+{
+	std::ofstream file("data.ruoeg", std::ios::out | std::ios::out | std::ios::binary);
+
+	if(!file)
+	{
+		return false;
+	}
+
+	file.seekp(0);
+	file.write(reinterpret_cast<const char*>(&hi_score_), sizeof(hi_score_));
+	file.write(reinterpret_cast<const char*>(&deepest_floor_), sizeof(deepest_floor_));
+
+	return true;
+}
+
+bool Game::loadData()
+{
+	std::ifstream file("data.ruoeg", std::ios::in | std::ios::binary);
+	
+	file.seekg(0, file.end);
+	if((!file) || (file.tellg() <= 0))
+	{
+		return false;
+	}
+	file.seekg(0, file.beg);
+
+	file.read(reinterpret_cast<char*>(&hi_score_), sizeof(hi_score_));
+	file.read(reinterpret_cast<char*>(&deepest_floor_), sizeof(deepest_floor_));
+
+	return true;
 }
