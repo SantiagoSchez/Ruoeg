@@ -2,7 +2,8 @@
 
 Human::Human(Dungeon &dungeon) : Player(Player::Race::Human, dungeon)
 {
-	health_points_ = 100;
+	max_health_points_ = 100;
+	health_points_ = max_health_points_;
 	attack_points_ = 10;
 	armor_points_ = 10;
 	color_ = GameObject::Color::White_Black;
@@ -14,9 +15,12 @@ Human::~Human()
 
 void Human::levelUp()
 {
-	health_points_ += 10;
+	max_health_points_ += 10;
+	health_points_ = max_health_points_;
 	attack_points_ += 5;
 	armor_points_ += 5;
+	experience_points_ = 0;
+	max_experience_points_ = static_cast<int>(max_experience_points_ * 1.50);
 	level_ += 1;
 }
 

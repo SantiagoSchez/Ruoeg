@@ -93,16 +93,52 @@ void Dungeon::generate()
  	switch(chance)
 	{
 	case 0:
-		spawnEnemy(location.y, location.x, std::make_shared<Dragon>(*this, location.x, location.y));
+		spawnEnemy(
+			location.y, 
+			location.x, 
+			std::make_shared<Dragon>(
+				*this, 
+				location.x, 
+				location.y, 
+				static_cast<int>(rng_.nextInt(1000, 1500)*Game::getInstance().score_factor()),
+				static_cast<int>(30*Game::getInstance().exp_factor()))
+			);
 		break;
 	case 1:
-		spawnEnemy(location.y, location.x, std::make_shared<Goblin>(*this, location.x, location.y));
+		spawnEnemy(
+			location.y, 
+			location.x, 
+			std::make_shared<Goblin>(
+				*this, 
+				location.x, 
+				location.y, 
+				static_cast<int>(rng_.nextInt(1000, 1500)*Game::getInstance().score_factor()),
+				static_cast<int>(30*Game::getInstance().exp_factor()))
+			);
 		break;
 	case 2:
-  		spawnEnemy(location.y, location.x, std::make_shared<Skeleton>(*this, location.x, location.y));
+  		spawnEnemy(
+			location.y, 
+			location.x, 
+			std::make_shared<Skeleton>(
+				*this, 
+				location.x, 
+				location.y,
+				static_cast<int>(rng_.nextInt(1000, 1500)*Game::getInstance().score_factor()),
+				static_cast<int>(30*Game::getInstance().exp_factor()))
+			);
 		break;
 	case 3:
-		spawnEnemy(location.y, location.x, std::make_shared<Troll>(*this, location.x, location.y));
+		spawnEnemy(
+			location.y, 
+			location.x, 
+			std::make_shared<Troll>(
+				*this, 
+				location.x, 
+				location.y,
+				static_cast<int>(rng_.nextInt(1000, 1500)*Game::getInstance().score_factor()),
+				static_cast<int>(30*Game::getInstance().exp_factor()))
+			);
 		break;
 	}
 
@@ -326,7 +362,9 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 		// Spawn a chest
 		// The 2 means two tiles away walls
 		spawn(loc, 
-			std::make_shared<Chest>(static_cast<int>(rng_.nextInt(100, 1000)*Game::getInstance().score_factor())), 
+			std::make_shared<Chest>(
+				static_cast<int>(rng_.nextInt(100, 1000)*Game::getInstance().score_factor())
+			), 
 			2);
 	}
 	else if(chance < 100) // 80% <- (100-20)
@@ -336,16 +374,51 @@ bool Dungeon::makeSquaredRoom(Point &loc, int height, int width)
 		switch(monster_chance)
 		{
 		case 0:
-			spawnEnemy(loc, std::make_shared<SmallGoblin>(*this, loc.x, loc.y), 1);
+			spawnEnemy(loc, 
+				std::make_shared<SmallGoblin>(
+					*this, 
+					loc.x, 
+					loc.y, 
+					static_cast<int>(rng_.nextInt(500, 1000)*Game::getInstance().score_factor()),
+					static_cast<int>(15*Game::getInstance().exp_factor())
+				), 
+				1);
 			break;
 		case 1:
-			spawnEnemy(loc, std::make_shared<SmallDragon>(*this, loc.x, loc.y), 1);
+			spawnEnemy(
+				loc, 
+				std::make_shared<SmallDragon>(
+					*this, 
+					loc.x, 
+					loc.y,
+					static_cast<int>(rng_.nextInt(500, 1000)*Game::getInstance().score_factor()),
+					static_cast<int>(15*Game::getInstance().exp_factor())
+				),
+				1);
 			break;
 		case 2:
-			spawnEnemy(loc, std::make_shared<SmallSkeleton>(*this, loc.x, loc.y), 1);
+			spawnEnemy(
+				loc, 
+				std::make_shared<SmallSkeleton>(
+					*this, 
+					loc.x, 
+					loc.y,
+					static_cast<int>(rng_.nextInt(500, 1000)*Game::getInstance().score_factor()),
+					static_cast<int>(15*Game::getInstance().exp_factor())
+				),
+				1);
 			break;
 		case 3:
-			spawnEnemy(loc, std::make_shared<SmallTroll>(*this, loc.x, loc.y), 1);
+			spawnEnemy(
+				loc, 
+				std::make_shared<SmallTroll>(
+					*this, 
+					loc.x, 
+					loc.y,
+					static_cast<int>(rng_.nextInt(500, 1000)*Game::getInstance().score_factor()),
+					static_cast<int>(15*Game::getInstance().exp_factor())
+				), 
+				1);
 			break;
 		}
 

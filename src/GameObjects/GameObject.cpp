@@ -14,6 +14,11 @@ GameObject::Color GameObject::color() const
 	return color_;
 }
 
+void GameObject::set_color(Color color)
+{
+	color_ = color;
+}
+
 GameObject::Type GameObject::type() const
 {
 	return type_;

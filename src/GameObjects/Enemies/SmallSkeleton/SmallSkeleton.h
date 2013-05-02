@@ -10,7 +10,7 @@
 class SmallSkeleton : public Enemy
 {
 public:
-	SmallSkeleton(Dungeon &dungeon, int x, int y);
+	SmallSkeleton(Dungeon &dungeon, int x, int y, int score, int exp);
 	~SmallSkeleton();
 
 	void levelUp();

@@ -19,7 +19,7 @@ class Dungeon;
 class Enemy : public GameObject
 {
 public:
-	Enemy(Type type, Dungeon &dungeon, int x, int y);
+	Enemy(Type type, Dungeon &dungeon, int x, int y, int score, int exp);
 	virtual ~Enemy();
 	
 	virtual const char* name() const;
@@ -28,7 +28,7 @@ public:
 	virtual int max_health() const;
 	virtual int attack() const;
 	virtual int armor() const;
-	virtual int receiveDamage(int attack_points);
+	virtual int receiveDamage(Player &player);
 	virtual const char* toString();
 	virtual Point& location();
 
@@ -55,6 +55,7 @@ protected:
 	int attack_;
 	int armor_;
 	int score_;
+	int exp_;
 
 	RNG rng_;
 	std::string string_;

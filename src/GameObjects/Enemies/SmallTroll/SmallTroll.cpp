@@ -1,7 +1,7 @@
 #include "SmallTroll.h"
 
-SmallTroll::SmallTroll(Dungeon &dungeon, int x, int y) : 
-	Enemy(GameObject::Type::SmallTroll, dungeon, x, y)
+SmallTroll::SmallTroll(Dungeon &dungeon, int x, int y, int score, int exp) : 
+	Enemy(GameObject::Type::SmallTroll, dungeon, x, y, score, exp)
 {
 	walkable_ = false;
 	name_ = "Troll";

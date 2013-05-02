@@ -10,7 +10,7 @@
 class Troll : public Enemy
 {
 public:
-	Troll(Dungeon &dungeon, int x, int y);
+	Troll(Dungeon &dungeon, int x, int y, int score, int exp);
 	~Troll();
 
 	void levelUp();

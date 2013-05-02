@@ -1,11 +1,14 @@
 #include "Enemy.h"
 #include "../Player/Player.h"
+#include "../../Game/Game.h"
+#include "../../Game/ResourceManager.h"
 
 int Enemy::num_enemies_;
 
-Enemy::Enemy(Type type, Dungeon &dungeon, int x, int y) : GameObject(type), 
-	location_(x, y), name_("!"), level_(-1), health_(-1), max_health_(-1), 
-	attack_(-1), armor_(-1), dungeon_(dungeon)
+Enemy::Enemy(Type type, Dungeon &dungeon, int x, int y, int score, int exp) : 
+	GameObject(type), location_(x, y), name_("!"), level_(-1), health_(-1), 
+	max_health_(-1), attack_(-1), armor_(-1), dungeon_(dungeon), score_(score),
+	exp_(exp)
 {
 	walkable_ = false;
 	++num_enemies_;
@@ -46,9 +49,11 @@ int Enemy::armor() const
 	return armor_;
 }
 
-int Enemy::receiveDamage(int attack_points)
+int Enemy::receiveDamage(Player &player)
 {
-	int damage = rng_.nextInt(attack_points-2, attack_points+2) - armor_;
+	color_ = GameObject::Color::Red_Black;
+
+	int damage = rng_.nextInt(player.attack_points()-2, player.attack_points()+2) - armor_;
 	if(damage <= 0)
 	{
 		damage = 1;
@@ -59,6 +64,35 @@ int Enemy::receiveDamage(int attack_points)
 	{
 		delete_object_ = true;
 		health_ = 0;
+
+		Curses::wattron(Game::getInstance().consoleWindow(), 
+			COLOR_PAIR(GameObject::Color::Yellow_Black));
+		Curses::wprintw(Game::getInstance().consoleWindow(), " %s %s!\n", 
+			ResourceManager::getInstance().getString("YOU_KILLED"),
+			name_);
+		Curses::wattroff(Game::getInstance().consoleWindow(), 
+			COLOR_PAIR(GameObject::Color::Yellow_Black));
+
+		Curses::wattron(Game::getInstance().consoleWindow(), 
+			COLOR_PAIR(GameObject::Color::Green_Black));
+		Curses::wprintw(Game::getInstance().consoleWindow(), " %s %d %s\n", 
+			ResourceManager::getInstance().getString("YOU_RECEIVE"),
+			score_,
+			ResourceManager::getInstance().getString("GOLD_RECEIVED"));
+		Curses::wattroff(Game::getInstance().consoleWindow(), 
+			COLOR_PAIR(GameObject::Color::Green_Black));
+
+		Curses::wattron(Game::getInstance().consoleWindow(), 
+			COLOR_PAIR(GameObject::Color::Magenta_Black));
+		Curses::wprintw(Game::getInstance().consoleWindow(), " %s %d %s\n", 
+			ResourceManager::getInstance().getString("YOU_RECEIVE"),
+			exp_,
+			ResourceManager::getInstance().getString("EXP_RECEIVED"));
+		Curses::wattroff(Game::getInstance().consoleWindow(), 
+			COLOR_PAIR(GameObject::Color::Magenta_Black));
+
+		Game::getInstance().add_score(score_);
+		player.addExp(exp_);
 	}
 
 	return damage;
@@ -102,27 +136,30 @@ void Enemy::draw(WINDOW *win)
 
 void Enemy::update(Player &player)
 {
-	int px = player.location().x;
-	int py = player.location().y;
-	int &ex = location_.x;
-	int &ey = location_.y;
+	if(health_ > 0)
+	{
+		int px = player.location().x;
+		int py = player.location().y;
+		int &ex = location_.x;
+		int &ey = location_.y;
 
-	// Movement
-	if(ey > py)
-	{
-		moveNorth(player);
-	}
-	else if(ey < py)
-	{
-		moveSouth(player);
-	}
-	if(ex < px)
-	{
-		moveEast(player);
-	}
-	else if(ex > px)
-	{
-		moveWest(player);
+		// Movement
+		if(ey > py)
+		{
+			moveNorth(player);
+		}
+		else if(ey < py)
+		{
+			moveSouth(player);
+		}
+		if(ex < px)
+		{
+			moveEast(player);
+		}
+		else if(ex > px)
+		{
+			moveWest(player);
+		}
 	}
 }
 
@@ -132,7 +169,7 @@ bool Enemy::moveNorth(Player &player)
 	{
 		if(player.location().y == location_.y-1)
 		{
-			player.receiveDamage(attack_);
+			player.receiveDamage(*this);
 			return false;
 		}
 	}
@@ -153,7 +190,7 @@ bool Enemy::moveEast(Player &player)
 	{
 		if(player.location().y == location_.y)
 		{
-			player.receiveDamage(attack_);
+			player.receiveDamage(*this);
 			return false;
 		}
 	}
@@ -174,7 +211,7 @@ bool Enemy::moveSouth(Player &player)
 	{
 		if(player.location().y == location_.y+1)
 		{
-			player.receiveDamage(attack_);
+			player.receiveDamage(*this);
 			return false;
 		}
 	}
@@ -195,7 +232,7 @@ bool Enemy::moveWest(Player &player)
 	{
 		if(player.location().y == location_.y)
 		{
-			player.receiveDamage(attack_);
+			player.receiveDamage(*this);
 			return false;
 		}
 	}

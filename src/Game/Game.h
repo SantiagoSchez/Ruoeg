@@ -40,7 +40,10 @@ public:
 	void set_score(int score);
 	void set_hi_score(int hi_score);
 	void add_score(int score);
+
 	double score_factor() const;
+	double exp_factor() const;
+	void increase_factors();
 
 	bool view_map() const;
 
@@ -58,7 +61,7 @@ private:
 	std::unique_ptr<Player> player_;
 	std::vector<WINDOW *> windows_;
 	int score_, hi_score_;
-	double score_factor_;
+	double score_factor_, exp_factor_;
 	bool view_map_;
 
 	// Disallowing copy constructor and assignment operator

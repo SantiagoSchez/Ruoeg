@@ -10,7 +10,7 @@
 class SmallDragon : public Enemy
 {
 public:
-	SmallDragon(Dungeon &dungeon, int x, int y);
+	SmallDragon(Dungeon &dungeon, int x, int y, int score, int exp);
 	~SmallDragon();
 
 	void levelUp();

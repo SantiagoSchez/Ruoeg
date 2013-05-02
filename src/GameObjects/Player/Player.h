@@ -30,13 +30,15 @@ public:
 	virtual Race race() const;
 	virtual const char* str_race() const;
 	virtual int health_points() const;
+	virtual int max_health_points() const;
 	virtual int attack_points() const;
 	virtual int armor_points() const;
 	virtual int experience_points() const;
 	virtual int max_experience_points() const;
+	virtual void addExp(int exp);
 	virtual int level() const;
 	virtual bool isAlive() const;
-	virtual int receiveDamage(int attack_points);
+	virtual int receiveDamage(Enemy &enemy);
 
 	virtual int explored() const;
 	virtual void reset_explored();
@@ -52,7 +54,6 @@ public:
 	virtual void openDoor(Door &door);
 	virtual void openChest(Chest &chest);
 	virtual void attack(Enemy &enemy);
-	virtual void flash(GameObject::Color color);
 
 	virtual void levelUp() = 0;
 	virtual void draw(WINDOW *win) = 0;
@@ -70,6 +71,7 @@ protected:
 
 	int health_points_;
 	int attack_points_;
+	int max_health_points_;
 	int armor_points_;
 	int experience_points_;
 	int max_experience_points_;

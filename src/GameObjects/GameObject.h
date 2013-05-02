@@ -52,13 +52,15 @@ public:
 		White_Green = 7,	// Orc
 		White_Yellow = 8,	// Elf
 		White_Red = 9,		// Dwarf
-		Black_Black = 10	// None
+		Black_Black = 10,	// None
+		Magenta_Black = 11	// Experience
 	};
 
 	explicit GameObject(Type type);
 	virtual ~GameObject();
 
 	virtual Color color() const;
+	virtual void set_color(GameObject::Color color);
 	virtual Type type() const;
 	virtual bool walkable() const;
 	virtual bool delete_object() const;

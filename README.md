@@ -7,6 +7,10 @@ Changes
 ### Current look
 ![ScreenShot](https://raw.github.com/SantiagoSanchez/Ruoeg/master/screenshots/Ruoeg_4.29.13.png)
 
+### v0.3.0
+- Enemies fully working.
+- Score and experience system adjusted.
+
 ### v0.2.1
 - Enemies now follow and attack you once they have been discovered.
 - Some improvements made in the main code of the engine.

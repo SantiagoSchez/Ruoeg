@@ -11,7 +11,8 @@
 
 #include <algorithm>
 
-Game::Game() : dungeon_(30, 90), score_factor_(0.5), view_map_(false)
+Game::Game() : dungeon_(30, 90), score_factor_(0.10), exp_factor_(0.50),
+	view_map_(false)
 {
 }
 
@@ -82,6 +83,7 @@ void Game::setUp()
 	Curses::init_pair(static_cast<int>(GameObject::Color::White_Yellow), COLOR_WHITE, COLOR_YELLOW);
 	Curses::init_pair(static_cast<int>(GameObject::Color::White_Red), COLOR_WHITE, COLOR_RED);
 	Curses::init_pair(static_cast<int>(GameObject::Color::Black_Black), COLOR_BLACK, COLOR_BLACK);
+	Curses::init_pair(static_cast<int>(GameObject::Color::Magenta_Black), COLOR_MAGENTA, COLOR_BLACK);
 
 	// Load resources
 	loadStrings();
@@ -293,12 +295,28 @@ void Game::loadStrings()
 		"You open the door.");
 	ResourceManager::getInstance().addString("CHEST_GATHERED",
 		"gold gathered from chest!");
+	ResourceManager::getInstance().addString("YOU_RECEIVE",
+		"You receive");
+	ResourceManager::getInstance().addString("YOU_KILLED",
+		"You killed the");
+	ResourceManager::getInstance().addString("DAMAGE_RECEIVED",
+		"damage!");
+	ResourceManager::getInstance().addString("EXP_RECEIVED",
+		"experience points!");
+	ResourceManager::getInstance().addString("GOLD_RECEIVED",
+		"gold!");
 	ResourceManager::getInstance().addString("ATTACK_ENEMY1",
 		"You attack enemy:");
 	ResourceManager::getInstance().addString("ATTACK_ENEMY2",
 		"Damage:");
+	ResourceManager::getInstance().addString("ATTACK_PLAYER1",
+		"Enemy");
+	ResourceManager::getInstance().addString("ATTACK_PLAYER2",
+		"attacks you:");
 	ResourceManager::getInstance().addString("ENEMY_LEVEL",
 		"Lvl.");
+	ResourceManager::getInstance().addString("LVL_UP",
+		"Level up! You reach level");
 
 	// Status window
 	ResourceManager::getInstance().addString("CHESTS_NUMBER",
@@ -347,7 +365,15 @@ void Game::set_hi_score(int hi_score)
 
 void Game::add_score(int score)
 {
-	score_ += static_cast<int>(score_factor_ * score);
+	int score_to_add = static_cast<int>(score_factor_ * score);
+
+	if(score_to_add <= 0)
+	{
+		score_to_add = 1;
+	}
+	
+	score_ += score_to_add;
+	
 	if(score_ > hi_score_)
 	{
 		hi_score_ = score_;
@@ -362,4 +388,15 @@ double Game::score_factor() const
 bool Game::view_map() const
 {
 	return view_map_;
+}
+
+double Game::exp_factor() const
+{
+	return exp_factor_;
+}
+
+void Game::increase_factors()
+{
+	score_factor_ += 0.15;
+	exp_factor_ += 0.50;
 }

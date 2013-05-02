@@ -1,7 +1,7 @@
 #include "Dragon.h"
 
-Dragon::Dragon(Dungeon &dungeon, int x, int y) : 
-	Enemy(GameObject::Type::Dragon, dungeon, x, y)
+Dragon::Dragon(Dungeon &dungeon, int x, int y, int score, int exp) : 
+	Enemy(GameObject::Type::Dragon, dungeon, x, y, score, exp)
 {
 	walkable_ = false;
 	name_ = "Big Dragon";

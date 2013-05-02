@@ -1,7 +1,7 @@
 #include "Troll.h"
 
-Troll::Troll(Dungeon &dungeon, int x, int y) : 
-	Enemy(GameObject::Type::Troll, dungeon, x, y)
+Troll::Troll(Dungeon &dungeon, int x, int y, int score, int exp) : 
+	Enemy(GameObject::Type::Troll, dungeon, x, y, score, exp)
 {
 	walkable_ = false;
 	name_ = "Big Troll";

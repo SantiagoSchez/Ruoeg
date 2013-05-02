@@ -1,7 +1,7 @@
 #include "SmallGoblin.h"
 
-SmallGoblin::SmallGoblin(Dungeon &dungeon, int x, int y) : 
-	Enemy(GameObject::Type::SmallGoblin, dungeon, x, y)
+SmallGoblin::SmallGoblin(Dungeon &dungeon, int x, int y, int score, int exp) : 
+	Enemy(GameObject::Type::SmallGoblin, dungeon, x, y, score, exp)
 {
 	walkable_ = false;
 	name_ = "Goblin";

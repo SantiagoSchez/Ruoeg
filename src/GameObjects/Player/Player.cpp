@@ -55,6 +55,11 @@ int Player::health_points() const
 	return health_points_;
 }
 
+int Player::max_health_points() const
+{
+	return max_health_points_;
+}
+
 int Player::attack_points() const
 {
 	return attack_points_;
@@ -272,9 +277,12 @@ void Player::openChest(Chest &chest)
 
 void Player::attack(Enemy &enemy)
 {
-	flash(GameObject::Color::Red_Black); // Flash the player to red
+	int damage = enemy.receiveDamage(*this);
 
-	int damage = enemy.receiveDamage(attack_points_);
+	if(enemy.health() <= 0)
+	{
+		return;
+	}
 
 	Curses::wattron(Game::getInstance().consoleWindow(), 
 		COLOR_PAIR(GameObject::Color::Yellow_Black));
@@ -360,19 +368,31 @@ void Player::reset_explored()
 	explored_ = 0;
 }
 
-void Player::flash(GameObject::Color color)
+int Player::receiveDamage(Enemy &enemy)
 {
-	color_ = color;
-}
+	color_ = GameObject::Color::Red_Black;
 
-int Player::receiveDamage(int attack_points)
-{
-	int damage = rng_.nextInt(attack_points-2, attack_points+2) - armor_points_;
+	int damage = rng_.nextInt(enemy.attack()-2, enemy.attack()+2) - armor_points_;
 	if(damage <= 0)
 	{
 		damage = 1;
 	}
 	health_points_ -= damage;
+
+	Curses::wattron(Game::getInstance().consoleWindow(), 
+		COLOR_PAIR(GameObject::Color::Red_Black));
+	Curses::wprintw(Game::getInstance().consoleWindow(), " %s %s %s\n",
+		ResourceManager::getInstance().getString("ATTACK_PLAYER1"),
+		enemy.name(),
+		ResourceManager::getInstance().getString("ATTACK_PLAYER2"));
+	Curses::wprintw(Game::getInstance().consoleWindow(), " %s %d %s (%d/%d)\n", 
+		ResourceManager::getInstance().getString("YOU_RECEIVE"),
+		damage,
+		ResourceManager::getInstance().getString("DAMAGE_RECEIVED"),
+		health_points_,
+		max_health_points_);
+	Curses::wattroff(Game::getInstance().consoleWindow(), 
+		COLOR_PAIR(GameObject::Color::Red_Black));
 
 	if(health_points_ <= 0)
 	{
@@ -381,4 +401,22 @@ int Player::receiveDamage(int attack_points)
 	}
 
 	return damage;
+}
+
+void Player::addExp(int exp)
+{
+	experience_points_ += exp;
+
+	if(experience_points_ >= max_experience_points_)
+	{
+		levelUp();
+
+		Curses::wattron(Game::getInstance().consoleWindow(), 
+			COLOR_PAIR(GameObject::Color::Green_Black));
+		Curses::wprintw(Game::getInstance().consoleWindow(), " %s %d\n", 
+			ResourceManager::getInstance().getString("LVL_UP"),
+			level_);
+		Curses::wattroff(Game::getInstance().consoleWindow(), 
+			COLOR_PAIR(GameObject::Color::Green_Black));
+	}
 }
