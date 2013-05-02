@@ -39,6 +39,7 @@ public:
 	virtual int level() const;
 	virtual bool isAlive() const;
 	virtual int receiveDamage(Enemy &enemy);
+	virtual bool goDeep();
 
 	virtual int explored() const;
 	virtual void reset_explored();

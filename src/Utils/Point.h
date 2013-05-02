@@ -18,6 +18,13 @@ struct Point
 	// connection between features i.e. a door/lit.
 	int x_mod;
 	int y_mod;
+
+	Point& Point::operator=(Point rhs)
+	{
+		x = rhs.x;
+		y = rhs.y;
+		return *this;
+	}
 };
 
 #endif // RUOEG_UTILS_POINT_H_

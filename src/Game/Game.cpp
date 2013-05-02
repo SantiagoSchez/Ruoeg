@@ -178,6 +178,10 @@ int Game::manageInput(WINDOW *win)
 			Curses::werase(windows_[0]);
 			Curses::wprintw(windows_[1], " VIEW MAP: %d\n", view_map_);
 		}
+		else if(key == static_cast<int>(Curses::Key::F3))
+		{
+			dungeon_.generate();
+		}
 
 		// Player movement
 		if(key == static_cast<int>(Curses::Key::Up))
@@ -241,6 +245,9 @@ void Game::updateMapWindow()
 		score_,
 		ResourceManager::getInstance().getString("HI_SCORE"),
 		hi_score_);
+	Curses::mvwprintw(windows_[0], 1, dungeon_.map().width()-54, "%s -%d",
+		ResourceManager::getInstance().getString("CURRENT_FLOOR"),
+		dungeon_.floor());
  	Curses::mvwprintw(windows_[0], 1, dungeon_.map().width()-27, "%s %.2f%%",
  		ResourceManager::getInstance().getString("EXPLORED"),
  		(player_->explored()/(float)dungeon_.map().valid_objects())*100);
@@ -291,56 +298,58 @@ void Game::updateStatusWindow()
 void Game::loadStrings()
 {
 	// Log window
-	ResourceManager::getInstance().addString("DOOR_OPENED",
-		"You open the door.");
-	ResourceManager::getInstance().addString("CHEST_GATHERED",
-		"gold gathered from chest!");
-	ResourceManager::getInstance().addString("YOU_RECEIVE",
-		"You receive");
-	ResourceManager::getInstance().addString("YOU_KILLED",
-		"You killed the");
-	ResourceManager::getInstance().addString("DAMAGE_RECEIVED",
-		"damage!");
-	ResourceManager::getInstance().addString("EXP_RECEIVED",
-		"experience points!");
-	ResourceManager::getInstance().addString("GOLD_RECEIVED",
-		"gold!");
-	ResourceManager::getInstance().addString("ATTACK_ENEMY1",
-		"You attack enemy:");
-	ResourceManager::getInstance().addString("ATTACK_ENEMY2",
-		"Damage:");
-	ResourceManager::getInstance().addString("ATTACK_PLAYER1",
-		"Enemy");
-	ResourceManager::getInstance().addString("ATTACK_PLAYER2",
-		"attacks you:");
-	ResourceManager::getInstance().addString("ENEMY_LEVEL",
-		"Lvl.");
-	ResourceManager::getInstance().addString("LVL_UP",
-		"Level up! You reach level");
+	ResourceManager::getInstance().
+		addString("DOOR_OPENED", "You open the door.");
+	ResourceManager::getInstance().
+		addString("CHEST_GATHERED", "gold gathered from chest!");
+	ResourceManager::getInstance().
+		addString("YOU_RECEIVE", "You receive");
+	ResourceManager::getInstance().
+		addString("YOU_KILLED", "You killed the");
+	ResourceManager::getInstance().
+		addString("DAMAGE_RECEIVED", "damage!");
+	ResourceManager::getInstance().
+		addString("EXP_RECEIVED", "experience points!");
+	ResourceManager::getInstance().
+		addString("GOLD_RECEIVED", "gold!");
+	ResourceManager::getInstance().
+		addString("ATTACK_ENEMY1", "You attack enemy:");
+	ResourceManager::getInstance().
+		addString("ATTACK_ENEMY2", "Damage:");
+	ResourceManager::getInstance().
+		addString("ATTACK_PLAYER1", "Enemy");
+	ResourceManager::getInstance().
+		addString("ATTACK_PLAYER2", "attacks you:");
+	ResourceManager::getInstance().
+		addString("ENEMY_LEVEL", "Lvl.");
+	ResourceManager::getInstance().
+		addString("LVL_UP", "Level up! You reach level");
 
 	// Status window
-	ResourceManager::getInstance().addString("CHESTS_NUMBER",
-		"CHESTS:");
-	ResourceManager::getInstance().addString("ENEMIES_NUMBER",
-		"ENEMIES:");
-	ResourceManager::getInstance().addString("PLAYER_HEALTH",
-		"HEALTH:");
-	ResourceManager::getInstance().addString("PLAYER_ATTACK",
-		"ATTACK:");
-	ResourceManager::getInstance().addString("PLAYER_ARMOR",
-		"ARMOR:");
-	ResourceManager::getInstance().addString("PLAYER_EXPERIENCE",
-		"EXPERIENCE:");
-	ResourceManager::getInstance().addString("PLAYER_LEVEL",
-		"LEVEL:");
+	ResourceManager::getInstance().
+		addString("CHESTS_NUMBER", "CHESTS:");
+	ResourceManager::getInstance().
+		addString("ENEMIES_NUMBER", "ENEMIES:");
+	ResourceManager::getInstance().
+		addString("PLAYER_HEALTH", "HEALTH:");
+	ResourceManager::getInstance().
+		addString("PLAYER_ATTACK", "ATTACK:");
+	ResourceManager::getInstance().
+		addString("PLAYER_ARMOR", "ARMOR:");
+	ResourceManager::getInstance().
+		addString("PLAYER_EXPERIENCE", "EXPERIENCE:");
+	ResourceManager::getInstance().
+		addString("PLAYER_LEVEL", "LEVEL:");
 
 	// Map window
-	ResourceManager::getInstance().addString("SCORE",
-		"SCORE:");
-	ResourceManager::getInstance().addString("HI_SCORE",
-		"HI-SCORE:");
-	ResourceManager::getInstance().addString("EXPLORED",
-		"DUNGEON EXPLORED:");
+	ResourceManager::getInstance().
+		addString("SCORE", "SCORE:");
+	ResourceManager::getInstance().
+		addString("HI_SCORE", "HI-SCORE:");
+	ResourceManager::getInstance().
+		addString("EXPLORED", "DUNGEON EXPLORED:");
+	ResourceManager::getInstance().
+		addString("CURRENT_FLOOR", "CURRENT FLOOR:");
 }
 
 int Game::score() const

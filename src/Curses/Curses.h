@@ -85,6 +85,12 @@ public:
 	// Creates a new window
 	static WINDOW* newwin(int nlines, int ncols, int begin_y, int begin_x);
 
+	// Create a sub-window
+	static WINDOW *derwin(WINDOW *orig, int nlines, int ncols, int begin_y, int begin_x);
+
+	// Change the attributes of a window
+	static int wbkgd(WINDOW *win, chtype ch);
+
 	// Deletes a given window
 	static int delwin(WINDOW *win);
 

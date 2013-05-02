@@ -116,6 +116,16 @@ WINDOW* Curses::newwin(int nlines, int ncols, int begin_y, int begin_x)
 	return ::newwin(nlines, ncols, begin_y, begin_x);
 }
 
+WINDOW* Curses::derwin(WINDOW *orig, int nlines, int ncols, int begin_y, int begin_x)
+{
+	return ::derwin(orig, nlines, ncols, begin_y, begin_x);
+}
+
+int Curses::wbkgd(WINDOW *win, chtype ch)
+{
+	return ::wbkgd(win, ch);
+}
+
 int Curses::delwin(WINDOW *win)
 {
 	return ::delwin(win);

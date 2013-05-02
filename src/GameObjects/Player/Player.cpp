@@ -245,6 +245,13 @@ void Player::checkMapCollisions(Tile &tile)
 	case GameObject::Type::Chest:
 		openChest(static_cast<Chest&>(*game_object));
 		break;
+	case GameObject::Type::DownStairs:
+		if(!goDeep())
+		{
+			location_ = dungeon_.stairs_location();
+			Game::getInstance().increase_factors();
+		}
+		break;
 	}
 }
 
@@ -419,4 +426,47 @@ void Player::addExp(int exp)
 		Curses::wattroff(Game::getInstance().consoleWindow(), 
 			COLOR_PAIR(GameObject::Color::Green_Black));
 	}
+}
+
+bool Player::goDeep()
+{
+	WINDOW *prompt = Curses::derwin(Game::getInstance().mapWindow(), 
+		5, 35, dungeon_.map().height()/2-2, dungeon_.map().width()/2-17);
+
+	Curses::wbkgd(prompt, COLOR_PAIR(GameObject::Color::Yellow_Black));
+	
+	while(prompt != NULL)
+	{
+		if(prompt != NULL)
+		{
+			Curses::mvwprintw(prompt, 1, 1, "You will go deeper in the dungeon.");
+			Curses::mvwprintw(prompt, 2, 1, "                                  ");
+			Curses::mvwprintw(prompt, 3, 1, "           [Y]es | [N]o           ");
+			Curses::mvwprintw(prompt, 4, 1, "                                  ");
+
+			Curses::wbox(prompt, 0, 0);
+			Curses::wrefresh(prompt);
+		}
+
+		int key = Curses::wgetch(prompt);
+		if(key != -1)
+		{
+			if(key == static_cast<int>('y'))
+			{
+				explored_ = 0;
+				dungeon_.generate();
+				Curses::delwin(prompt);
+
+				return true;
+			}
+			else if(key == static_cast<int>('n'))
+			{
+				Curses::delwin(prompt);
+				Curses::werase(Game::getInstance().mapWindow());
+				return false;
+			}
+		}
+	}
+
+	return false;
 }

@@ -21,11 +21,10 @@
 #include "../GameObjects/Enemies/Troll/Troll.h"
 #include "../GameObjects/Terrains/Stairs/Stairs.h"
 
-int Dungeon::dungeon_level = 1;
-
 Dungeon::Dungeon(int height, int width) 
 	: map_(height, width), map_error(4), min_room_height(4), 
-	  min_room_width(4), num_rooms_(0), num_corridors_(0), num_enemies_(0)
+	  min_room_width(4), num_rooms_(0), num_corridors_(0), num_enemies_(0),
+	  floor_(0)
 {
 }
 
@@ -38,11 +37,14 @@ void Dungeon::generate()
 	// Dungeon generation based on next algorithm:
 	// http://roguebasin.roguelikedevelopment.org/index.php?title=Dungeon-Building_Algorithm
 
+	// Erase the previous dungeon
+	Curses::werase(Game::getInstance().mapWindow());
+
 	// Restart map stuff
-	map_.clear();
-	num_corridors_ = 0;
-	num_enemies_ = 0;
-	num_rooms_ = 0;
+	restart();
+
+	// Increase the current level of the dungeon
+	++floor_;
 
 	// Fill the whole map with solid earth
 	int size = map_.width() * map_.height();
@@ -143,7 +145,7 @@ void Dungeon::generate()
 	}
 
 	// Generate the downstairs
-	location = getRandomLit();
+	stairs_location_ = location = getRandomLit();
 	map_.at(location.y, location.x).add(std::make_shared<Stairs>());
 
 	// Count the number of not explored tiles
@@ -821,7 +823,30 @@ int Dungeon::num_enemies() const
 	return num_enemies_;
 }
 
+int Dungeon::floor() const
+{
+	return floor_;
+}
+
+const Point& Dungeon::stairs_location() const
+{
+	return stairs_location_;
+}
+
 std::vector<EnemyPtr>& Dungeon::enemies()
 {
 	return enemies_;
+}
+
+void Dungeon::restart()
+{
+	map_.clear();
+	if(!enemies_.empty())
+	{
+		enemies_.clear();
+	}
+
+	num_corridors_ = 0;
+	num_enemies_ = 0;
+	num_rooms_ = 0;
 }

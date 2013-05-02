@@ -28,10 +28,12 @@ public:
 
 	std::vector<EnemyPtr>& enemies();
 
-	// Some getters for get the number of features
+	// Some getters for the features
 	int num_rooms() const;
 	int num_corridors() const;
 	int num_enemies() const;
+	int floor() const;
+	const Point& stairs_location() const;
 
 	// Helper methods
 	Point getRandomWall();
@@ -39,6 +41,9 @@ public:
 	Point getRandomCorridor();
 
 private:
+	// When we want to restart the class
+	void restart();
+
 	// Features to build. More can be added here.
 	bool makeSquaredRoom(Point &loc, int height, int width);
 	bool makeCorridor(Point &loc, int len);
@@ -71,6 +76,12 @@ private:
 	int num_corridors_;
 	int num_enemies_;
 
+	// Current floor
+	int floor_;
+
+	// Location for the stairs
+	Point stairs_location_;
+
 	// Some min values
 	const int min_room_height;
 	const int min_room_width;
@@ -79,12 +90,6 @@ private:
 	// inside the window avoiding problems of index out of boundaries.
 	// Currently it's set to 4 i.e. (4, 4, height-4, width-4).
 	const int map_error;
-
-	// This is a variable used to save the number of dungeons 
-	// (or level of dungeon) we have generated. We'll use it to take 
-	// care the monsters are stronger at higher level and chests give the
-	// player better scores
-	static int dungeon_level;
 };
 
 #endif // RUOEG_MAP_DUNGEON_H_

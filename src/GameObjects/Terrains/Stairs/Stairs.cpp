@@ -2,7 +2,7 @@
 
 Stairs::Stairs() : GameObject(GameObject::Type::DownStairs)
 {
-	walkable_ = true;
+	walkable_ = false;
 }
 
 Stairs::~Stairs()
