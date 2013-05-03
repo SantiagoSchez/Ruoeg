@@ -1,4 +1,4 @@
-![ScreenShot](https://raw.github.com/SantiagoSanchez/Ruoeg/master/screenshots/Ruoeg_banner.jpg)
+![ScreenShot](https://raw.github.com/SantiagoSanchez/Ruoeg/master/screenshots/Ruoeg_banner.jpg)![ScreenShot](http://roguetemple.com/rogueBanners/roguetempleSquareBanner.png)
 =====
 ### An old-school rogue-like game built from scratch using pdcurses.
 ### You may need to install the VC++ Redistributable for VS2012 in order to execute Ruoeg: http://www.microsoft.com/en-GB/download/details.aspx?id=30679
