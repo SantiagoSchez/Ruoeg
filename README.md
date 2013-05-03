@@ -2,7 +2,7 @@
 =====
 ### An old-school rogue-like game built from scratch using pdcurses.
 - You may need to install the VC++ Redistributable for VS2012 in order to execute Ruoeg: http://www.microsoft.com/en-GB/download/details.aspx?id=30679
-- Refer to zip file if you just want to play the game (https://github.com/SantiagoSanchez/Ruoeg/blob/master/Ruoeg_1.0_03052013.zip?raw=true).
+- Refer to the zip file if you just want to play the game (https://github.com/SantiagoSanchez/Ruoeg/blob/master/Ruoeg_1.0_03052013.zip?raw=true).
 
 Changes
 =======
