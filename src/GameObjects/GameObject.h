@@ -36,6 +36,7 @@ public:
 		// Chests/Items
 		Chest = 'c',
 		MapItem = 'M',
+		CompassItem = 'C',
 
 		// Debug purposes
 		Dummy = '?'
@@ -75,6 +76,8 @@ protected:
 	bool walkable_;
 	bool discovered_;
 	bool delete_object_;
+
+	int time_to_flash_;
 };
 
 #endif // RUOEG_GAMEOBJECTS_GAMEOBJECT_H_

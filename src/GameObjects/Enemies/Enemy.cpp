@@ -53,7 +53,7 @@ int Enemy::receiveDamage(Player &player)
 {
 	color_ = GameObject::Color::Red_Black;
 
-	int damage = rng_.nextInt(player.attack_points()-2, player.attack_points()+2) - armor_;
+	int damage = rng_.nextInt(player.attack_points(), player.attack_points()+3) - armor_;
 	if(damage <= 0)
 	{
 		damage = 1;
@@ -128,7 +128,7 @@ void Enemy::draw(WINDOW *win)
 		if(color_ != GameObject::Color::Yellow_Black)
 		{
 			wnoutrefresh(win);
-			Curses::napms(50);
+			Curses::napms(time_to_flash_);
 			color_ = GameObject::Color::Yellow_Black;
 		}
 	}

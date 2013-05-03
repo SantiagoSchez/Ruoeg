@@ -5,8 +5,8 @@
 #include "../Enemies/Enemy.h"
 #include "../Chests/Chest.h"
 #include "../Chests/MapItem.h"
+#include "../Chests/CompassItem.h"
 #include "../Terrains/Door/Door.h"
-#include "../Enemies/SmallGoblin/SmallGoblin.h"
 #include "../Terrains/Lit/Lit.h"
 #include "../../Game/Game.h"
 #include "../../Game/ResourceManager.h"
@@ -256,7 +256,23 @@ void Player::checkMapCollisions(Tile &tile)
 	case GameObject::Type::MapItem:
 		getMap(static_cast<MapItem&>(*game_object));
 		break;
+	case GameObject::Type::CompassItem:
+		getCompass(static_cast<CompassItem&>(*game_object));
+		break;
 	}
+}
+
+void Player::getCompass(CompassItem &compass)
+{
+	Curses::wattron(Game::getInstance().consoleWindow(), 
+		COLOR_PAIR(GameObject::Color::Green_Black));
+	Curses::wprintw(Game::getInstance().consoleWindow(), " %s\n",
+		ResourceManager::getInstance().getString("COMPASS_OBTAINED"));
+	Curses::wattroff(Game::getInstance().consoleWindow(), 
+		COLOR_PAIR(GameObject::Color::Green_Black));
+
+	Game::getInstance().set_view_chests(true);
+	compass.kill_object();
 }
 
 void Player::getMap(MapItem &map)
@@ -396,7 +412,7 @@ int Player::receiveDamage(Enemy &enemy)
 {
 	color_ = GameObject::Color::Red_Black;
 
-	int damage = rng_.nextInt(enemy.attack()-2, enemy.attack()+2) - armor_points_;
+	int damage = rng_.nextInt(enemy.attack(), enemy.attack()+2) - armor_points_;
 	if(damage <= 0)
 	{
 		damage = 1;
@@ -465,12 +481,13 @@ bool Player::goDeeper()
 		int key = Curses::wgetch(prompt);
 		if(key != -1)
 		{
-			if(key == static_cast<int>('y'))
+			if((key == 'y') || (key == 'Y'))
 			{
 				explored_ = 0;
 				dungeon_.generate();
 				location_ = dungeon_.getRandomLit();
 				Game::getInstance().set_view_map(false);
+				Game::getInstance().set_view_chests(false);
 				Game::getInstance().increase_factors();
 				if(dungeon_.floor() >= Game::getInstance().deepest_floor())
 				{
@@ -480,7 +497,7 @@ bool Player::goDeeper()
 
 				return true;
 			}
-			else if(key == static_cast<int>('n'))
+			else if((key == 'n') || (key == 'N'))
 			{
 				Curses::delwin(prompt);
 				Curses::werase(Game::getInstance().mapWindow());

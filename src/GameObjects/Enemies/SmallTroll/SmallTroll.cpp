@@ -7,7 +7,7 @@ SmallTroll::SmallTroll(Dungeon &dungeon, int x, int y, int score, int exp) :
 	name_ = "Troll";
 	color_ = GameObject::Color::Yellow_Black;
 
-	level_ = 1;
+	level_ = 0;
 	health_ = max_health_ = 25;
 	attack_ = 5;
 	armor_ = 3;

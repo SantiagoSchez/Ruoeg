@@ -7,7 +7,7 @@ Troll::Troll(Dungeon &dungeon, int x, int y, int score, int exp) :
 	name_ = "Big Troll";
 	color_ = GameObject::Color::Yellow_Red;
 
-	level_ = 2;
+	level_ = 1;
 	health_ = max_health_ = 50;
 	attack_ = 10;
 	armor_ = 6;

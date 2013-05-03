@@ -13,6 +13,7 @@
 
 class Enemy;
 class MapItem;
+class CompassItem;
 
 class Player : public GameObject
 {
@@ -42,6 +43,7 @@ public:
 	virtual int receiveDamage(Enemy &enemy);
 	virtual bool goDeeper();
 	virtual void getMap(MapItem &map);
+	virtual void getCompass(CompassItem &compass);
 
 	virtual int explored() const;
 	virtual void reset_explored();

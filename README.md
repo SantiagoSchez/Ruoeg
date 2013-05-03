@@ -1,11 +1,17 @@
 Ruoeg
 =====
 ### An old-school rogue-like game built from scratch using pdcurses.
+You may need to install the VC++ Redistributable for VS2012 in order to execute Ruoeg. You can find it in: http://www.microsoft.com/en-GB/download/details.aspx?id=30679
 -
 Changes
 =======
 ### Current look
-![ScreenShot](https://raw.github.com/SantiagoSanchez/Ruoeg/master/screenshots/Ruoeg_4.29.13.png)
+![ScreenShot](https://raw.github.com/SantiagoSanchez/Ruoeg/master/screenshots/Ruoeg_03.05.13.png)
+
+### v1.0.0
+- A compass item added to show chests and downstairs (but not enemies).
+- Player can now restart the game if he dies.
+- Some adjustments done to the difficulty.
 
 ### v0.4.0
 - Title screen added.

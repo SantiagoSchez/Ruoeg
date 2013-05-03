@@ -33,6 +33,7 @@ public:
 	int num_corridors() const;
 	int num_enemies() const;
 	int floor() const;
+	void reset_floor();
 	const Point& stairs_location() const;
 
 	// Helper methods

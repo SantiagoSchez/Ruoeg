@@ -51,6 +51,9 @@ public:
 	bool view_map() const;
 	void set_view_map(bool view_map);
 
+	bool view_chests() const;
+	void set_view_chests(bool view_chests);
+
 	void end();
 
 	bool saveData();
@@ -59,19 +62,22 @@ public:
 private:
 	enum class State 
 	{
-		Finish, 
-		Running
+		Running,
+		TitleScreen,
+		Gameloop,
+		Finish,
+		Exit
 	};
 
 	Game();
 
-	State state_;
+	State outer_state_, inner_state_;
 	Dungeon dungeon_;
 	std::unique_ptr<Player> player_;
 	std::vector<WINDOW *> windows_;
 	int score_, hi_score_, deepest_floor_;
 	double score_factor_, exp_factor_;
-	bool view_map_;
+	bool view_map_, view_chests_;
 	Point first_location_;
 
 	// Disallowing copy constructor and assignment operator

@@ -15,8 +15,8 @@
 #include <algorithm>
 #include <fstream>
 
-Game::Game() : dungeon_(30, 90), score_factor_(0.10), exp_factor_(0.50),
-	view_map_(false), deepest_floor_(1), hi_score_(0)
+Game::Game() : dungeon_(30, 90), score_factor_(0.10), exp_factor_(1.00),
+	view_map_(false), view_chests_(false), deepest_floor_(1), hi_score_(0)
 {
 }
 
@@ -106,7 +106,8 @@ void Game::setUp()
 	dungeon_.generate();
 
 	// Change game state
-	state_ = State::Running;
+	outer_state_ = State::Running;
+	inner_state_ = State::Gameloop;
 
 	// Play some music
 	RNG rng;
@@ -116,24 +117,63 @@ void Game::setUp()
 
 void Game::loop(Curses::Key /*= Crs::Key::ESC*/)
 {
-	while(state_ == State::Running)
+	while(outer_state_ == State::Running)
 	{
-		updateEnemyDeaths();
-
-		if(manageInput(mapWindow()) != -1)
+		if(inner_state_ == State::TitleScreen)
 		{
-			updateEnemies();
+			titleScreen();
+			dungeon_.generate();
+			first_location_ = dungeon_.getRandomLit();
+			player_->placeIt(first_location_.x, first_location_.y);
+			inner_state_ = State::Gameloop;
 		}
 
-		if(!player_->isAlive())
+		while(inner_state_ == State::Gameloop)
 		{
-			end();
+			updateEnemyDeaths();
+
+			if(manageInput(mapWindow()) != -1)
+			{
+				updateEnemies();
+			}
+
+			if(!player_->isAlive())
+			{
+				end();
+				inner_state_ = State::TitleScreen;
+			}
+
+			updateMapWindow();
+			updateStatusWindow();
+
+			refreshWindows(windows_);
 		}
-		
-		updateMapWindow();
-		updateStatusWindow();
-		
-		refreshWindows(windows_);
+	}
+
+	for(auto w : windows_)
+	{
+		Curses::delwin(w);
+	}
+
+	Curses::werase(stdscr);
+	WINDOW *win = Curses::newwin(6, 29, 16, 31);
+
+	while(outer_state_ == State::Finish)
+	{
+		Curses::wattron(win, COLOR_PAIR(static_cast<int>(GameObject::Color::Green_Black)));
+		Curses::mvwprintw(win, 2, 2, "Thanks for playing Ruoeg.");
+		Curses::mvwprintw(win, 3, 2, "  Press any key to exit  ");
+		Curses::wattroff(win, COLOR_PAIR(static_cast<int>(GameObject::Color::Green_Black)));
+
+		Curses::wbox(win, 0, 0);
+		Curses::wrefresh(stdscr);
+
+		if(Curses::wgetch(win) != -1)
+		{
+			outer_state_ = State::Exit;
+			saveData();
+			Curses::delwin(win);
+		}
 	}
 }
 
@@ -182,23 +222,6 @@ int Game::manageInput(WINDOW *win)
 
 	if(key != -1)
 	{
-		// Stuff for debugging 
-		if(key == static_cast<int>(Curses::Key::F1))
-		{
-			player_->ghost_mode = !player_->ghost_mode;
-			Curses::wprintw(consoleWindow(), " GHOST MODE: %d\n", player_->ghost_mode);
-		}
-		else if(key == static_cast<int>(Curses::Key::F2))
-		{
-			view_map_ = !view_map_;
-			Curses::werase(mapWindow());
-			Curses::wprintw(consoleWindow(), " VIEW MAP: %d\n", view_map_);
-		}
-		else if(key == static_cast<int>(Curses::Key::F3))
-		{
-			dungeon_.generate();
-		}
-
 		// Player movement
 		if(key == static_cast<int>(Curses::Key::Up))
 		{
@@ -220,7 +243,8 @@ int Game::manageInput(WINDOW *win)
 		// Exit
 		if(key == static_cast<int>(Curses::Key::Esc))
 		{
-			state_ = State::Finish;
+			outer_state_ = State::Finish;
+			inner_state_ = State::Finish;
 		}
 	}
 
@@ -320,6 +344,8 @@ void Game::loadStrings()
 		addString("CHEST_GATHERED", "gold gathered from chest!");
 	ResourceManager::getInstance().
 		addString("MAP_OBTAINED", "Map of the dungeon obtained!");
+	ResourceManager::getInstance().
+		addString("COMPASS_OBTAINED", "Compass obtained. It shows you where the chests are!");
 	ResourceManager::getInstance().
 		addString("YOU_RECEIVE", "You receive");
 	ResourceManager::getInstance().
@@ -432,6 +458,16 @@ void Game::set_view_map(bool view_map)
 	view_map_ = view_map;
 }
 
+bool Game::view_chests() const
+{
+	return view_chests_;
+}
+
+void Game::set_view_chests(bool view_chests)
+{
+	view_chests_ = view_chests;
+}
+
 double Game::exp_factor() const
 {
 	return exp_factor_;
@@ -462,7 +498,7 @@ void Game::end()
 		Curses::mvwprintw(prompt, 7, 1, "of going through the dungeon again brave    ");
 		Curses::mvwprintw(prompt, 8, 1, "warrior!                                    ");
 		Curses::mvwprintw(prompt, 9, 1, "                                            ");
-		Curses::mvwprintw(prompt, 10, 1, "       <PRESS [ENTER] TO CONTINUE>          ");
+		Curses::mvwprintw(prompt, 10, 1, "       <PRESS [SPACE] TO CONTINUE>          ");
 
 		Curses::wbox(prompt, 0, 0);
 		Curses::wrefresh(prompt);
@@ -472,8 +508,12 @@ void Game::end()
 		{
 			if(key == static_cast<int>(Curses::Key::Space))
 			{
+				dungeon_.reset_floor();
+				set_view_chests(false);
+				set_view_map(false);
+				werase(consoleWindow());
 				Curses::delwin(prompt);
-
+				
 				return;
 			}
 		}

@@ -12,6 +12,7 @@
 #include "../GameObjects/Terrains/None/None.h"
 #include "../GameObjects/Chests/Chest.h"
 #include "../GameObjects/Chests/MapItem.h"
+#include "../GameObjects/Chests/CompassItem.h"
 #include "../GameObjects/Enemies/SmallDragon/SmallDragon.h"
 #include "../GameObjects/Enemies/SmallGoblin/SmallGoblin.h"
 #include "../GameObjects/Enemies/SmallSkeleton/SmallSkeleton.h"
@@ -149,6 +150,10 @@ void Dungeon::generate()
 	location = getRandomLit();
 	map_.at(location.y, location.x).add(std::make_shared<MapItem>());
 
+	// Generate a compass item of the dungeon
+	location = getRandomLit();
+	map_.at(location.y, location.x).add(std::make_shared<CompassItem>());
+
 	// Generate the downstairs
 	stairs_location_ = location = getRandomLit();
 	map_.at(location.y, location.x).add(std::make_shared<Stairs>());
@@ -162,6 +167,15 @@ void Dungeon::generate()
 			{
 				map_.increase_valid_objects();
 			}
+		}
+	}
+
+	// Empower the enemies
+	if(floor_ > 1)
+	{
+		for(auto enemy : enemies_)
+		{
+			enemy->levelUp();
 		}
 	}
 }
@@ -809,6 +823,22 @@ void Dungeon::draw(WINDOW *win)
 							COLOR_PAIR(static_cast<int>(g->color())));
 					}
 				}
+
+				if(Game::getInstance().view_chests())
+				{
+					if(g->type() == GameObject::Type::Chest)
+					{
+						Curses::mvwaddch(win, i, j, 
+							static_cast<char>(g->type()) | 
+							COLOR_PAIR(static_cast<int>(g->color())));
+					}
+					else if(g->type() == GameObject::Type::DownStairs)
+					{
+						Curses::mvwaddch(win, i, j, 
+							static_cast<char>(g->type()) | 
+							COLOR_PAIR(static_cast<int>(g->color())));
+					}
+				}
 			}
 			else
 			{
@@ -838,6 +868,11 @@ int Dungeon::num_enemies() const
 int Dungeon::floor() const
 {
 	return floor_;
+}
+
+void Dungeon::reset_floor()
+{
+	floor_ = 0;
 }
 
 const Point& Dungeon::stairs_location() const

@@ -1,7 +1,8 @@
 #include "GameObject.h"
 
 GameObject::GameObject(Type type) : type_(type), discovered_(false), 
-	delete_object_(false), color_(GameObject::Color::None)
+	delete_object_(false), color_(GameObject::Color::None), 
+	time_to_flash_(100)
 {
 }
 
