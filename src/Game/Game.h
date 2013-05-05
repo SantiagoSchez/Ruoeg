@@ -78,6 +78,7 @@ private:
 	int score_, hi_score_, deepest_floor_;
 	double score_factor_, exp_factor_;
 	bool view_map_, view_chests_;
+	bool f1_pressed_;
 	Point first_location_;
 
 	// Disallowing copy constructor and assignment operator

@@ -16,7 +16,8 @@
 #include <fstream>
 
 Game::Game() : dungeon_(30, 90), score_factor_(0.10), exp_factor_(1.00),
-	view_map_(false), view_chests_(false), deepest_floor_(1), hi_score_(0)
+	view_map_(false), view_chests_(false), deepest_floor_(1), hi_score_(0),
+	f1_pressed_(false)
 {
 }
 
@@ -219,7 +220,6 @@ void Game::refreshWindows(std::vector<WINDOW *> windows)
 int Game::manageInput(WINDOW *win)
 {
 	int key = Curses::wgetch(win);
-
 	if(key != -1)
 	{
 		// Player movement
@@ -238,6 +238,20 @@ int Game::manageInput(WINDOW *win)
 		else if(key == static_cast<int>(Curses::Key::Left))
 		{
 			player_->moveWest();
+		}
+
+		// Music muting
+		if((key == 'm') || (key == 'M'))
+		{
+			f1_pressed_ = !f1_pressed_;
+			if(f1_pressed_)
+			{
+				uFMOD_SetVolume(uFMOD_MIN_VOL);
+			}
+			else
+			{
+				uFMOD_SetVolume(uFMOD_MAX_VOL);
+			}
 		}
 
 		// Exit
@@ -563,12 +577,17 @@ void Game::titleScreen()
 		Curses::mvwprintw(win, 30, 30, "Deepest floor: -%d | Best score: %d", deepest_floor_, hi_score_);
 		Curses::wattroff(win, COLOR_PAIR(static_cast<int>(GameObject::Color::Yellow_Black)));
 
+		Curses::wattron(win, COLOR_PAIR(static_cast<int>(GameObject::Color::Cyan_Black)));
+		Curses::mvwprintw(win, 32, 26, "<Press M ingame for (un)muting the music>");
+		Curses::wattroff(win, COLOR_PAIR(static_cast<int>(GameObject::Color::Cyan_Black)));
+
 		Curses::mvwprintw(win, 39, 0, "Copyright (c) 2013 Santiago Sanchez Sobrino.");
 		Curses::wrefresh(win);
 
 		int key = Curses::wgetch(win);
 		if(key != -1)
 		{
+			// Race selection
 			if((key == 'h') || (key == 'H'))
 			{
 				Curses::delwin(win);
